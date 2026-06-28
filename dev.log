@@ -1,0 +1,119 @@
+
+> nerishoes-build@0.1.0 dev
+> next dev --port 3005
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3005
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1187ms
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ ✓ Compiled /src/middleware in 232ms (91 modules)
+ ○ Compiling /[locale] ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ ✓ Compiled /[locale] in 3.1s (1546 modules)
+ ✓ Compiled in 176ms (717 modules)
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next-intl\dist\esm\production\extractor\format\index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+ GET /tr 200 in 3545ms
+ GET /en 200 in 90ms
+ GET /de 200 in 56ms
+ GET /it 200 in 39ms
+ GET /ar 200 in 58ms
+ GET /ru 200 in 35ms
+ ✓ Compiled /[locale]/urunler in 283ms (1530 modules)
+ GET /tr/urunler 200 in 619ms
+ GET /en/urunler 200 in 71ms
+ ✓ Compiled /[locale]/urunler/[slug] in 181ms (1537 modules)
+ GET /tr/urunler/chunky 200 in 485ms
+ GET /en/urunler/chunky 200 in 83ms
+ GET /ar/urunler/milano-gm 200 in 77ms
+ GET /ru/urunler/noble-leather-chelsea-bot 200 in 67ms
+ ✓ Compiled /[locale]/hakkimizda in 179ms (1544 modules)
+ GET /tr/hakkimizda 200 in 409ms
+ ✓ Compiled /[locale]/iletisim in 170ms (1551 modules)
+ GET /de/iletisim 200 in 436ms
+ ✓ Compiled /admin in 195ms (1564 modules)
+ ⨯ Error: Failed to call `useTranslations` because the context from `NextIntlClientProvider` was not found.
+
+This can happen because:
+1) You intended to render this component as a Server Component, the render
+   failed, and therefore React attempted to render the component on the client
+   instead. If this is the case, check the console for server errors.
+2) You intended to render this component on the client side, but no context was found.
+   Learn more about this error here: https://next-intl.dev/docs/environments/server-client-components#missing-context
+    at AdminLogin (./src/components/admin/AdminLogin.tsx:16:73)
+digest: "3626915513"
+ GET /admin 500 in 295ms
+ ✓ Compiled in 684ms (729 modules)
+ ○ Compiling /[locale]/urunler/[slug] ...
+ ✓ Compiled /[locale]/urunler/[slug] in 648ms (819 modules)
+ GET /en/urunler/4920-suet-deri 200 in 844ms
+ ⨯ Failed to generate static paths for /[locale]/urunler/[slug]:
+TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./src/app/[locale]/layout.tsx:9:73)
+    at (rsc)/./src/app/[locale]/layout.tsx (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\app\[locale]\urunler\[slug]\page.js:322:1)
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async collectGenerateParams (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\build\utils.js:921:21)
+    at async Object.loadStaticPaths (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\server\dev\static-paths-worker.js:47:13) {
+  type: 'TypeError'
+}
+ ✓ Compiled /favicon.ico in 242ms (851 modules)
+ GET /favicon.ico 200 in 322ms
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./src/app/[locale]/layout.tsx:12:74)
+    at (rsc)/./src/app/[locale]/layout.tsx (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\app\[locale]\urunler\[slug]\page.js:322:1)
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async collectGenerateParams (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\build\utils.js:921:21)
+    at async Object.loadStaticPaths (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\server\dev\static-paths-worker.js:47:13) {
+  type: 'TypeError',
+  page: '/tr/urunler/4920-suet-deri'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_not-found in 1092ms (1795 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /_next/static/webpack/8954459bfbf5fc1a.webpack.hot-update.json 404 in 525ms
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./src/app/[locale]/layout.tsx:12:74)
+    at (rsc)/./src/app/[locale]/layout.tsx (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\app\[locale]\urunler\[slug]\page.js:322:1)
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async collectGenerateParams (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\build\utils.js:921:21)
+    at async Object.loadStaticPaths (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\server\dev\static-paths-worker.js:47:13) {
+  type: 'TypeError',
+  page: '/en/urunler/4920-suet-deri'
+}
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./src/app/[locale]/layout.tsx:12:74)
+    at (rsc)/./src/app/[locale]/layout.tsx (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\app\[locale]\urunler\[slug]\page.js:322:1)
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async collectGenerateParams (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\build\utils.js:921:21)
+    at async Object.loadStaticPaths (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\server\dev\static-paths-worker.js:47:13) {
+  type: 'TypeError',
+  page: '/en/urunler/4920-suet-deri'
+}
+ GET /en/urunler/4920-suet-deri 500 in 230ms
+ GET /favicon.ico 200 in 10ms
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./src/app/[locale]/layout.tsx:12:74)
+    at (rsc)/./src/app/[locale]/layout.tsx (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\app\[locale]\urunler\[slug]\page.js:322:1)
+    at __webpack_require__ (C:\Users\selcu\Desktop\NeriSohes.com\.next\server\webpack-runtime.js:33:42)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async collectGenerateParams (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\build\utils.js:921:21)
+    at async Object.loadStaticPaths (C:\Users\selcu\Desktop\NeriSohes.com\node_modules\next\dist\server\dev\static-paths-worker.js:47:13) {
+  type: 'TypeError',
+  page: '/en/urunler/4920-suet-deri'
+}
+ GET /en/urunler/4920-suet-deri 500 in 195ms
+ GET /favicon.ico 200 in 12ms

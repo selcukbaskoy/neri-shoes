@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "skills": {
+    "blog": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog/SKILL.md",
+      "computedHash": "ba20db5779472b6015175f1fdeb3fccc41d0e722c4f0e6ec92b9e8d6719875ba"
+    },
+    "blog-analyze": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-analyze/SKILL.md",
+      "computedHash": "990d6edfdc46defee5e4a40b934ab4f496552c411e261714ac37efc28550eb22"
+    },
+    "blog-audio": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-audio/SKILL.md",
+      "computedHash": "2f4a91913d73cc8869e05115fdd3a9c39c87a6b5b69a2a033ffa267c38b74693"
+    },
+    "blog-audit": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-audit/SKILL.md",
+      "computedHash": "2080a428f56e3255ed9d73c3e6daf65ea67a41e5cf190c51d25b24769091fb9c"
+    },
+    "blog-brand": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-brand/SKILL.md",
+      "computedHash": "b1209521d7fe39b267aaad0868745ffeb2ec936ee60a04d198446526d58164b1"
+    },
+    "blog-brief": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-brief/SKILL.md",
+      "computedHash": "ba208b87fa4ab1e40685d93d2bcfffe8d0afeef5656b9c5a6ba49a87eef83e9e"
+    },
+    "blog-calendar": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-calendar/SKILL.md",
+      "computedHash": "c8a6d6dfd893da27f21f3ace8760316fa127c8fbb2a21ff7a2970c4f4ad00d0c"
+    },
+    "blog-cannibalization": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-cannibalization/SKILL.md",
+      "computedHash": "9b95f4d1aae03bfef9ee0bc1ebb0433954c164eec50108f6ec35bb3d3f32fd16"
+    },
+    "blog-chart": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-chart/SKILL.md",
+      "computedHash": "84e882794e6a1a146edab7bf3b0edeb81e9f4f6c572abc4922c3f6808482f3d7"
+    },
+    "blog-cluster": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-cluster/SKILL.md",
+      "computedHash": "277e6a1557ce9e158fb26220929bf030498aee7079c3e3fba58eb35a8be9a297"
+    },
+    "blog-discourse": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-discourse/SKILL.md",
+      "computedHash": "fdb7ddcff3674edc09d6f76f1b0b89de9eef1612cf2e716ad7640b445f660c2e"
+    },
+    "blog-factcheck": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-factcheck/SKILL.md",
+      "computedHash": "14d617eb4e52e365dc4fb6d67ee8d432630364423c2659445605ef1c286c3a5c"
+    },
+    "blog-flow": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-flow/SKILL.md",
+      "computedHash": "79ae958536c9493b20eda5e644a559116e546ba364750651ed72951d4166b47a"
+    },
+    "blog-geo": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-geo/SKILL.md",
+      "computedHash": "ca1c6c1bc5379d85d52e5d4d55537934c5dc2f69b029459c060ee348325f149d"
+    },
+    "blog-google": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-google/SKILL.md",
+      "computedHash": "956a90f5ec536cd4fcea8cf18fdef181ed498ebb363577f5049bfc3fb5e8df3d"
+    },
+    "blog-image": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-image/SKILL.md",
+      "computedHash": "f52bf2e813827bc134a5ecb6f25232e84ae9981c0340227489f22648a31ff9d5"
+    },
+    "blog-locale-audit": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-locale-audit/SKILL.md",
+      "computedHash": "3952c62e85a1ace9e33df50cdf5f791135f31f8ec44803b17f73939e4b213dfc"
+    },
+    "blog-localize": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-localize/SKILL.md",
+      "computedHash": "05a3f33ec2049c8a56793b7dec1625c62fbf67a1505204506d4150b1e19d9535"
+    },
+    "blog-multilingual": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-multilingual/SKILL.md",
+      "computedHash": "10d54a3394077f3dc6a53894ac5137b8edaa363c6e4dc97254565b4e8730f593"
+    },
+    "blog-notebooklm": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-notebooklm/SKILL.md",
+      "computedHash": "cc05fdf2da91778f67b5fea6065795735a89258d62a3ee11935b8e98d3469047"
+    },
+    "blog-outline": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-outline/SKILL.md",
+      "computedHash": "dca5ac90a8963c4e8ebf3d01080214249cd19305cda6142b6d2579bee6a17b13"
+    },
+    "blog-persona": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-persona/SKILL.md",
+      "computedHash": "1624b2fdd1ddc006c627a7e46cee44ac31af37463fdace357d435afafa7add84"
+    },
+    "blog-repurpose": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-repurpose/SKILL.md",
+      "computedHash": "ded820ce9a4d2cf95416793e9aea8187d7356c184dbd08e89d60f88542cefad4"
+    },
+    "blog-rewrite": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-rewrite/SKILL.md",
+      "computedHash": "5f08803d4e98f8c53569a2a1109290010adcac9adcdf1398e226a590c6e0506f"
+    },
+    "blog-schema": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-schema/SKILL.md",
+      "computedHash": "ea8f57cae0a0a145d12a4a9c99e4768a0178e0ba80781994f22fe3f5dc4d51ab"
+    },
+    "blog-seo-check": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-seo-check/SKILL.md",
+      "computedHash": "58c364816b818f6eaf78d409a935a24f4f4c32f548b4ef3d0da7e3e50f04077f"
+    },
+    "blog-strategy": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-strategy/SKILL.md",
+      "computedHash": "21a231129c23aff7ebf653c247556d6c260d01dcab02bcc343cfd4fba6851bbf"
+    },
+    "blog-taxonomy": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-taxonomy/SKILL.md",
+      "computedHash": "abf5b7836c5567b4e9ef656e2b5260e4b9ac1c5154c121a894e75cb3aea4d81b"
+    },
+    "blog-translate": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-translate/SKILL.md",
+      "computedHash": "805464232c5810a6d43bfc34bb49d5ef872fceda706259c29968115fe4597f5d"
+    },
+    "blog-write": {
+      "source": "AgriciDaniel/claude-blog",
+      "sourceType": "github",
+      "skillPath": "skills/blog-write/SKILL.md",
+      "computedHash": "92d07a5f5178fd2fc327a4ee834b1a6fb87ab88e92bf3e02717912b3511bc909"
+    },
+    "brandkit": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/brandkit/SKILL.md",
+      "computedHash": "b63012f3c3d21197e0185d3e9cc7ec40c589fb10e0b5a32a561739de31aa3f20"
+    },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
+    },
+    "design-taste-frontend-v1": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill-v1/SKILL.md",
+      "computedHash": "d704ab912c4d0ca954ffa858983da755ae4cd5cad9ba22554db5557382f5bd34"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skill",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "8bdf9e4e6de7a4969147bf4828a4ad2c5aacd9fba4b690b250a85e0467ca387d"
+    },
+    "full-output-enforcement": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/output-skill/SKILL.md",
+      "computedHash": "26bd29ce4c5e02c7666b2d503609bf466bd32290822e91f0e984147048dbb924"
+    },
+    "gpt-taste": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/gpt-tasteskill/SKILL.md",
+      "computedHash": "cc8f0c601d8240a124e1d11634351a2be7b8a72fd807c75e5b6bf7afcd5ddee0"
+    },
+    "high-end-visual-design": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/soft-skill/SKILL.md",
+      "computedHash": "7db385e4c5370e5a7fca9704a1361b056e4504ea6a03924bb86f33a4f00b5c73"
+    },
+    "image-to-code": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/image-to-code-skill/SKILL.md",
+      "computedHash": "58517b03b2a01f4c9ba65861559d03df931400871bbc200978c975b24bb92c73"
+    },
+    "imagegen-frontend-mobile": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/imagegen-frontend-mobile/SKILL.md",
+      "computedHash": "9ab7f4f6ce66a3cff02bbf5894e5bd5af50bf5d6ef0adffdc88e8fab772fe44f"
+    },
+    "imagegen-frontend-web": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/imagegen-frontend-web/SKILL.md",
+      "computedHash": "65f5ae59fa317567809438310b1c54f78cd133426deb43e4d3d4ca4c8f541628"
+    },
+    "industrial-brutalist-ui": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/brutalist-skill/SKILL.md",
+      "computedHash": "8fc355c4aadb7d29c53ca28bc41be3cd6eea765d121e3737c4dc2d0f90a8effa"
+    },
+    "minimalist-ui": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/minimalist-skill/SKILL.md",
+      "computedHash": "08873a3131d3be27bef9bf3304b310b16b44ca6e3561aebe532797be3443f6bd"
+    },
+    "redesign-existing-projects": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/redesign-skill/SKILL.md",
+      "computedHash": "b405eee0e0e80fc243f731d9aa368bca307e356db7e6157d27101d369dac6726"
+    },
+    "review-animations": {
+      "source": "emilkowalski/skill",
+      "sourceType": "github",
+      "skillPath": "skills/review-animations/SKILL.md",
+      "computedHash": "ca04aaa0a815f05e0910ded8fedbfbdfe0acdec8f52dfbb88277890070d134d4"
+    },
+    "stitch-design-taste": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/stitch-skill/SKILL.md",
+      "computedHash": "13322f38406cd3abf16ba45e35bdc9b18002d0153a79b4612b97aefc65d5a335"
+    }
+  }
+}

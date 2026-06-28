@@ -1,0 +1,69 @@
+{
+  "_aciklama": "Bu dosya bir ŞABLONDUR, doğrudan projede kullanılmaz. Yeni bir sayfa eklediğinizde, aşağıdaki 'yourNamespace' bloğunu kopyalayıp messages/tr.json, en.json, de.json, it.json, ar.json, ru.json dosyalarının HER BİRİNE ekleyin (en üst seviyeye, diğer bölümlerin -home, products, about- yanına). 'yourNamespace' adını sayfanıza uygun bir isimle değiştirebilirsiniz (örn. 'campaign', 'faq'), ama TÜM 6 dosyada AYNI anahtar adını ve AYNI alt-anahtarları kullanın. Anahtar isimleri (title, subtitle, sectionOneTitle ...) page-template.tsx içindeki t('...') çağrılarıyla eşleşmelidir.",
+
+  "tr": {
+    "yourNamespace": {
+      "title": "Sayfa Başlığı",
+      "subtitle": "Sayfa için kısa açıklama metni.",
+      "sectionOneTitle": "Birinci Bölüm Başlığı",
+      "sectionOneText": "Birinci bölüm için açıklama metni.",
+      "sectionTwoTitle": "İkinci Bölüm Başlığı",
+      "sectionTwoText": "İkinci bölüm için açıklama metni."
+    }
+  },
+
+  "en": {
+    "yourNamespace": {
+      "title": "Page Title",
+      "subtitle": "Short description text for the page.",
+      "sectionOneTitle": "Section One Title",
+      "sectionOneText": "Description text for section one.",
+      "sectionTwoTitle": "Section Two Title",
+      "sectionTwoText": "Description text for section two."
+    }
+  },
+
+  "de": {
+    "yourNamespace": {
+      "title": "Seitentitel",
+      "subtitle": "Kurze Beschreibung für die Seite.",
+      "sectionOneTitle": "Titel des ersten Abschnitts",
+      "sectionOneText": "Beschreibungstext für den ersten Abschnitt.",
+      "sectionTwoTitle": "Titel des zweiten Abschnitts",
+      "sectionTwoText": "Beschreibungstext für den zweiten Abschnitt."
+    }
+  },
+
+  "it": {
+    "yourNamespace": {
+      "title": "Titolo della Pagina",
+      "subtitle": "Breve testo descrittivo per la pagina.",
+      "sectionOneTitle": "Titolo della Prima Sezione",
+      "sectionOneText": "Testo descrittivo per la prima sezione.",
+      "sectionTwoTitle": "Titolo della Seconda Sezione",
+      "sectionTwoText": "Testo descrittivo per la seconda sezione."
+    }
+  },
+
+  "ar": {
+    "yourNamespace": {
+      "title": "عنوان الصفحة",
+      "subtitle": "نص وصف قصير للصفحة.",
+      "sectionOneTitle": "عنوان القسم الأول",
+      "sectionOneText": "نص وصفي للقسم الأول.",
+      "sectionTwoTitle": "عنوان القسم الثاني",
+      "sectionTwoText": "نص وصفي للقسم الثاني."
+    }
+  },
+
+  "ru": {
+    "yourNamespace": {
+      "title": "Заголовок страницы",
+      "subtitle": "Короткое описание страницы.",
+      "sectionOneTitle": "Заголовок первого раздела",
+      "sectionOneText": "Текст описания первого раздела.",
+      "sectionTwoTitle": "Заголовок второго раздела",
+      "sectionTwoText": "Текст описания второго раздела."
+    }
+  }
+}
