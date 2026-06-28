@@ -92,7 +92,8 @@
     "selectSizeFirst": "الرجاء اختيار المقاس أولاً",
     "cartComingSoon": "نظام السلة قريباً — يمكنك الطلب عبر واتساب الآن",
     "outOfStockMessage": "هذا المنتج غير متوفر حاليًا في المخزون.",
-    "availableSizesMessage": "المقاسات المتوفرة: {sizes}"
+    "availableSizesMessage": "المقاسات المتوفرة: {sizes}",
+    "zoomImage": "تكبير الصورة"
   },
   "about": {
     "title": "من نحن",

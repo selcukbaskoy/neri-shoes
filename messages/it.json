@@ -92,7 +92,8 @@
     "selectSizeFirst": "Seleziona prima una taglia",
     "cartComingSoon": "Sistema carrello presto disponibile — per ora ordina via WhatsApp",
     "outOfStockMessage": "Questo prodotto non è attualmente disponibile.",
-    "availableSizesMessage": "Taglie disponibili: {sizes}"
+    "availableSizesMessage": "Taglie disponibili: {sizes}",
+    "zoomImage": "Ingrandisci immagine"
   },
   "about": {
     "title": "Chi Siamo",

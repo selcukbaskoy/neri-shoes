@@ -92,7 +92,8 @@
     "selectSizeFirst": "Please select a size first",
     "cartComingSoon": "Cart system coming soon — for now, you can order via WhatsApp",
     "outOfStockMessage": "This product is currently out of stock.",
-    "availableSizesMessage": "Available sizes: {sizes}"
+    "availableSizesMessage": "Available sizes: {sizes}",
+    "zoomImage": "Zoom image"
   },
   "about": {
     "title": "About Us",

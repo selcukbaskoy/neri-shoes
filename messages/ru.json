@@ -92,7 +92,8 @@
     "selectSizeFirst": "Сначала выберите размер",
     "cartComingSoon": "Корзина скоро появится — пока заказывайте через WhatsApp",
     "outOfStockMessage": "Данный товар в настоящее время отсутствует на складе.",
-    "availableSizesMessage": "Доступные размеры: {sizes}"
+    "availableSizesMessage": "Доступные размеры: {sizes}",
+    "zoomImage": "Увеличить изображение"
   },
   "about": {
     "title": "О Нас",

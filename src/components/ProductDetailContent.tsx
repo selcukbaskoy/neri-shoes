@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StockEntry, computeStockStatus } from "@/lib/stock";
 import { formatPrice } from "@/lib/currency";
 import { RegionalPrice, findRegionalPrice, formatRegionalPrice } from "@/lib/regional-prices";
@@ -51,6 +51,39 @@ export default function ProductDetailContent({
     key: "addedToCart",
     visible: false,
   });
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [transformOrigin, setTransformOrigin] = useState("50% 50%");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImg, setLightboxImg] = useState(0);
+
+  const images = product.images?.length ? product.images : [product.image];
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setTransformOrigin(`${x.toFixed(1)}% ${y.toFixed(1)}%`);
+  }
+
+  function openLightbox() {
+    setLightboxImg(activeImg);
+    setLightboxOpen(true);
+  }
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowLeft") setLightboxImg((i) => Math.max(0, i - 1));
+      if (e.key === "ArrowRight") setLightboxImg((i) => Math.min(images.length - 1, i + 1));
+    }
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [lightboxOpen, images.length]);
 
   function showToast(key: "addedToCart" | "stockLimitReached") {
     setToast({ key, visible: true });
@@ -100,7 +133,6 @@ export default function ProductDetailContent({
     return formatPrice(tryAmount, locale, rates);
   }
 
-  const images = product.images?.length ? product.images : [product.image];
   const infoLink = buildProductWhatsAppLink(whatsappNumber, product.name, locale);
   const wholesaleFn = WHOLESALE_MSG[locale] || WHOLESALE_MSG.tr;
   const wholesaleLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(wholesaleFn(product.name))}`;
@@ -128,31 +160,62 @@ export default function ProductDetailContent({
           transition={{ duration: 0.55, ease: "easeOut" }}
         >
           {/* Main image */}
-          <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-[#222] bg-[#111]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeImg}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="absolute inset-0"
-              >
-                <Image
-                  src={images[activeImg]}
-                  alt={`${product.name} — görsel ${activeImg + 1}`}
-                  fill
-                  className="object-cover"
-                  priority={activeImg === 0}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </motion.div>
-            </AnimatePresence>
-            {/* Persistent corner vignette */}
+          <div
+            className="relative aspect-square w-full overflow-hidden rounded-xl border border-[#222] bg-[#111] cursor-zoom-in select-none"
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setIsZoomed(true)}
+            onMouseLeave={() => setIsZoomed(false)}
+            onClick={openLightbox}
+            role="button"
+            tabIndex={0}
+            aria-label={t("zoomImage")}
+            onKeyDown={(e) => e.key === "Enter" && openLightbox()}
+          >
+            {/* Zoom wrapper — scales with cursor-origin; vignette/badge stay outside */}
+            <div
+              className="absolute inset-0"
+              style={{
+                transform: isZoomed ? "scale(1.85)" : "scale(1)",
+                transformOrigin,
+                transition: "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              }}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeImg}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={images[activeImg]}
+                    alt={`${product.name} — görsel ${activeImg + 1}`}
+                    fill
+                    className="object-cover"
+                    priority={activeImg === 0}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Persistent corner vignette — outside zoom so it stays fixed */}
             <div
               className="pointer-events-none absolute inset-0"
               style={{ background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.25) 100%)" }}
             />
+
+            {/* Zoom hint icon — outside zoom wrapper */}
+            <div className="pointer-events-none absolute bottom-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm transition-opacity duration-200" style={{ opacity: isZoomed ? 0 : 0.55 }}>
+              <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5 text-white">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M11 8v6M8 11h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
+
             {/* Durum B: tüm stok sıfır — diyagonal tükendi şeridi */}
             {stockStatus.kind === "sold_out" && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -179,7 +242,7 @@ export default function ProductDetailContent({
               {images.map((src, i) => (
                 <motion.button
                   key={i}
-                  onClick={() => setActiveImg(i)}
+                  onClick={() => { setActiveImg(i); setIsZoomed(false); }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.97 }}
                   className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-200 ${
@@ -438,6 +501,88 @@ export default function ProductDetailContent({
             }`}
           >
             {tCart(toast.key)}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-sm"
+            onClick={() => setLightboxOpen(false)}
+          >
+            {/* Close */}
+            <button
+              className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-colors"
+              onClick={() => setLightboxOpen(false)}
+              aria-label="Kapat"
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+
+            {/* Image */}
+            <div
+              className="relative m-4 h-[90vh] w-full max-w-3xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={images[lightboxImg]}
+                alt={`${product.name} — görsel ${lightboxImg + 1}`}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 900px"
+                quality={90}
+              />
+            </div>
+
+            {/* Prev / Next arrows */}
+            {images.length > 1 && (
+              <>
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition-colors disabled:opacity-30"
+                  onClick={(e) => { e.stopPropagation(); setLightboxImg((i) => Math.max(0, i - 1)); }}
+                  disabled={lightboxImg === 0}
+                  aria-label="Önceki görsel"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                    <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition-colors disabled:opacity-30"
+                  onClick={(e) => { e.stopPropagation(); setLightboxImg((i) => Math.min(images.length - 1, i + 1)); }}
+                  disabled={lightboxImg === images.length - 1}
+                  aria-label="Sonraki görsel"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                    <path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </>
+            )}
+
+            {/* Dot indicators */}
+            {images.length > 1 && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={(e) => { e.stopPropagation(); setLightboxImg(i); }}
+                    className={`h-1.5 rounded-full transition-all duration-200 ${
+                      i === lightboxImg ? "w-6 bg-accent" : "w-1.5 bg-white/40 hover:bg-white/60"
+                    }`}
+                    aria-label={`Görsel ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
