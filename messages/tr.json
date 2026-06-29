@@ -69,7 +69,16 @@
     "viewAll": "Tümünü Gör",
     "whatsappTitle": "Sipariş ve Bilgi",
     "whatsappSubtitle": "Sipariş ve bilgi için WhatsApp'tan ulaşın",
-    "whatsappButton": "WhatsApp'tan Ulaş"
+    "whatsappButton": "WhatsApp'tan Ulaş",
+    "brand": {
+      "eyebrow": "Zanaat & Tasarım",
+      "title": "Adana'nın Zanaat Mirasından Doğan Bir Marka",
+      "text": "Adana'nın köklü imalat kültüründen doğan Neri Shoes, hakiki deri işçiliğini modern tasarımla buluşturuyor. Seçilmiş malzemeler, titiz el işçiliği ve EVA taban konforu — her adımda hissedilen fark.",
+      "cta": "Hikayemizi Oku",
+      "stat1": "Model",
+      "stat2": "Yıl Deneyim",
+      "stat3": "Ülke"
+    }
   },
   "products": {
     "title": "Ürünler",

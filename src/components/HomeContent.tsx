@@ -191,6 +191,63 @@ export default function HomeContent({ featured, stocksMap, rates, whatsappLink, 
         </motion.div>
       </section>
 
+      {/* Marka Hikayesi */}
+      <section className="relative overflow-hidden border-y border-[#1a1a1a] px-4 py-24 md:px-8">
+        <div className="hero-grain pointer-events-none absolute inset-0" style={{ opacity: 0.02 }} />
+        <div className="mx-auto max-w-7xl">
+          <div className="grid items-center gap-16 md:grid-cols-2 md:gap-20">
+
+            {/* Sol: Hikaye metni */}
+            <motion.div
+              initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -32 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: shouldReduceMotion ? 0.01 : 0.7, ease: EASE_OUT }}
+              className="border-l-2 border-accent/40 pl-7"
+            >
+              <p className="mb-4 text-xs uppercase tracking-[0.2em] text-accent/70">
+                {t("brand.eyebrow")}
+              </p>
+              <h2 className="mb-6 font-serif text-3xl font-bold leading-snug text-foreground md:text-4xl">
+                {t("brand.title")}
+              </h2>
+              <p className="leading-relaxed text-muted">
+                {t("brand.text")}
+              </p>
+              <motion.div
+                className="mt-8"
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Link href="/hakkimizda" className="btn-primary">
+                  {t("brand.cta")}
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Sağ: İstatistik kartları */}
+            <div className="grid grid-cols-3 gap-4">
+              {(["500+", "10+", "50+"] as const).map((value, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: shouldReduceMotion ? 0.01 : 0.5, delay: shouldReduceMotion ? 0 : i * 0.12, ease: EASE_OUT }}
+                  className="flex flex-col items-center justify-center rounded-lg border border-[#222] bg-gradient-to-b from-[#141414] to-[#0a0a0a] px-3 py-8 text-center"
+                >
+                  <span className="mb-2 font-serif text-4xl font-bold text-accent">{value}</span>
+                  <span className="text-[10px] uppercase tracking-[0.15em] text-muted">
+                    {t(`brand.stat${i + 1}` as "brand.stat1" | "brand.stat2" | "brand.stat3")}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <section className="relative overflow-hidden border-t border-[#222] bg-surface px-4 py-24 text-center md:px-8">
         <div className="hero-grain pointer-events-none absolute inset-0" style={{ opacity: 0.02 }} />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(255,208,0,0.06),transparent_70%)]" />

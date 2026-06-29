@@ -61,7 +61,16 @@
     "viewAll": "Alle Anzeigen",
     "whatsappTitle": "Bestellung & Information",
     "whatsappSubtitle": "Kontaktieren Sie uns über WhatsApp für Bestellungen und Informationen",
-    "whatsappButton": "Über WhatsApp Kontaktieren"
+    "whatsappButton": "Über WhatsApp Kontaktieren",
+    "brand": {
+      "eyebrow": "Handwerk & Design",
+      "title": "Eine Marke aus dem Handwerkserbe Adanas",
+      "text": "Aus Adanas reicher Fertigungskultur hervorgegangen, verbindet Neri Shoes echte Lederschuhmacherei mit modernem Design. Ausgewählte Materialien, sorgfältige Handarbeit und EVA-Sohlenkomfort — ein Unterschied, der bei jedem Schritt spürbar ist.",
+      "cta": "Unsere Geschichte",
+      "stat1": "Modelle",
+      "stat2": "Jahre Erfahrung",
+      "stat3": "Länder"
+    }
   },
   "products": {
     "title": "Produkte",

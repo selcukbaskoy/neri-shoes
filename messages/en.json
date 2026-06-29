@@ -61,7 +61,16 @@
     "viewAll": "View All",
     "whatsappTitle": "Order & Information",
     "whatsappSubtitle": "Reach us on WhatsApp for orders and information",
-    "whatsappButton": "Contact via WhatsApp"
+    "whatsappButton": "Contact via WhatsApp",
+    "brand": {
+      "eyebrow": "Craft & Design",
+      "title": "A Brand Born from Adana's Craft Heritage",
+      "text": "Born from Adana's rich manufacturing culture, Neri Shoes brings together genuine leather craftsmanship and modern design. Selected materials, meticulous handiwork and EVA sole comfort — a difference felt with every step.",
+      "cta": "Read Our Story",
+      "stat1": "Models",
+      "stat2": "Years Experience",
+      "stat3": "Countries"
+    }
   },
   "products": {
     "title": "Products",
