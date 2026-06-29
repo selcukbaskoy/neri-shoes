@@ -1,7 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import HomeContent from "@/components/HomeContent";
-import { getFeaturedProducts } from "@/lib/products";
+import { getFeaturedProducts, getActiveProductImages } from "@/lib/products";
 import { getAllProductStocks } from "@/lib/stock";
 import { getExchangeRates } from "@/lib/currency";
 import { getWhatsAppLink, getWhatsAppNumber } from "@/lib/whatsapp";
@@ -45,10 +45,11 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [featured, stocksMap, rates] = await Promise.all([
+  const [featured, stocksMap, rates, stripImages] = await Promise.all([
     getFeaturedProducts(),
     getAllProductStocks(),
     getExchangeRates(),
+    getActiveProductImages(12),
   ]);
   const whatsappLink = getWhatsAppLink();
   const whatsappNumber = getWhatsAppNumber();
@@ -77,6 +78,7 @@ export default async function HomePage({ params }: Props) {
         rates={rates}
         whatsappLink={whatsappLink}
         whatsappNumber={whatsappNumber}
+        stripImages={stripImages}
       />
     </>
   );

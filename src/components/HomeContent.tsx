@@ -15,11 +15,12 @@ interface Props {
   rates: Record<string, number>;
   whatsappLink: string;
   whatsappNumber: string;
+  stripImages: string[];
 }
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
-export default function HomeContent({ featured, stocksMap, rates, whatsappLink, whatsappNumber }: Props) {
+export default function HomeContent({ featured, stocksMap, rates, whatsappLink, whatsappNumber, stripImages }: Props) {
   const t = useTranslations("home");
   const shouldReduceMotion = useReducedMotion();
   const words = t("heroTitle").split(" ");
@@ -92,6 +93,31 @@ export default function HomeContent({ featured, stocksMap, rates, whatsappLink, 
             {t("exploreButton")}
           </Link>
         </motion.div>
+
+        {stripImages.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: shouldReduceMotion ? 0.01 : 1.4, delay: shouldReduceMotion ? 0 : 1.8 }}
+            className="strip-mask pointer-events-none absolute bottom-20 left-0 w-full overflow-hidden"
+            aria-hidden="true"
+          >
+            <div
+              className="flex gap-4"
+              style={{
+                width: "max-content",
+                animation: shouldReduceMotion ? "none" : "strip-scroll 42s linear infinite",
+              }}
+            >
+              {[...stripImages, ...stripImages].map((src, i) => (
+                <div key={i} className="relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-sm">
+                  <Image src={src} alt="" fill className="object-cover grayscale" sizes="96px" />
+                  <div className="absolute inset-0 bg-black/55" />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0 }}

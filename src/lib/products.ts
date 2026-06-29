@@ -69,6 +69,19 @@ export async function getActiveProducts(): Promise<Product[]> {
   return (data ?? []).map(mapRow);
 }
 
+export async function getActiveProductImages(limit = 12): Promise<string[]> {
+  noStore();
+  const { data, error } = await supabase
+    .from("products")
+    .select("image")
+    .eq("is_active", true)
+    .not("image", "is", null)
+    .order("created_at", { ascending: true })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((r) => r.image as string).filter(Boolean);
+}
+
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
   noStore();
   const { data, error } = await supabase

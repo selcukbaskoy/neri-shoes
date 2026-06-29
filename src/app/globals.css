@@ -202,6 +202,32 @@ body {
   animation: scroll-indicator 2s ease-in-out infinite;
 }
 
+@keyframes strip-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.strip-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
