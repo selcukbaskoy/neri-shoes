@@ -130,6 +130,23 @@ export default function ProductCard({
           {product.retail && <span className="badge">{t("retail")}</span>}
         </div>
 
+        {stockStatus.kind === "in_stock" && (
+          <div
+            className="flex flex-wrap gap-1"
+            aria-label={t("availableSizesMessage", { sizes: stockStatus.sizes.join(", ") })}
+          >
+            {stockStatus.sizes.map((size) => (
+              <span
+                key={size}
+                aria-hidden="true"
+                className="inline-flex h-5 min-w-[20px] items-center justify-center rounded border border-[#2a2a2a] bg-[#111] px-1.5 text-[10px] font-medium text-muted"
+              >
+                {size}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="mt-auto flex gap-2">
           <a
             href={whatsappLink}
