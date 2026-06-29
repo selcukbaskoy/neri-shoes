@@ -101,7 +101,13 @@
     "cartComingSoon": "Sepet sistemi yakında aktif olacak — şimdilik WhatsApp'tan sipariş verebilirsiniz",
     "outOfStockMessage": "Bu ürün şu anda stokta bulunmamaktadır.",
     "availableSizesMessage": "Stokta kalan numaralar: {sizes}",
-    "zoomImage": "Görseli büyüt"
+    "zoomImage": "Görseli büyüt",
+    "sortLabel": "Sıralama",
+    "sortNewest": "Yeni",
+    "sortPriceAsc": "Fiyat ↑",
+    "sortPriceDesc": "Fiyat ↓",
+    "activeFilters": "{count} filtre aktif",
+    "whatsappAria": "{name} için WhatsApp'tan Sor"
   },
   "about": {
     "title": "Hakkımızda",

@@ -93,7 +93,13 @@
     "cartComingSoon": "نظام السلة قريباً — يمكنك الطلب عبر واتساب الآن",
     "outOfStockMessage": "هذا المنتج غير متوفر حاليًا في المخزون.",
     "availableSizesMessage": "المقاسات المتوفرة: {sizes}",
-    "zoomImage": "تكبير الصورة"
+    "zoomImage": "تكبير الصورة",
+    "sortLabel": "ترتيب",
+    "sortNewest": "الأحدث",
+    "sortPriceAsc": "السعر ↑",
+    "sortPriceDesc": "السعر ↓",
+    "activeFilters": "{count} فلتر نشط",
+    "whatsappAria": "استفسر عن {name} عبر واتساب"
   },
   "about": {
     "title": "من نحن",

@@ -44,7 +44,7 @@ export default function ProductCard({
             src={product.image}
             alt={product.name}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-[400ms] ease-out group-hover:scale-105"
           />
           {/* Persistent corner vignette — blends light studio bg with dark card */}
@@ -59,8 +59,13 @@ export default function ProductCard({
           />
           {/* Durum B: tüm stok sıfır — diyagonal tükendi şeridi */}
           {stockStatus.kind === "sold_out" && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+            <div
+              className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+              role="img"
+              aria-label={t("soldOut")}
+            >
               <div
+                aria-hidden="true"
                 className="w-[150%] py-2.5 text-center"
                 style={{
                   transform: "rotate(-35deg)",
@@ -88,7 +93,7 @@ export default function ProductCard({
           </span>
         </div>
 
-        <p className="line-clamp-2 text-sm text-muted">
+        <p className="line-clamp-1 text-sm text-muted">
           {content?.shortDescription || content?.description}
         </p>
 
@@ -130,6 +135,7 @@ export default function ProductCard({
             href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={t("whatsappAria", { name: product.name })}
             className="btn-whatsapp flex-1"
           >
             <span className="btn-whatsapp-content">

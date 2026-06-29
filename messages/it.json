@@ -93,7 +93,13 @@
     "cartComingSoon": "Sistema carrello presto disponibile — per ora ordina via WhatsApp",
     "outOfStockMessage": "Questo prodotto non è attualmente disponibile.",
     "availableSizesMessage": "Taglie disponibili: {sizes}",
-    "zoomImage": "Ingrandisci immagine"
+    "zoomImage": "Ingrandisci immagine",
+    "sortLabel": "Ordina",
+    "sortNewest": "Più recenti",
+    "sortPriceAsc": "Prezzo ↑",
+    "sortPriceDesc": "Prezzo ↓",
+    "activeFilters": "{count} filtri attivi",
+    "whatsappAria": "Chiedi di {name} su WhatsApp"
   },
   "about": {
     "title": "Chi Siamo",

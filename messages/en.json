@@ -93,7 +93,13 @@
     "cartComingSoon": "Cart system coming soon — for now, you can order via WhatsApp",
     "outOfStockMessage": "This product is currently out of stock.",
     "availableSizesMessage": "Available sizes: {sizes}",
-    "zoomImage": "Zoom image"
+    "zoomImage": "Zoom image",
+    "sortLabel": "Sort",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price ↑",
+    "sortPriceDesc": "Price ↓",
+    "activeFilters": "{count} filters active",
+    "whatsappAria": "Ask about {name} on WhatsApp"
   },
   "about": {
     "title": "About Us",

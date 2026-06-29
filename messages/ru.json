@@ -93,7 +93,13 @@
     "cartComingSoon": "Корзина скоро появится — пока заказывайте через WhatsApp",
     "outOfStockMessage": "Данный товар в настоящее время отсутствует на складе.",
     "availableSizesMessage": "Доступные размеры: {sizes}",
-    "zoomImage": "Увеличить изображение"
+    "zoomImage": "Увеличить изображение",
+    "sortLabel": "Сортировка",
+    "sortNewest": "Новинки",
+    "sortPriceAsc": "Цена ↑",
+    "sortPriceDesc": "Цена ↓",
+    "activeFilters": "{count} фильтра активно",
+    "whatsappAria": "Спросить о {name} в WhatsApp"
   },
   "about": {
     "title": "О Нас",

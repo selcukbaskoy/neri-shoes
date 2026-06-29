@@ -10,6 +10,7 @@ import ProductCard from "./ProductCard";
 const CATEGORIES: ProductCategory[] = ["erkek", "spor", "klasik", "gunluk"];
 
 type SaleType = "all" | "wholesale" | "retail";
+type SortType = "newest" | "price_asc" | "price_desc";
 
 export default function ProductsCatalog({
   products,
@@ -27,9 +28,18 @@ export default function ProductsCatalog({
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [saleType, setSaleType] = useState<SaleType>("all");
+  const [sort, setSort] = useState<SortType>("newest");
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (category !== "all") count++;
+    if (saleType !== "all") count++;
+    if (search.trim() !== "") count++;
+    return count;
+  }, [category, saleType, search]);
 
   const filtered = useMemo(() => {
-    return products.filter((product) => {
+    const result = products.filter((product) => {
       const c = product.content?.[locale] ?? product.content?.["tr"];
       const haystack = [product.name, c?.shortDescription, c?.description]
         .filter(Boolean)
@@ -44,7 +54,15 @@ export default function ProductsCatalog({
 
       return matchesSearch && matchesCategory && matchesSaleType;
     });
-  }, [products, search, category, saleType, locale]);
+
+    if (sort === "price_asc") {
+      return [...result].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+    }
+    if (sort === "price_desc") {
+      return [...result].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    }
+    return result;
+  }, [products, search, category, saleType, sort, locale]);
 
   const categoryLabel = (value: ProductCategory | "all") =>
     value === "all" ? t("categoryAll") : t(`category${capitalize(value)}`);
@@ -82,6 +100,23 @@ export default function ProductsCatalog({
               label={type === "all" ? t("filterAll") : t(type)}
             />
           ))}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-muted">{t("sortLabel")}:</span>
+          {(["newest", "price_asc", "price_desc"] as const).map((s) => (
+            <FilterButton
+              key={s}
+              active={sort === s}
+              onClick={() => setSort(s)}
+              label={t(s === "newest" ? "sortNewest" : s === "price_asc" ? "sortPriceAsc" : "sortPriceDesc")}
+            />
+          ))}
+          {activeFilterCount > 0 && (
+            <span className="ml-2 rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+              {t("activeFilters", { count: activeFilterCount })}
+            </span>
+          )}
         </div>
       </div>
 
