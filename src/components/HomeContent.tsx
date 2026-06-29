@@ -227,7 +227,7 @@ export default function HomeContent({ featured, stocksMap, rates, whatsappLink, 
 
             {/* Sağ: İstatistik kartları */}
             <div className="grid grid-cols-3 gap-4">
-              {(["500+", "10+", "50+"] as const).map((value, i) => (
+              {(["500+", "25+", "50+"] as const).map((value, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
