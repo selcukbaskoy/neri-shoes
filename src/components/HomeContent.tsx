@@ -27,8 +27,8 @@ export default function HomeContent({ featured, stocksMap, rates, whatsappLink, 
   return (
     <>
       <section className="relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden bg-black px-4 text-center">
-        {/* Radial glow — soft, organic */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgba(255,208,0,0.08),transparent_70%)]" />
+        {/* Radial glow — soft, organic, breathing */}
+        <div className="hero-ambient-glow pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,rgba(255,208,0,0.08),transparent_70%)]" />
         {/* Leather grain texture */}
         <div className="hero-grain pointer-events-none absolute inset-0" />
 

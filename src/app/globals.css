@@ -157,6 +157,20 @@ body {
   }
 }
 
+@keyframes hero-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hero-ambient-glow {
+  animation: hero-breathe 4.5s ease-in-out infinite;
+}
+
 @keyframes fade-in-up {
   from {
     opacity: 0;
