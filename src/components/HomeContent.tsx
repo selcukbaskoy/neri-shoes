@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { Fragment } from "react";
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -51,16 +52,19 @@ export default function HomeContent({ featured, stocksMap, rates, whatsappLink, 
 
         <h1 className="relative z-10 font-serif text-5xl font-bold tracking-tight text-accent md:text-7xl">
           {words.map((word, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: shouldReduceMotion ? 0.01 : 0.65, delay: shouldReduceMotion ? 0 : 0.4 + i * 0.15, ease: EASE_OUT }}
-              className="inline-block"
-            >
-              {word}
-              {i < words.length - 1 ? " " : ""}
-            </motion.span>
+            <Fragment key={i}>
+              <span className="inline-block overflow-hidden pb-1 leading-tight">
+                <motion.span
+                  initial={{ y: shouldReduceMotion ? 0 : "110%" }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: shouldReduceMotion ? 0.01 : 0.8, delay: shouldReduceMotion ? 0 : 0.25 + i * 0.18, ease: EASE_OUT }}
+                  className="inline-block"
+                >
+                  {word}
+                </motion.span>
+              </span>
+              {i < words.length - 1 && " "}
+            </Fragment>
           ))}
         </h1>
 
