@@ -162,7 +162,7 @@ export default function ProductCard({
           </a>
           <Link
             href={detailHref}
-            className="flex min-h-[44px] items-center justify-center rounded border border-accent/40 px-3 text-xs font-medium text-accent transition-all hover:border-accent hover:bg-accent/10"
+            className="flex min-h-[44px] items-center justify-center rounded border border-[#2e2e2e] px-3 text-xs text-muted/70 transition-colors hover:border-[#444] hover:text-foreground"
           >
             {t("viewDetail")}
           </Link>
