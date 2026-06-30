@@ -320,6 +320,8 @@
     "tryAgain": "Riprova",
     "emptyCart": "Il tuo carrello è vuoto",
     "goToProducts": "Torna ai prodotti",
-    "cityPlaceholder": "Milano"
+    "cityPlaceholder": "Milano",
+    "district": "Distretto",
+    "districtPlaceholder": "Kadıköy"
   }
 }

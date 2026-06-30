@@ -320,6 +320,8 @@
     "tryAgain": "Try Again",
     "emptyCart": "Your cart is empty",
     "goToProducts": "Back to Products",
-    "cityPlaceholder": "London"
+    "cityPlaceholder": "London",
+    "district": "District",
+    "districtPlaceholder": "Kadıköy"
   }
 }

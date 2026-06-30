@@ -320,6 +320,8 @@
     "tryAgain": "Erneut versuchen",
     "emptyCart": "Ihr Warenkorb ist leer",
     "goToProducts": "Zurück zu den Produkten",
-    "cityPlaceholder": "Berlin"
+    "cityPlaceholder": "Berlin",
+    "district": "Bezirk",
+    "districtPlaceholder": "Kadıköy"
   }
 }

@@ -17,6 +17,7 @@ interface FormData {
   phone: string;
   address: string;
   city: string;
+  district: string;
 }
 
 const EMPTY_FORM: FormData = {
@@ -26,6 +27,7 @@ const EMPTY_FORM: FormData = {
   phone: "",
   address: "",
   city: "",
+  district: "",
 };
 
 export default function CheckoutContent({ rates }: { rates: Record<string, number> }) {
@@ -64,6 +66,7 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
       e.phone = t("invalidPhone");
     if (!form.address.trim()) e.address = t("required");
     if (!form.city.trim()) e.city = t("required");
+    if (!form.district.trim()) e.district = t("required");
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -209,15 +212,27 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
                     />
                     {errors.address && <p className={errorClass}>{errors.address}</p>}
                   </div>
-                  <div className="sm:w-1/2">
-                    <label className={labelClass}>{t("city")}</label>
-                    <input
-                      className={inputClass}
-                      value={form.city}
-                      onChange={(e) => setForm({ ...form, city: e.target.value })}
-                      placeholder={t("cityPlaceholder")}
-                    />
-                    {errors.city && <p className={errorClass}>{errors.city}</p>}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className={labelClass}>{t("city")}</label>
+                      <input
+                        className={inputClass}
+                        value={form.city}
+                        onChange={(e) => setForm({ ...form, city: e.target.value })}
+                        placeholder={t("cityPlaceholder")}
+                      />
+                      {errors.city && <p className={errorClass}>{errors.city}</p>}
+                    </div>
+                    <div>
+                      <label className={labelClass}>{t("district")}</label>
+                      <input
+                        className={inputClass}
+                        value={form.district}
+                        onChange={(e) => setForm({ ...form, district: e.target.value })}
+                        placeholder={t("districtPlaceholder")}
+                      />
+                      {errors.district && <p className={errorClass}>{errors.district}</p>}
+                    </div>
                   </div>
                 </div>
               </section>

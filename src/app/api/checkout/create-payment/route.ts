@@ -19,6 +19,7 @@ interface CheckoutBody {
     phone: string;
     address: string;
     city: string;
+    district: string;
   };
 }
 
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
     customer_phone: customer.phone,
     shipping_address: customer.address,
     shipping_city: customer.city,
+    shipping_district: customer.district,
     total_amount: totalAmount,
     status: "pending",
     payment_provider: "iyzico",

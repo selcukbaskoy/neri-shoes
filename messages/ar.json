@@ -320,6 +320,8 @@
     "tryAgain": "حاول مجدداً",
     "emptyCart": "سلتك فارغة",
     "goToProducts": "العودة إلى المنتجات",
-    "cityPlaceholder": "المدينة"
+    "cityPlaceholder": "المدينة",
+    "district": "المنطقة",
+    "districtPlaceholder": "Kadıköy"
   }
 }

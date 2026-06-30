@@ -320,6 +320,8 @@
     "tryAgain": "Попробовать снова",
     "emptyCart": "Ваша корзина пуста",
     "goToProducts": "Вернуться к товарам",
-    "cityPlaceholder": "Москва"
+    "cityPlaceholder": "Москва",
+    "district": "Район",
+    "districtPlaceholder": "Kadıköy"
   }
 }

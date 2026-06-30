@@ -328,6 +328,8 @@
     "tryAgain": "Tekrar Dene",
     "emptyCart": "Sepetiniz boş",
     "goToProducts": "Ürünlere Geri Dön",
-    "cityPlaceholder": "İstanbul"
+    "cityPlaceholder": "İstanbul",
+    "district": "İlçe",
+    "districtPlaceholder": "Kadıköy"
   }
 }
