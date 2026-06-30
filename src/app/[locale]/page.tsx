@@ -45,12 +45,26 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [featured, stocksMap, rates, stripImages] = await Promise.all([
+  const [featuredRaw, stocksMap, rates, stripImages] = await Promise.all([
     getFeaturedProducts(),
     getAllProductStocks(),
     getExchangeRates(),
     getActiveProductImages(12),
   ]);
+
+  // Smart sort: in-stock > featured > discounted, tükenmiş products sink to bottom
+  const totalStock = (id: string) =>
+    (stocksMap[id] ?? []).reduce((sum: number, s) => sum + s.quantity, 0);
+  const featured = [...featuredRaw].sort((a, b) => {
+    const stockScore = (id: string) => (totalStock(id) > 0 ? 0 : 1);
+    const featuredScore = (f: boolean) => (f ? 0 : 1);
+    const discountScore = (p: typeof a) => (p.compareAtPrice != null ? 0 : 1);
+    return (
+      stockScore(a.id) - stockScore(b.id) ||
+      featuredScore(a.featured) - featuredScore(b.featured) ||
+      discountScore(a) - discountScore(b)
+    );
+  });
   const whatsappLink = getWhatsAppLink();
   const whatsappNumber = getWhatsAppNumber();
 

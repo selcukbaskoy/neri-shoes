@@ -56,10 +56,11 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
   noStore();
+  // .eq() is parameterized — safe with any character including non-ASCII
   const { data, error } = await supabase
     .from("blog_posts")
     .select("*")
-    .or(`slug.eq.${slug},id.eq.${slug}`)
+    .eq("slug", slug)
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data ? mapRow(data) : undefined;

@@ -8,14 +8,20 @@ import { BlogPost, BlogPostContent, BLOG_CATEGORIES, BlogCategory, Locale } from
 const LOCALES: Locale[] = ["tr", "en", "de", "it", "ar", "ru"];
 
 function generateSlug(title: string): string {
-  const map: Record<string, string> = {
-    ç: "c", Ç: "c", ğ: "g", Ğ: "g", ı: "i", I: "i",
-    İ: "i", ö: "o", Ö: "o", ş: "s", Ş: "s", ü: "u", Ü: "u",
-  };
+  // Unicode escapes avoid source-file encoding ambiguity for Turkish chars
+  const map: [string, string][] = [
+    ["ç", "c"], ["Ç", "c"], // ç Ç
+    ["ğ", "g"], ["Ğ", "g"], // ğ Ğ
+    ["ı", "i"], ["İ", "i"], // ı İ
+    ["ö", "o"], ["Ö", "o"], // ö Ö
+    ["ş", "s"], ["Ş", "s"], // ş Ş
+    ["ü", "u"], ["Ü", "u"], // ü Ü
+  ];
   let slug = title.toLowerCase();
-  Object.entries(map).forEach(([k, v]) => {
-    slug = slug.replace(new RegExp(k, "g"), v);
-  });
+  // split/join avoids RegExp constructor issues with non-ASCII keys
+  for (const [k, v] of map) slug = slug.split(k).join(v);
+  // NFD strip handles any remaining diacritics (ç→c etc. as fallback)
+  slug = slug.normalize("NFD").replace(/[̀-ͯ]/g, "");
   return slug.replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-");
 }
 

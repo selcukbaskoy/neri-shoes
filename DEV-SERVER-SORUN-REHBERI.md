@@ -178,7 +178,38 @@ Bu sürecin ÇEKİRDEK noktası: kullanıcı tek bir istek yazar, gerisi (agent 
 
 ---
 
-## BU DOSYA NE ZAMAN GÜNCELLENECEK
+---
+
+## OTOMATİK GIT COMMIT/PUSH — KALICI ÇALIŞMA KURALI
+
+Bu proje GitHub'a bağlı (github.com/selcukbaskoy/neri-shoes, main branch). Bundan sonra Claude Code, her anlamlı değişiklik tamamlandığında (bir özellik bitince, bir bug düzeltilince, bir aşama tamamlanınca) OTOMATİK olarak commit + push yapacak — kullanıcıdan "şimdi push et" komutu beklemeden.
+
+### KURALLAR
+
+1. **Ne zaman commit/push yapılır:** Bir görev/değişiklik turu BAŞARIYLA tamamlandığında (build hatasız, testler geçtiğinde). Yarım kalmış, test edilmemiş bir değişiklik COMMIT EDİLMEZ.
+
+2. **Commit mesajı:** Açıklayıcı, Türkçe veya İngilizce (tutarlı olsun), ne değiştiğini net anlatan bir mesaj (örn. "Sepet sistemine stok limiti kontrolü eklendi" — "fix" veya "update" gibi anlamsız mesajlar KULLANILMAZ).
+
+3. **Otomatik push:** Commit sonrası hemen `git push` yapılır — kullanıcıdan onay istenmez (bu, DEV-SERVER-SORUN-REHBERI.md'deki "ARA ONAY İSTENMEYECEK" prensibiyle tutarlıdır).
+
+4. **.gitignore kontrolü:** Her commit öncesi, yanlışlıkla büyük/gereksiz/hassas dosyaların (örn. .env.local, node_modules, .next, büyük binary dosyalar) eklenmediğinden emin olunur. `git status` ile commit'e girecek dosyalar kontrol edilir.
+
+5. **Push başarısız olursa:** (örn. ağ sorunu, conflict) kullanıcıya net olarak bildirilir, otomatik olarak tekrar denenir veya sebep açıklanır — sessizce başarısız olunmaz.
+
+6. **Bu kural, projenin Vercel'e bağlanmasından SONRA da geçerli olacak** — yani her push, otomatik olarak Vercel'de de yeni bir deploy tetikleyecek (Vercel'in GitHub entegrasyonu sayesinde). Bu, kullanıcının "şimdi versiyona koymak istemiyorum" dediği bir aşamada DİKKAT edilmesi gereken bir durumdur — eğer kullanıcı "şu an deploy etmek istemiyorum ama GitHub'a göndermek istiyorum" derse, Vercel'de bu push için otomatik deploy'u durdurma/preview branch kullanma seçeneği değerlendirilebilir (bu, ileride Vercel bağlandığında ayrıca ele alınacak bir detaydır).
+
 
 Eğer yukarıdaki önlemler uygulandıktan sonra hata YİNE de çıkarsa, bu dosyaya yeni bir "Tespit Edilen Ek Neden" bölümü eklenmeli — böylece bilgi birikimi kaybolmaz, her seferinde sıfırdan araştırma yapılmaz.
+
+---
+
+## KOD KEŞFİ KURALI — codebase-memory-mcp
+
+codebase-memory-mcp global olarak kurulu ve aktif. Yapısal kod soruları için (kim çağırıyor, nerede kullanılıyor, mimari nasıl) grep/Explore yerine ÖNCELİKLE graph tool'larını kullan:
+- `search_graph` — fonksiyon/class/route bul
+- `trace_path` — çağrı zinciri izle
+- `get_code_snippet` — tam kaynak konumunu al
+- `get_architecture` — proje yapısına bak
+
+Yeni bir proje açıldığında: önce `index_repository` çalıştır (bir kerelik), sonrası otomatik.
 

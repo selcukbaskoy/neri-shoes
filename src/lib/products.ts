@@ -84,16 +84,39 @@ export async function getActiveProductImages(limit = 12): Promise<string[]> {
 
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
   noStore();
-  const { data, error } = await supabase
+
+  // Priority 1: admin-curated featured products (discounted ones first within group)
+  const { data: featuredData, error: e1 } = await supabase
     .from("products")
     .select("*")
     .eq("featured", true)
     .eq("is_active", true)
-    .order("created_at", { ascending: true })
-    .order("id", { ascending: true })
-    .limit(limit);
-  if (error) throw new Error(error.message);
-  return (data ?? []).map(mapRow);
+    .order("compare_at_price", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false });
+  if (e1) throw new Error(e1.message);
+
+  const featuredRows = featuredData ?? [];
+  if (featuredRows.length >= limit) return featuredRows.slice(0, limit).map(mapRow);
+
+  // Priority 2: fill remaining slots with discounted (compare_at_price) active products
+  const needed = limit - featuredRows.length;
+  const excludeIds = featuredRows.map((p) => p.id);
+
+  const fillerBase = supabase
+    .from("products")
+    .select("*")
+    .eq("featured", false)
+    .eq("is_active", true)
+    .not("compare_at_price", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(needed + 4);
+
+  const { data: fillerData, error: e2 } = excludeIds.length > 0
+    ? await fillerBase.not("id", "in", `(${excludeIds.join(",")})`)
+    : await fillerBase;
+  if (e2) throw new Error(e2.message);
+
+  return [...featuredRows, ...(fillerData ?? []).slice(0, needed)].map(mapRow);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
