@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
 
 // iyzico webhook: ödeme sonucu POST ile gelir (form-urlencoded)
 export async function POST(req: NextRequest) {
@@ -17,24 +17,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Token yok" }, { status: 400 });
   }
 
-  // HMAC imza doğrulaması (güvenlik)
+  // HMAC imza doğrulaması — zorunlu, key eksikse 503
   const secretKey = process.env.IYZICO_SECRET_KEY;
-  if (secretKey && merchantToken && iyziReferenceCode) {
-    const crypto = await import("crypto");
-    const expected = crypto
-      .createHmac("sha256", secretKey)
-      .update(`${iyziReferenceCode}${conversationId ?? ""}${merchantToken}`)
-      .digest("base64");
-
-    if (expected !== merchantToken) {
-      console.warn("iyzico webhook imza doğrulaması başarısız");
-      return NextResponse.json({ error: "İmza geçersiz" }, { status: 403 });
-    }
+  if (!secretKey) {
+    console.error("IYZICO_SECRET_KEY not set — webhook disabled for security");
+    return NextResponse.json({ error: "webhook disabled" }, { status: 503 });
+  }
+  if (!merchantToken || !iyziReferenceCode) {
+    return NextResponse.json({ error: "İmza parametreleri eksik" }, { status: 400 });
+  }
+  const crypto = await import("crypto");
+  const expected = crypto
+    .createHmac("sha256", secretKey)
+    .update(`${iyziReferenceCode}${conversationId ?? ""}${merchantToken}`)
+    .digest("base64");
+  if (expected !== merchantToken) {
+    console.warn("iyzico webhook imza doğrulaması başarısız");
+    return NextResponse.json({ error: "İmza geçersiz" }, { status: 403 });
   }
 
   const newStatus = status === "SUCCESS" ? "paid" : "failed";
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("orders")
     .update({
       status: newStatus,
@@ -49,21 +53,21 @@ export async function POST(req: NextRequest) {
 
   // Stok düşümü: paid siparişlerde
   if (newStatus === "paid") {
-    const { data: order } = await supabase
+    const { data: order } = await supabaseAdmin
       .from("orders")
       .select("id")
       .eq("iyzico_token", token)
       .single();
 
     if (order) {
-      const { data: items } = await supabase
+      const { data: items } = await supabaseAdmin
         .from("order_items")
         .select("product_id, size, quantity")
         .eq("order_id", order.id);
 
       if (items) {
         for (const item of items) {
-          await supabase.rpc("decrement_stock", {
+          await supabaseAdmin.rpc("decrement_stock", {
             p_product_id: item.product_id,
             p_size: item.size,
             p_qty: item.quantity,

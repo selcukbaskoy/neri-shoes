@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
 import { getIyzicoClient } from "@/lib/iyzico";
 
 interface CartItem {
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   const conversationId = orderId;
 
   // 1. Siparişi veritabanına kaydet
-  const { error: orderErr } = await supabase.from("orders").insert({
+  const { error: orderErr } = await supabaseAdmin.from("orders").insert({
     id: orderId,
     customer_name: `${customer.name} ${customer.surname}`,
     customer_email: customer.email,
@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
     unit_price: item.unitPrice,
   }));
 
-  await supabase.from("order_items").insert(flatItems);
+  await supabaseAdmin.from("order_items").insert(flatItems);
 
   // 3. iyzico checkout form token al
   let iyzico;
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
     iyzico = getIyzicoClient();
   } catch {
     // Sandbox key yoksa mock token döndür (geliştirme modu)
-    await supabase.from("orders").update({ iyzico_token: `dev-${orderId}` }).eq("id", orderId);
+    await supabaseAdmin.from("orders").update({ iyzico_token: `dev-${orderId}` }).eq("id", orderId);
     return NextResponse.json({
       token: `dev-${orderId}`,
       checkoutFormContent: null,
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
       async (err, result) => {
         if (err || result.status !== "success" || !result.token) {
           console.error("iyzico error:", err ?? result);
-          await supabase.from("orders").update({ status: "failed" }).eq("id", orderId);
+          await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", orderId);
           resolve(
             NextResponse.json(
               { error: result?.errorMessage ?? "Ödeme başlatılamadı" },
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
           return;
         }
 
-        await supabase
+        await supabaseAdmin
           .from("orders")
           .update({ iyzico_token: result.token })
           .eq("id", orderId);
