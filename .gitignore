@@ -28,6 +28,14 @@ yarn-error.log*
 # playwright-mcp (large binaries)
 .playwright-mcp/
 
+# Cybersecurity skills library (817 skills, large — local only)
+.agents/
+.claude/skills/
+
+# Local Claude Code and tool caches
+.claude/settings.local.json
+.impeccable/
+
 # local env files
 .env
 .env.*
