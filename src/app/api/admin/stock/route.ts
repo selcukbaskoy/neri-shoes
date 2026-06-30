@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
 
 export async function GET() {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("product_stock")
     .select("product_id, size, quantity")
     .order("product_id")
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     quantity: Math.max(0, e.quantity),
   }));
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("product_stock")
     .upsert(rows, { onConflict: "product_id,size" });
 

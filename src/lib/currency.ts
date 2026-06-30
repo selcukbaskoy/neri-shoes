@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { supabase } from "./supabase";
+import { supabase, supabaseAdmin } from "./supabase";
 
 // 1 TRY = X (target currency) — fawazahmed0/currency-api (CDN hosted, no key needed)
 const API_URL =
@@ -50,7 +50,7 @@ export async function getExchangeRates(): Promise<Record<string, number>> {
     // Cache yok veya eski — API'den çek
     const rates = await fetchFreshRates();
 
-    await supabase.from("exchange_rates").upsert(
+    await supabaseAdmin.from("exchange_rates").upsert(
       { base_currency: "TRY", rates, updated_at: new Date().toISOString() },
       { onConflict: "base_currency" }
     );
