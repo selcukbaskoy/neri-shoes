@@ -32,10 +32,6 @@ export const metadata: Metadata = {
   },
   description: "Neri Shoes - Premium Ayakkabı Koleksiyonu",
   metadataBase: new URL(SITE_URL),
-  icons: {
-    icon: "/logo.jpeg",
-    apple: "/logo.jpeg",
-  },
 };
 
 export default async function RootLayout({
