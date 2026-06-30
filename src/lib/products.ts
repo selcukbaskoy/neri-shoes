@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { supabase } from "./supabase";
+import { supabase, supabaseAdmin } from "./supabase";
 import { Product, ProductContent, Locale, ProductCategory } from "./types";
 
 function mapRow(row: Record<string, unknown>): Product {
@@ -132,14 +132,14 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
 }
 
 export async function saveProduct(product: Product): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("products")
     .upsert(toRow(product), { onConflict: "id" });
   if (error) throw new Error(error.message);
 }
 
 export async function updateProduct(product: Product): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("products")
     .update(toRow(product))
     .eq("id", product.id);
@@ -147,7 +147,7 @@ export async function updateProduct(product: Product): Promise<void> {
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  const { error } = await supabase.from("products").delete().eq("id", id);
+  const { error } = await supabaseAdmin.from("products").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
 

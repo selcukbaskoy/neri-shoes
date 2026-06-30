@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
 
 const VALID_LOCALES = ["en", "de", "it", "ar", "ru"] as const;
 
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const productId = req.nextUrl.searchParams.get("productId");
   if (!productId) return NextResponse.json({ error: "productId required" }, { status: 400 });
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("product_regional_prices")
     .select("locale_code, price, currency")
     .eq("product_id", productId);
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Delete all existing, then upsert non-empty ones
-  await supabase.from("product_regional_prices").delete().eq("product_id", productId);
+  await supabaseAdmin.from("product_regional_prices").delete().eq("product_id", productId);
 
   const toInsert = prices
     .filter(
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     }));
 
   if (toInsert.length > 0) {
-    const { error } = await supabase.from("product_regional_prices").insert(toInsert);
+    const { error } = await supabaseAdmin.from("product_regional_prices").insert(toInsert);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
