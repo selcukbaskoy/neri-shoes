@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import { supabase } from "./supabase";
+import { supabase, supabaseAdmin } from "./supabase";
 import { BlogPost, BlogPostContent, BlogCategory, Locale } from "./types";
 
 function mapRow(row: Record<string, unknown>): BlogPost {
@@ -33,9 +33,10 @@ function toRow(p: BlogPost) {
   };
 }
 
+// Admin-only: returns ALL posts including drafts (bypasses RLS via service_role key)
 export async function getBlogPosts(): Promise<BlogPost[]> {
   noStore();
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("blog_posts")
     .select("*")
     .order("created_at", { ascending: false });
@@ -67,14 +68,14 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | undefi
 }
 
 export async function saveBlogPost(post: BlogPost): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("blog_posts")
     .upsert(toRow(post), { onConflict: "id" });
   if (error) throw new Error(error.message);
 }
 
 export async function updateBlogPost(post: BlogPost): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("blog_posts")
     .update(toRow(post))
     .eq("id", post.id);
@@ -82,12 +83,12 @@ export async function updateBlogPost(post: BlogPost): Promise<void> {
 }
 
 export async function deleteBlogPost(id: string): Promise<void> {
-  const { error } = await supabase.from("blog_posts").delete().eq("id", id);
+  const { error } = await supabaseAdmin.from("blog_posts").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
 
 export async function publishBlogPost(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("blog_posts")
     .update({ status: "published", published_at: new Date().toISOString() })
     .eq("id", id);
@@ -95,7 +96,7 @@ export async function publishBlogPost(id: string): Promise<void> {
 }
 
 export async function unpublishBlogPost(id: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from("blog_posts")
     .update({ status: "draft", published_at: null })
     .eq("id", id);
