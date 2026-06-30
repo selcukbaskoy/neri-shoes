@@ -203,6 +203,50 @@ Eğer yukarıdaki önlemler uygulandıktan sonra hata YİNE de çıkarsa, bu dos
 
 ---
 
+## TESPİT EDİLEN EK NEDEN — 3. TEKRAR (2026-06-30): HER npm install SONRASI VENDOR-CHUNK BOZULMASI
+
+### Desen
+Hata üçüncü kez, her seferinde FARKLI bir paket adıyla çıktı:
+1. `vendor-chunks/@formatjs.js` (next-intl kurulunca)
+2. `vendor-chunks/@opentelemetry.js` (devDependency eklenince)  
+3. `vendor-chunks/@supabase.js` (supabase-js kurulunca)
+
+Bu bir tesadüf değil — her yeni `npm install` sonrası sistemli olarak tekrarlıyor.
+
+### Kök Neden
+`dev:fast` scripti `.next`'i temizlemiyordu. Birisi `npm install <paket>` yapıp ardından `npm run dev:fast` başlatınca:
+- Yeni paketin vendor chunk'ı oluşturulmadan manifest'e ekleniyor (webpack'in incremental rebuild'ı yarım kalıyor)
+- Eski `.next/server/vendor-chunks/` referansları stale kalıyor
+- `Cannot find module './vendor-chunks/@X.js'` hatası çıkıyor
+
+Ek olarak: `next.config.mjs`'deki `cache = false` sadece webpack'in disk cache'ini devre dışı bırakıyordu, ama `snapshot.managedPaths` ayarı yoktu — bu da webpack'in node_modules'ü "managed path" olarak görüp incremental update yapmaya çalışmasına (ve başarısız olmasına) yol açıyordu.
+
+### Uygulanan Kalıcı Çözüm (2026-06-30)
+
+**1. `postinstall` scripti eklendi (package.json):**
+```json
+"postinstall": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\""
+```
+Her `npm install` (yeni paket ekleme dahil) sonrası `.next` OTOMATIK olarak silinir. Sonraki `npm run dev` temiz başlar.
+
+**2. `dev:fast` scripti kaldırıldı (package.json):**
+Bu script `.next` temizlemeden dev server başlatıyordu — stale cache sorunlarının asıl tetikleyicisiydi. Artık tek güvenli yol `npm run dev`.
+
+**3. `snapshot.managedPaths = []` eklendi (next.config.mjs):**
+```js
+config.snapshot = {
+  ...config.snapshot,
+  managedPaths: [],
+};
+```
+Webpack'in node_modules değişikliklerini incremental olarak işlemeye çalışmasını önler — her dev start'ta node_modules tam olarak taranır, yarım vendor chunk oluşturulmaz.
+
+### Doğrulama
+- Build (`npm run build`) hatasız tamamlandı (355 sayfa)
+- `postinstall` hook: bir sonraki `npm install` otomatik olarak `.next`'i temizleyecek
+
+---
+
 ## KOD KEŞFİ KURALI — codebase-memory-mcp
 
 codebase-memory-mcp global olarak kurulu ve aktif. Yapısal kod soruları için (kim çağırıyor, nerede kullanılıyor, mimari nasıl) grep/Explore yerine ÖNCELİKLE graph tool'larını kullan:

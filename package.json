@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\" && next dev",
-    "dev:fast": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "fix-cache": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\""
+    "fix-cache": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "postinstall": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",
