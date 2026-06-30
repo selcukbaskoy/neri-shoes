@@ -2,10 +2,37 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
+const cspHeader = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://cdn.iyzipay.com https://sandbox-api.iyzipay.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' https:",
+  "connect-src 'self' https://*.supabase.co https://*.iyzipay.com",
+  "frame-src 'self' https://*.iyzipay.com",
+  "frame-ancestors 'self'",
+  "form-action 'self'",
+  "base-uri 'self'",
+].join("; ");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     unoptimized: true
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "Content-Security-Policy", value: cspHeader },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
   },
   // next-intl uses dynamic import(t) expressions that webpack cannot statically analyze.
   // This prevents webpack from tracking those dependencies for cache invalidation,
