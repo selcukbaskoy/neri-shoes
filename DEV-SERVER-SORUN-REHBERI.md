@@ -247,6 +247,29 @@ Webpack'in node_modules değişikliklerini incremental olarak işlemeye çalış
 
 ---
 
+## FAVİCON FORMAT KURALI — "HTML'de var" ≠ "Görsel olarak render ediliyor"
+
+**Tarih:** 2026-06-30
+**Sorun:** `src/app/icon.jpeg` koyduk, HTML'de `<link rel="icon" href="/icon.jpeg...">` doğru çıktı ama tarayıcı sekmesinde favicon görünmedi.
+**Gerçek Sebep:** `.jpeg` formatı Chrome'un bazı versiyonlarında favicon olarak sessizce yoksayılıyor. Next.js App Router `icon.*` konvansiyonu teknik olarak `.jpeg`'i desteklese de format uyumluluğu garantisi yok.
+**Çözüm:** `System.Drawing` ile `logo.jpeg` → `icon.png` (192×192) + `apple-icon.png` (180×180) dönüşümü yapıldı.
+
+### Genel Kural
+HTML'deki `<link rel="icon">` tag'inin varlığı, favicon'un görsel olarak render edildiğini KANITMAZ. Doğrulama için:
+1. Favicon URL'ine (`/icon.png`) DOĞRUDAN git — tarayıcı gerçek görsel göstermeli
+2. Format: favicon için **PNG** veya **ICO** kullan, **JPEG asla**
+3. Görsel kanıt olmadan "çalışıyor" deme — Chrome MCP'nin tab bar'ı yakalayamadığı durumda bile en azından `/icon.png` URL'inin doğrudan görsel döndürdüğünü kanıtla
+
+### Favicon Kurulum Standardı (Next.js App Router)
+```
+src/app/icon.png        → 192×192 PNG (genel favicon)
+src/app/apple-icon.png  → 180×180 PNG (Apple touch icon)
+# favicon.ico KOY veya KOYMA — eğer koyarsan icon.png'yi ezer
+# .jpeg formatı KULLANMA
+```
+
+---
+
 ## KOD KEŞFİ KURALI — codebase-memory-mcp
 
 codebase-memory-mcp global olarak kurulu ve aktif. Yapısal kod soruları için (kim çağırıyor, nerede kullanılıyor, mimari nasıl) grep/Explore yerine ÖNCELİKLE graph tool'larını kullan:
