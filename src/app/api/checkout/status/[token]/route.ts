@@ -6,8 +6,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
   const { token } = await params;
   if (!token) return NextResponse.json({ error: "Token eksik" }, { status: 400 });
 
-  // Dev mode token
+  // Dev mode token — disabled in production for security
   if (token.startsWith("dev-")) {
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json({ error: "Dev token not allowed in production" }, { status: 403 });
+    }
     const orderId = token.replace("dev-", "");
     const { data } = await supabase.from("orders").select("status").eq("id", orderId).single();
     return NextResponse.json({ status: data?.status ?? "pending", devMode: true });
