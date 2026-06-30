@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_VALUE } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { ADMIN_SESSION_COOKIE, generateSessionToken } from "@/lib/auth";
+import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
 
   // Check existing record for this IP
-  const { data: record } = await supabase
+  const { data: record } = await supabaseAdmin
     .from("admin_login_attempts")
     .select("attempt_count, locked_until")
     .eq("ip_address", ip)
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         ? new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000).toISOString()
         : null;
 
-    await supabase.from("admin_login_attempts").upsert(
+    await supabaseAdmin.from("admin_login_attempts").upsert(
       {
         ip_address: ip,
         attempt_count: newCount,
@@ -61,13 +61,13 @@ export async function POST(request: NextRequest) {
   }
 
   // Success — clear attempts for this IP
-  await supabase
+  await supabaseAdmin
     .from("admin_login_attempts")
     .delete()
     .eq("ip_address", ip);
 
   const response = NextResponse.json({ success: true });
-  response.cookies.set(ADMIN_SESSION_COOKIE, ADMIN_SESSION_VALUE, {
+  response.cookies.set(ADMIN_SESSION_COOKIE, generateSessionToken(), {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
