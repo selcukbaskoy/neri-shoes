@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Bodoni_Moda } from "next/font/google";
 import { getLocale } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
 import { SITE_URL, SITE_NAME } from "@/lib/seo";
 import "./globals.css";
 
@@ -46,6 +47,7 @@ export default async function RootLayout({
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"}>
       <body className={`${inter.variable} ${bodoniModa.variable} antialiased bg-black text-white`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
