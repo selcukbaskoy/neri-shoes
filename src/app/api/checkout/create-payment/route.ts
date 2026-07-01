@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase";
 import { getIyzicoClient } from "@/lib/iyzico";
 
 interface CartItem {
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Geçersiz istek" }, { status: 400 });
+    return NextResponse.json({ error: "GeÃ§ersiz istek" }, { status: 400 });
   }
 
   const { items, customer } = body;
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   const orderId = crypto.randomUUID();
   const conversationId = orderId;
 
-  // 1. Siparişi veritabanına kaydet
+  // 1. SipariÅŸi veritabanÄ±na kaydet
   const { error: orderErr } = await supabaseAdmin.from("orders").insert({
     id: orderId,
     customer_name: `${customer.name} ${customer.surname}`,
@@ -56,10 +56,10 @@ export async function POST(req: NextRequest) {
 
   if (orderErr) {
     console.error("Order insert error:", orderErr);
-    return NextResponse.json({ error: "Sipariş oluşturulamadı" }, { status: 500 });
+    return NextResponse.json({ error: "SipariÅŸ oluÅŸturulamadÄ±" }, { status: 500 });
   }
 
-  // 2. Sipariş kalemlerini kaydet
+  // 2. SipariÅŸ kalemlerini kaydet
   const orderItems = items.flatMap((item) =>
     Array(item.quantity).fill(null).map((_, idx) => ({
       order_id: orderId,
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     }))
   );
 
-  // Toplu insert yerine tek kayıt per item
+  // Toplu insert yerine tek kayÄ±t per item
   const flatItems = items.map((item) => ({
     order_id: orderId,
     product_id: item.productId,
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
   try {
     iyzico = getIyzicoClient();
   } catch {
-    // Sandbox key yoksa mock token döndür (geliştirme modu)
+    // Sandbox key yoksa mock token dÃ¶ndÃ¼r (geliÅŸtirme modu)
     await supabaseAdmin.from("orders").update({ iyzico_token: `dev-${orderId}` }).eq("id", orderId);
     return NextResponse.json({
       token: `dev-${orderId}`,
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
           surname: customer.surname,
           email: customer.email,
           phone: customer.phone,
-          identityNumber: "11111111111", // Sandbox için sabit
+          identityNumber: "11111111111", // Sandbox iÃ§in sabit
           registrationAddress: customer.address,
           city: customer.city,
           country: "Turkey",
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
         basketItems: items.map((item) => ({
           id: item.productId,
           name: item.productName,
-          category1: "Ayakkabı",
+          category1: "AyakkabÄ±",
           itemType: "PHYSICAL" as const,
           price: (item.unitPrice * item.quantity).toFixed(2),
         })),
@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
           await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", orderId);
           resolve(
             NextResponse.json(
-              { error: result?.errorMessage ?? "Ödeme başlatılamadı" },
+              { error: result?.errorMessage ?? "Ã–deme baÅŸlatÄ±lamadÄ±" },
               { status: 502 }
             )
           );
@@ -179,3 +179,4 @@ export async function POST(req: NextRequest) {
     );
   });
 }
+

@@ -282,7 +282,11 @@
     "addedToCart": "أُضيف إلى السلة!",
     "stockLimitReached": "تم الوصول لحد المخزون",
     "checkoutComingSoon": "نظام الدفع قريباً",
-    "checkoutCurrencyNote": "سيتم الدفع بالليرة التركية (₺)"
+    "checkoutCurrencyNote": "سيتم الدفع بالليرة التركية (₺)",
+    "cartItemOutOfStock": "هذا المنتج نفد من المخزون",
+    "cartItemQuantityExceeded": "لم يتبق سوى {max} في المخزون",
+    "checkoutBlockedByStock": "بعض المنتجات في سلتك غير متوفرة، يرجى إزالتها",
+    "validatingStock": "جاري التحقق من المخزون…"
   },
   "odeme": {
     "title": "الدفع",
@@ -323,5 +327,10 @@
     "cityPlaceholder": "المدينة",
     "district": "المنطقة",
     "districtPlaceholder": "Kadıköy"
+  },
+  "whatsapp": {
+    "productInfo": "مرحباً، أود الحصول على معلومات حول طراز {productName}.",
+    "wholesale": "مرحباً، أود الحصول على قائمة أسعار الجملة لطراز {productName}.",
+    "generalContact": "مرحباً، أود الحصول على معلومات حول منتجات Neri Shoes."
   }
 }

@@ -4,7 +4,7 @@ import HomeContent from "@/components/HomeContent";
 import { getFeaturedProducts, getActiveProductImages } from "@/lib/products";
 import { getAllProductStocks } from "@/lib/stock";
 import { getExchangeRates } from "@/lib/currency";
-import { getWhatsAppLink, getWhatsAppNumber } from "@/lib/whatsapp";
+import { getWhatsAppNumber } from "@/lib/whatsapp";
 import { SITE_URL, SITE_NAME, localeToOgLocale } from "@/lib/seo";
 import { locales } from "@/i18n/routing";
 import { JsonLd } from "@/components/JsonLd";
@@ -65,7 +65,6 @@ export default async function HomePage({ params }: Props) {
       discountScore(a) - discountScore(b)
     );
   });
-  const whatsappLink = getWhatsAppLink();
   const whatsappNumber = getWhatsAppNumber();
 
   const websiteSchema = {
@@ -90,7 +89,6 @@ export default async function HomePage({ params }: Props) {
         featured={featured}
         stocksMap={stocksMap}
         rates={rates}
-        whatsappLink={whatsappLink}
         whatsappNumber={whatsappNumber}
         stripImages={stripImages}
       />

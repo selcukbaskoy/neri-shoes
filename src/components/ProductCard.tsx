@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { Product, Locale } from "@/lib/types";
 import { StockEntry, computeStockStatus } from "@/lib/stock";
 import { formatPrice } from "@/lib/currency";
-import { buildProductWhatsAppLink } from "@/lib/whatsapp";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
 
 export default function ProductCard({
@@ -22,10 +22,11 @@ export default function ProductCard({
   whatsappNumber: string;
 }) {
   const t = useTranslations("products");
+  const tWa = useTranslations("whatsapp");
   const locale = useLocale() as Locale;
   const shouldReduceMotion = useReducedMotion();
   const content = product.content?.[locale] ?? product.content?.["tr"];
-  const whatsappLink = buildProductWhatsAppLink(whatsappNumber, product.name, locale);
+  const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("productInfo", { productName: product.name }));
   const slug = product.slug || product.id;
   const detailHref = `/urunler/${slug}` as const;
 
@@ -74,7 +75,7 @@ export default function ProductCard({
                   WebkitBackdropFilter: "blur(8px)",
                 }}
               >
-                <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/85">
+                <span className="text-xs font-bold uppercase tracking-[0.3em] text-accent">
                   {t("soldOut")}
                 </span>
               </div>

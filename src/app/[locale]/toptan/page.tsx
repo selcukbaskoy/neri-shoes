@@ -1,7 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import WholesaleContent from "@/components/WholesaleContent";
-import { getWhatsAppLink } from "@/lib/whatsapp";
+import { getWhatsAppNumber } from "@/lib/whatsapp";
 import { SITE_URL, SITE_NAME, localeToOgLocale } from "@/lib/seo";
 import { locales } from "@/i18n/routing";
 
@@ -38,5 +38,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WholesalePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <WholesaleContent whatsappLink={getWhatsAppLink()} />;
+  return <WholesaleContent whatsappNumber={getWhatsAppNumber()} />;
 }

@@ -6,6 +6,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 
@@ -17,8 +18,12 @@ export interface CartItem {
   size: number;
   quantity: number;
   unitPrice: number; // always TRY
-  maxQuantity: number; // stock limit
+  maxQuantity: number; // stock limit at add-time
 }
+
+// Runtime-only stock validation state (not persisted)
+// key: `${productId}-${size}`, value: live quantity from Supabase
+type StockMap = Record<string, number>;
 
 interface CartContextType {
   items: CartItem[];
@@ -30,6 +35,11 @@ interface CartContextType {
   totalCount: number;
   isOpen: boolean;
   setOpen: (open: boolean) => void;
+  // Stock validation
+  stockMap: StockMap;
+  hasStockIssues: boolean;
+  isValidatingStock: boolean;
+  validateStock: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -39,6 +49,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [stockMap, setStockMap] = useState<StockMap>({});
+  const [isValidatingStock, setIsValidatingStock] = useState(false);
 
   useEffect(() => {
     try {
@@ -54,6 +66,48 @@ export function CartProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {}
   }, [items, hydrated]);
+
+  const validateStock = useCallback(async () => {
+    if (!items.length) return;
+    setIsValidatingStock(true);
+    try {
+      const res = await fetch("/api/cart/validate-stock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({ productId: i.productId, size: i.size })),
+        }),
+      });
+      if (!res.ok) return;
+      const { results } = await res.json() as {
+        results: Array<{ productId: string; size: number; quantity: number }>;
+      };
+      const map: StockMap = {};
+      for (const r of results) {
+        map[`${r.productId}-${r.size}`] = r.quantity;
+      }
+      setStockMap(map);
+    } catch {
+      // network error — keep existing stockMap, don't block checkout
+    } finally {
+      setIsValidatingStock(false);
+    }
+  }, [items]);
+
+  // Validate when cart opens
+  useEffect(() => {
+    if (isOpen && items.length > 0) {
+      validateStock();
+    }
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const hasStockIssues = useMemo(() => {
+    if (!Object.keys(stockMap).length) return false;
+    return items.some((item) => {
+      const live = stockMap[`${item.productId}-${item.size}`];
+      return live !== undefined && live < item.quantity;
+    });
+  }, [items, stockMap]);
 
   const addItem = useCallback((newItem: Omit<CartItem, "quantity">) => {
     setItems((prev) => {
@@ -75,6 +129,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) =>
       prev.filter((i) => !(i.productId === productId && i.size === size))
     );
+    setStockMap((prev) => {
+      const next = { ...prev };
+      delete next[`${productId}-${size}`];
+      return next;
+    });
   }, []);
 
   const updateQuantity = useCallback(
@@ -95,7 +154,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const clearCart = useCallback(() => setItems([]), []);
+  const clearCart = useCallback(() => {
+    setItems([]);
+    setStockMap({});
+  }, []);
 
   const totalAmount = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
   const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);
@@ -112,6 +174,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         totalCount,
         isOpen,
         setOpen,
+        stockMap,
+        hasStockIssues,
+        isValidatingStock,
+        validateStock,
       }}
     >
       {children}

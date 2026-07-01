@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, useInView } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
@@ -125,8 +126,10 @@ function AddressCard({ title, address, icon }: { title: string; address: string;
 /* ══════════════════════════════════════════════════════════════
    MAIN COMPONENT
 ══════════════════════════════════════════════════════════════ */
-export default function AboutContent({ whatsappLink }: { whatsappLink: string }) {
+export default function AboutContent({ whatsappNumber }: { whatsappNumber: string }) {
   const t = useTranslations("about");
+  const tWa = useTranslations("whatsapp");
+  const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
   const heroChars = Array.from(t("heroTitle"));
 
   const iconCards = [

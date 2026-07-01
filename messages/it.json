@@ -282,7 +282,11 @@
     "addedToCart": "Aggiunto al carrello!",
     "stockLimitReached": "Limite scorte raggiunto",
     "checkoutComingSoon": "Sistema di pagamento presto disponibile",
-    "checkoutCurrencyNote": "Il pagamento verrà effettuato in Lira Turca (₺)"
+    "checkoutCurrencyNote": "Il pagamento verrà effettuato in Lira Turca (₺)",
+    "cartItemOutOfStock": "Questo articolo è esaurito",
+    "cartItemQuantityExceeded": "Ne restano solo {max} in magazzino",
+    "checkoutBlockedByStock": "Alcuni articoli nel carrello sono esauriti, rimuoverli",
+    "validatingStock": "Verifica disponibilità…"
   },
   "odeme": {
     "title": "Pagamento",
@@ -323,5 +327,10 @@
     "cityPlaceholder": "Milano",
     "district": "Distretto",
     "districtPlaceholder": "Kadıköy"
+  },
+  "whatsapp": {
+    "productInfo": "Ciao, vorrei avere informazioni sul modello {productName}.",
+    "wholesale": "Ciao, vorrei ricevere il listino prezzi all'ingrosso per il modello {productName}.",
+    "generalContact": "Ciao, vorrei avere informazioni sui prodotti di Neri Shoes."
   }
 }

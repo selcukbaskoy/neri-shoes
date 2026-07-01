@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -15,12 +16,14 @@ import { useCart } from "@/lib/cart";
 const INSTAGRAM_URL = "https://www.instagram.com/nerishoess/";
 const TIKTOK_URL = "https://www.tiktok.com/@nerishoes.outlet";
 
-export default function Header({ whatsappLink }: { whatsappLink: string }) {
+export default function Header({ whatsappNumber }: { whatsappNumber: string }) {
   const t = useTranslations("nav");
+  const tWa = useTranslations("whatsapp");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { totalCount, setOpen: setCartOpen } = useCart();
+  const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
 
   useEffect(() => {
     function onScroll() {

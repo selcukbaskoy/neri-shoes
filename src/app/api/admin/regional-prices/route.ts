@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
+import { supabaseAdmin } from "@/lib/supabase";
 
 const VALID_LOCALES = ["en", "de", "it", "ar", "ru"] as const;
 
@@ -60,3 +60,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ saved: toInsert.length });
 }
+

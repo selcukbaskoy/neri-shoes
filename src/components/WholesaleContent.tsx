@@ -3,9 +3,12 @@
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
-export default function WholesaleContent({ whatsappLink }: { whatsappLink: string }) {
+export default function WholesaleContent({ whatsappNumber }: { whatsappNumber: string }) {
   const t = useTranslations("wholesale");
+  const tWa = useTranslations("whatsapp");
+  const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
 
   const advantages = [
     t("advantage1"),

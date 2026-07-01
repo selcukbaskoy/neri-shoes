@@ -282,7 +282,11 @@
     "addedToCart": "Добавлено в корзину!",
     "stockLimitReached": "Достигнут лимит запасов",
     "checkoutComingSoon": "Система оплаты скоро появится",
-    "checkoutCurrencyNote": "Оплата будет произведена в турецких лирах (₺)"
+    "checkoutCurrencyNote": "Оплата будет произведена в турецких лирах (₺)",
+    "cartItemOutOfStock": "Этот товар закончился",
+    "cartItemQuantityExceeded": "Осталось только {max} на складе",
+    "checkoutBlockedByStock": "Некоторые товары в корзине закончились, удалите их",
+    "validatingStock": "Проверка наличия…"
   },
   "odeme": {
     "title": "Оплата",
@@ -323,5 +327,10 @@
     "cityPlaceholder": "Москва",
     "district": "Район",
     "districtPlaceholder": "Kadıköy"
+  },
+  "whatsapp": {
+    "productInfo": "Здравствуйте, я хотел бы получить информацию о модели {productName}.",
+    "wholesale": "Здравствуйте, хотел бы получить оптовый прайс-лист на модель {productName}.",
+    "generalContact": "Здравствуйте, я хотел бы получить информацию о товарах Neri Shoes."
   }
 }

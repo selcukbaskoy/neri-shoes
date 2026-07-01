@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE, generateSessionToken } from "@/lib/auth";
-import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
+import { supabaseAdmin } from "@/lib/supabase";
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;

@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import ProductCard from "@/components/ProductCard";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { Product } from "@/lib/types";
 import { StockEntry } from "@/lib/stock";
 
@@ -14,15 +15,16 @@ interface Props {
   featured: Product[];
   stocksMap: Record<string, StockEntry[]>;
   rates: Record<string, number>;
-  whatsappLink: string;
   whatsappNumber: string;
   stripImages: string[];
 }
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
-export default function HomeContent({ featured, stocksMap, rates, whatsappLink, whatsappNumber, stripImages }: Props) {
+export default function HomeContent({ featured, stocksMap, rates, whatsappNumber, stripImages }: Props) {
   const t = useTranslations("home");
+  const tWa = useTranslations("whatsapp");
+  const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
   const shouldReduceMotion = useReducedMotion();
   const words = t("heroTitle").split(" ");
 

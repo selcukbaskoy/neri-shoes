@@ -10,17 +10,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Product, ProductContent } from "@/lib/types";
-import { buildProductWhatsAppLink } from "@/lib/whatsapp";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
-
-const WHOLESALE_MSG: Record<string, (name: string) => string> = {
-  tr: (name) => `Merhaba, ${name} modeli için toptan fiyat listesi almak istiyorum.`,
-  en: (name) => `Hello, I would like to get the wholesale price list for ${name}.`,
-  de: (name) => `Hallo, ich möchte die Großhandelspreiseliste für ${name} erhalten.`,
-  it: (name) => `Ciao, vorrei ricevere il listino prezzi all'ingrosso per ${name}.`,
-  ar: (name) => `مرحباً، أود الحصول على قائمة أسعار الجملة لـ ${name}.`,
-  ru: (name) => `Здравствуйте, хотел бы получить оптовый прайс-лист на ${name}.`,
-};
 
 function capitalize(v: string) {
   return v.charAt(0).toUpperCase() + v.slice(1);
@@ -43,6 +34,7 @@ export default function ProductDetailContent({
 }) {
   const t = useTranslations("products");
   const tCart = useTranslations("cart");
+  const tWa = useTranslations("whatsapp");
   const locale = useLocale();
   const cart = useCart();
   const [activeImg, setActiveImg] = useState(0);
@@ -133,9 +125,8 @@ export default function ProductDetailContent({
     return formatPrice(tryAmount, locale, rates);
   }
 
-  const infoLink = buildProductWhatsAppLink(whatsappNumber, product.name, locale);
-  const wholesaleFn = WHOLESALE_MSG[locale] || WHOLESALE_MSG.tr;
-  const wholesaleLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(wholesaleFn(product.name))}`;
+  const infoLink = buildWhatsAppLink(whatsappNumber, tWa("productInfo", { productName: product.name }));
+  const wholesaleLink = buildWhatsAppLink(whatsappNumber, tWa("wholesale", { productName: product.name }));
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 md:px-8">
@@ -228,7 +219,7 @@ export default function ProductDetailContent({
                     WebkitBackdropFilter: "blur(10px)",
                   }}
                 >
-                  <span className="text-sm font-bold uppercase tracking-[0.4em] text-white/90">
+                  <span className="text-sm font-bold uppercase tracking-[0.4em] text-accent">
                     {t("soldOut")}
                   </span>
                 </div>

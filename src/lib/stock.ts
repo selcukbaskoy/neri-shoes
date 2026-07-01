@@ -9,7 +9,6 @@ export type StockStatus =
   | { kind: "in_stock"; sizes: number[] };
 
 export function computeStockStatus(entries: StockEntry[]): StockStatus {
-  if (entries.length === 0) return { kind: "no_data" };
   const inStock = entries.filter((e) => e.quantity > 0).map((e) => e.size);
   if (inStock.length === 0) return { kind: "sold_out" };
   return { kind: "in_stock", sizes: inStock };

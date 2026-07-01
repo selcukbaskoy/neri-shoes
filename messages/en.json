@@ -282,7 +282,11 @@
     "addedToCart": "Added to cart!",
     "stockLimitReached": "Stock limit reached",
     "checkoutComingSoon": "Checkout system coming soon",
-    "checkoutCurrencyNote": "Payment will be processed in Turkish Lira (₺)"
+    "checkoutCurrencyNote": "Payment will be processed in Turkish Lira (₺)",
+    "cartItemOutOfStock": "This item is out of stock",
+    "cartItemQuantityExceeded": "Only {max} left in stock",
+    "checkoutBlockedByStock": "Some items in your cart are out of stock, please remove them",
+    "validatingStock": "Checking stock…"
   },
   "odeme": {
     "title": "Checkout",
@@ -323,5 +327,10 @@
     "cityPlaceholder": "London",
     "district": "District",
     "districtPlaceholder": "Kadıköy"
+  },
+  "whatsapp": {
+    "productInfo": "Hello, I would like to get information about the {productName} model.",
+    "wholesale": "Hello, I would like to get the wholesale price list for the {productName} model.",
+    "generalContact": "Hello, I would like to get information about Neri Shoes products."
   }
 }

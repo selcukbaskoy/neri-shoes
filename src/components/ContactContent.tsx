@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import InstagramIcon from "./icons/InstagramIcon";
 import TiktokIcon from "./icons/TiktokIcon";
 
@@ -28,9 +29,11 @@ function ClockIcon() {
 
 const cardStyle = { background: "linear-gradient(135deg, #141414, #0a0a0a)" };
 
-export default function ContactContent({ whatsappLink }: { whatsappLink: string }) {
+export default function ContactContent({ whatsappNumber }: { whatsappNumber: string }) {
   const t = useTranslations("contact");
   const ta = useTranslations("about");
+  const tWa = useTranslations("whatsapp");
+  const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-16 md:px-8">

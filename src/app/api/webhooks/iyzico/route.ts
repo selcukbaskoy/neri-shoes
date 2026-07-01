@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
+﻿import { NextRequest, NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase";
 
-// iyzico webhook: ödeme sonucu POST ile gelir (form-urlencoded)
+// iyzico webhook: Ã¶deme sonucu POST ile gelir (form-urlencoded)
 export async function POST(req: NextRequest) {
   const text = await req.text();
   const params = new URLSearchParams(text);
@@ -17,14 +17,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Token yok" }, { status: 400 });
   }
 
-  // HMAC imza doğrulaması — zorunlu, key eksikse 503
+  // HMAC imza doÄŸrulamasÄ± â€” zorunlu, key eksikse 503
   const secretKey = process.env.IYZICO_SECRET_KEY;
   if (!secretKey) {
-    console.error("IYZICO_SECRET_KEY not set — webhook disabled for security");
+    console.error("IYZICO_SECRET_KEY not set â€” webhook disabled for security");
     return NextResponse.json({ error: "webhook disabled" }, { status: 503 });
   }
   if (!merchantToken || !iyziReferenceCode) {
-    return NextResponse.json({ error: "İmza parametreleri eksik" }, { status: 400 });
+    return NextResponse.json({ error: "Ä°mza parametreleri eksik" }, { status: 400 });
   }
   const crypto = await import("crypto");
   const expected = crypto
@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     .update(`${iyziReferenceCode}${conversationId ?? ""}${merchantToken}`)
     .digest("base64");
   if (expected !== merchantToken) {
-    console.warn("iyzico webhook imza doğrulaması başarısız");
-    return NextResponse.json({ error: "İmza geçersiz" }, { status: 403 });
+    console.warn("iyzico webhook imza doÄŸrulamasÄ± baÅŸarÄ±sÄ±z");
+    return NextResponse.json({ error: "Ä°mza geÃ§ersiz" }, { status: 403 });
   }
 
   const newStatus = status === "SUCCESS" ? "paid" : "failed";
@@ -48,10 +48,10 @@ export async function POST(req: NextRequest) {
 
   if (error) {
     console.error("Webhook order update error:", error);
-    return NextResponse.json({ error: "Güncelleme hatası" }, { status: 500 });
+    return NextResponse.json({ error: "GÃ¼ncelleme hatasÄ±" }, { status: 500 });
   }
 
-  // Stok düşümü: paid siparişlerde
+  // Stok dÃ¼ÅŸÃ¼mÃ¼: paid sipariÅŸlerde
   if (newStatus === "paid") {
     const { data: order } = await supabaseAdmin
       .from("orders")
@@ -79,3 +79,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ received: true });
 }
+

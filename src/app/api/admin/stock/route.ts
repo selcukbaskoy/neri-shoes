@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { supabaseAdminAdmin } from "@/lib/supabaseAdmin";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
   if (!(await isAdminAuthenticated())) {
@@ -53,3 +53,4 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ success: true });
 }
+

@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/JsonLd";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HtmlAttributes from "@/components/HtmlAttributes";
-import { getWhatsAppLink } from "@/lib/whatsapp";
+import { getWhatsAppNumber } from "@/lib/whatsapp";
 import { CartProvider } from "@/lib/cart";
 import CartPanel from "@/components/CartPanel";
 import { getExchangeRates } from "@/lib/currency";
@@ -75,7 +75,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   const messages = await getMessages();
-  const whatsappLink = getWhatsAppLink();
+  const whatsappNumber = getWhatsAppNumber();
   const exchangeRates = await getExchangeRates();
 
   const organizationSchema = {
@@ -112,9 +112,9 @@ export default async function LocaleLayout({
         <JsonLd data={organizationSchema} />
         <HtmlAttributes locale={locale} />
         <div className="flex min-h-screen flex-col">
-          <Header whatsappLink={whatsappLink} />
+          <Header whatsappNumber={whatsappNumber} />
           <main className="flex-1">{children}</main>
-          <Footer whatsappLink={whatsappLink} />
+          <Footer whatsappNumber={whatsappNumber} />
           <CartPanel rates={exchangeRates} />
         </div>
       </CartProvider>

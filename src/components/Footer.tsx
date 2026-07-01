@@ -2,16 +2,19 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import InstagramIcon from "./icons/InstagramIcon";
 import TiktokIcon from "./icons/TiktokIcon";
 
 const INSTAGRAM_URL = "https://www.instagram.com/nerishoess/";
 const TIKTOK_URL = "https://www.tiktok.com/@nerishoes.outlet";
 
-export default function Footer({ whatsappLink }: { whatsappLink: string }) {
+export default function Footer({ whatsappNumber }: { whatsappNumber: string }) {
   const t = useTranslations("footer");
   const nav = useTranslations("nav");
   const ta = useTranslations("about");
+  const tWa = useTranslations("whatsapp");
+  const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
 
   const links = [
     { href: "/", label: nav("home") },

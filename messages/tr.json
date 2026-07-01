@@ -290,7 +290,11 @@
     "addedToCart": "Sepete eklendi!",
     "stockLimitReached": "Stok limiti doldu",
     "checkoutComingSoon": "Ödeme sistemi yakında aktif olacak",
-    "checkoutCurrencyNote": "Ödeme Türk Lirası (₺) ile yapılacaktır"
+    "checkoutCurrencyNote": "Ödeme Türk Lirası (₺) ile yapılacaktır",
+    "cartItemOutOfStock": "Bu ürünün stoku tükenmiştir",
+    "cartItemQuantityExceeded": "Stokta sadece {max} adet kaldı",
+    "checkoutBlockedByStock": "Sepetinizde stok sorunu olan ürünler var, lütfen kaldırın",
+    "validatingStock": "Stok kontrol ediliyor…"
   },
   "odeme": {
     "title": "Ödeme",
@@ -331,5 +335,10 @@
     "cityPlaceholder": "İstanbul",
     "district": "İlçe",
     "districtPlaceholder": "Kadıköy"
+  },
+  "whatsapp": {
+    "productInfo": "Merhaba, {productName} modeli hakkında bilgi almak istiyorum.",
+    "wholesale": "Merhaba, {productName} modeli için toptan fiyat listesi almak istiyorum.",
+    "generalContact": "Merhaba, Neri Shoes ürünleri hakkında bilgi almak istiyorum."
   }
 }
