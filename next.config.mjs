@@ -17,6 +17,16 @@ const cspHeader = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // iyzipay lib/resources/ dizinini fs.readdirSync ile dinamik yükler — Vercel file tracer
+  // bunu statik import olarak görmez ve bundle'a eklemez (ENOENT hatası).
+  // outputFileTracingIncludes bu dizini tüm checkout API route'larına zorunlu ekler.
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/checkout/create-payment': ['./node_modules/iyzipay/lib/resources/**'],
+      '/api/checkout/status/**': ['./node_modules/iyzipay/lib/resources/**'],
+      '/api/debug-env': ['./node_modules/iyzipay/lib/resources/**'],
+    },
+  },
   images: {
     unoptimized: true
   },
