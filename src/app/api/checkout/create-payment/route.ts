@@ -87,11 +87,13 @@ export async function POST(req: NextRequest) {
   let iyzico;
   try {
     iyzico = getIyzicoClient();
-  } catch {
+  } catch (clientErr) {
     if (process.env.NODE_ENV === "production") {
       await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", orderId);
+      const reason = clientErr instanceof Error ? clientErr.message : String(clientErr);
+      console.error("[create-payment] getIyzicoClient hatası:", reason);
       return NextResponse.json(
-        { error: "Ödeme sistemi şu an kullanılamıyor. Lütfen daha sonra tekrar deneyin." },
+        { error: `Ödeme sistemi şu an kullanılamıyor. Neden: ${reason}` },
         { status: 503 }
       );
     }
@@ -159,11 +161,12 @@ export async function POST(req: NextRequest) {
       },
       async (err, result) => {
         if (err || result.status !== "success" || !result.token) {
-          console.error("iyzico error:", err ?? result);
+          const detail = err?.message ?? result?.errorMessage ?? result?.errorCode ?? "iyzico yanit vermedi";
+          console.error("[create-payment] iyzico API hatası:", detail, JSON.stringify(result ?? {}));
           await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", orderId);
           resolve(
             NextResponse.json(
-              { error: result?.errorMessage ?? "Ã–deme baÅŸlatÄ±lamadÄ±" },
+              { error: `Ödeme başlatılamadı: ${detail}` },
               { status: 502 }
             )
           );
