@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
     "85.34.78.112";
 
   const priceStr = totalAmount.toFixed(2);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nerishoes.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nerishoes.com.tr";
 
   return new Promise<NextResponse>((resolve) => {
     iyzico.checkoutFormInitialize.create(
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
           surname: customer.surname,
           email: customer.email,
           phone: customer.phone,
-          identityNumber: "11111111111", // Sandbox iÃ§in sabit
+          identityNumber: "11111111111",
           registrationAddress: customer.address,
           city: customer.city,
           country: "Turkey",

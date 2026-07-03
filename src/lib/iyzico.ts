@@ -3,7 +3,14 @@ import Iyzipay from "iyzipay";
 export function getIyzicoClient(): Iyzipay {
   const apiKey = process.env.IYZICO_API_KEY;
   const secretKey = process.env.IYZICO_SECRET_KEY;
-  const uri = process.env.IYZICO_BASE_URL ?? "https://sandbox-api.iyzipay.com";
+
+  // Production'da IYZICO_BASE_URL tanımlı değilse gerçek API'ye düşer.
+  // Local dev'de tanımlı değilse sandbox'a düşer.
+  const uri =
+    process.env.IYZICO_BASE_URL ??
+    (process.env.NODE_ENV === "production"
+      ? "https://api.iyzipay.com"
+      : "https://sandbox-api.iyzipay.com");
 
   if (!apiKey || !secretKey) {
     throw new Error("IYZICO_API_KEY ve IYZICO_SECRET_KEY env değişkenleri eksik");
