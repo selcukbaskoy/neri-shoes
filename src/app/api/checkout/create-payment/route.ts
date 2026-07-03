@@ -88,7 +88,14 @@ export async function POST(req: NextRequest) {
   try {
     iyzico = getIyzicoClient();
   } catch {
-    // Sandbox key yoksa mock token dÃ¶ndÃ¼r (geliÅŸtirme modu)
+    if (process.env.NODE_ENV === "production") {
+      await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", orderId);
+      return NextResponse.json(
+        { error: "Ödeme sistemi şu an kullanılamıyor. Lütfen daha sonra tekrar deneyin." },
+        { status: 503 }
+      );
+    }
+    // Sadece development modunda simülasyon
     await supabaseAdmin.from("orders").update({ iyzico_token: `dev-${orderId}` }).eq("id", orderId);
     return NextResponse.json({
       token: `dev-${orderId}`,

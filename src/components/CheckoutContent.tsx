@@ -91,7 +91,7 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
         return;
       }
 
-      if (data.devMode) {
+      if (data.devMode && process.env.NODE_ENV !== "production") {
         setDevMode(true);
         setStep("payment");
         return;
@@ -304,7 +304,7 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
             animate={{ opacity: 1 }}
             className="flex flex-col items-center gap-6"
           >
-            {devMode ? (
+            {devMode && process.env.NODE_ENV !== "production" ? (
               <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-8 text-center max-w-md">
                 <p className="mb-2 text-sm font-semibold text-yellow-400">{t("devModeTitle")}</p>
                 <p className="text-xs text-muted">{t("devModeDesc")}</p>
