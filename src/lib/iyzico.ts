@@ -1,8 +1,8 @@
 import Iyzipay from "iyzipay";
 
 export function getIyzicoClient(): Iyzipay {
-  const apiKey = process.env.IYZICO_API_KEY;
-  const secretKey = process.env.IYZICO_SECRET_KEY;
+  const apiKey = process.env.IYZICO_API_KEY?.trim();
+  const secretKey = process.env.IYZICO_SECRET_KEY?.trim();
 
   // Production'da IYZICO_BASE_URL tanımlı değilse gerçek API'ye düşer.
   // Local dev'de tanımlı değilse sandbox'a düşer.
