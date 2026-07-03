@@ -4,7 +4,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const cspHeader = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://cdn.iyzipay.com https://sandbox-api.iyzipay.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.iyzipay.com https://sandbox-api.iyzipay.com https://api.iyzipay.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' https:",
@@ -48,9 +48,6 @@ const nextConfig = {
   webpack: (config, { dev }) => {
     if (dev) {
       config.cache = false;
-      // Prevent webpack from treating node_modules as managed paths eligible
-      // for incremental vendor-chunk updates — new npm installs would otherwise
-      // create a stale manifest/file mismatch (Cannot find module vendor-chunks/X).
       config.snapshot = {
         ...config.snapshot,
         managedPaths: [],
