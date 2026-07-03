@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
@@ -40,7 +40,30 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [devMode, setDevMode] = useState(false);
-  const paymentRef = useRef<HTMLDivElement>(null);
+  const [checkoutHtml, setCheckoutHtml] = useState<string | null>(null);
+  const [paymentContainer, setPaymentContainer] = useState<HTMLDivElement | null>(null);
+
+  // Callback ref pattern: div mount olduğunda state güncellenir, effect yeniden çalışır
+  useEffect(() => {
+    if (step !== "payment" || !checkoutHtml || !paymentContainer) return;
+
+    const container = paymentContainer;
+    container.innerHTML = checkoutHtml;
+
+    // Script tag'lerini manuel olarak yeniden oluştur ki tarayıcı çalıştırsın
+    container.querySelectorAll("script").forEach((oldScript) => {
+      const newScript = document.createElement("script");
+      Array.from(oldScript.attributes).forEach((attr) =>
+        newScript.setAttribute(attr.name, attr.value)
+      );
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+      oldScript.parentNode?.replaceChild(newScript, oldScript);
+    });
+  }, [step, checkoutHtml, paymentContainer]);
 
   // Sepet boşsa form gösterme
   if (items.length === 0 && step === "form") {
@@ -97,22 +120,9 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
         return;
       }
 
+      // State'e kaydet; useEffect DOM mount edildikten sonra enjekte edecek
+      setCheckoutHtml(data.checkoutFormContent ?? null);
       setStep("payment");
-
-      // iyzico checkoutFormContent'i DOM'a enjekte et
-      if (data.checkoutFormContent && paymentRef.current) {
-        const container = paymentRef.current;
-        container.innerHTML = data.checkoutFormContent;
-        // Script taglarını çalıştır
-        container.querySelectorAll("script").forEach((oldScript) => {
-          const newScript = document.createElement("script");
-          Array.from(oldScript.attributes).forEach((attr) =>
-            newScript.setAttribute(attr.name, attr.value)
-          );
-          newScript.textContent = oldScript.textContent;
-          oldScript.parentNode?.replaceChild(newScript, oldScript);
-        });
-      }
     } catch {
       setErrorMsg(t("networkError"));
       setStep("error");
@@ -324,7 +334,7 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
                 </div>
               </div>
             ) : (
-              <div ref={paymentRef} className="w-full" />
+              <div ref={setPaymentContainer} className="w-full" />
             )}
           </motion.div>
         )}
