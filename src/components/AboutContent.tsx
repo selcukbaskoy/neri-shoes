@@ -162,12 +162,14 @@ export default function AboutContent({ whatsappNumber }: { whatsappNumber: strin
           aria-label={t("heroTitle")}
         >
           {heroWords.map((word, wi) => (
-            <span key={wi} className="whitespace-nowrap">
-              {Array.from(word).map((char, ci) => (
-                <motion.span key={ci} variants={heroLetter} className="inline-block">
-                  {char}
-                </motion.span>
-              ))}
+            <span key={wi}>
+              <span className="whitespace-nowrap">
+                {Array.from(word).map((char, ci) => (
+                  <motion.span key={ci} variants={heroLetter} className="inline-block">
+                    {char}
+                  </motion.span>
+                ))}
+              </span>
               {wi < heroWords.length - 1 && " "}
             </span>
           ))}
