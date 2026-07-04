@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getIyzicoClient } from "@/lib/iyzico";
 
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "GeÃ§ersiz istek" }, { status: 400 });
+    return NextResponse.json({ error: "Geçersiz istek" }, { status: 400 });
   }
 
   const { items, customer } = body;
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   const orderId = crypto.randomUUID();
   const conversationId = orderId;
 
-  // 1. SipariÅŸi veritabanÄ±na kaydet
+  // 1. Siparişi veritabanına kaydet
   const { error: orderErr } = await supabaseAdmin.from("orders").insert({
     id: orderId,
     customer_name: `${customer.name} ${customer.surname}`,
@@ -56,23 +56,11 @@ export async function POST(req: NextRequest) {
 
   if (orderErr) {
     console.error("Order insert error:", orderErr);
-    return NextResponse.json({ error: "SipariÅŸ oluÅŸturulamadÄ±" }, { status: 500 });
+    return NextResponse.json({ error: "Sipariş oluşturulamadı" }, { status: 500 });
   }
 
-  // 2. SipariÅŸ kalemlerini kaydet
-  const orderItems = items.flatMap((item) =>
-    Array(item.quantity).fill(null).map((_, idx) => ({
-      order_id: orderId,
-      product_id: item.productId,
-      product_name: item.productName,
-      size: item.size,
-      quantity: 1,
-      unit_price: item.unitPrice,
-    }))
-  );
-
-  // Toplu insert yerine tek kayÄ±t per item
-  const flatItems = items.map((item) => ({
+  // 2. Sipariş kalemlerini kaydet
+  const orderItems = items.map((item) => ({
     order_id: orderId,
     product_id: item.productId,
     product_name: item.productName,
@@ -81,7 +69,7 @@ export async function POST(req: NextRequest) {
     unit_price: item.unitPrice,
   }));
 
-  await supabaseAdmin.from("order_items").insert(flatItems);
+  await supabaseAdmin.from("order_items").insert(orderItems);
 
   // 3. iyzico checkout form token al
   let iyzico;
@@ -154,14 +142,14 @@ export async function POST(req: NextRequest) {
         basketItems: items.map((item) => ({
           id: item.productId,
           name: item.productName,
-          category1: "AyakkabÄ±",
+          category1: "Ayakkabı",
           itemType: "PHYSICAL" as const,
           price: (item.unitPrice * item.quantity).toFixed(2),
         })),
       },
       async (err, result) => {
         if (err || result.status !== "success" || !result.token) {
-          const detail = err?.message ?? result?.errorMessage ?? result?.errorCode ?? "iyzico yanit vermedi";
+          const detail = err?.message ?? result?.errorMessage ?? result?.errorCode ?? "iyzico yanıt vermedi";
           console.error("[create-payment] iyzico API hatası:", detail, JSON.stringify(result ?? {}));
           await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", orderId);
           resolve(
@@ -189,4 +177,3 @@ export async function POST(req: NextRequest) {
     );
   });
 }
-
