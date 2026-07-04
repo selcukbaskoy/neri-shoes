@@ -101,7 +101,9 @@ export async function POST(req: NextRequest) {
     "85.34.78.112";
 
   const priceStr = totalAmount.toFixed(2);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.nerishoes.com.tr";
+  // NEXT_PUBLIC_SITE_URL Vercel'de www'suz ayarlanmış olabilir; callbackUrl daima www ile olsun.
+  const rawSite = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.nerishoes.com.tr";
+  const siteUrl = rawSite.replace("https://nerishoes.com.tr", "https://www.nerishoes.com.tr");
 
   return new Promise<NextResponse>((resolve) => {
     iyzico.checkoutFormInitialize.create(
