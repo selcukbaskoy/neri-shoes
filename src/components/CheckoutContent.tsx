@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
@@ -41,16 +41,21 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
   const [errorMsg, setErrorMsg] = useState("");
   const [devMode, setDevMode] = useState(false);
   const [checkoutHtml, setCheckoutHtml] = useState<string | null>(null);
-  const [paymentContainer, setPaymentContainer] = useState<HTMLDivElement | null>(null);
 
-  // Callback ref pattern: div mount olduğunda state güncellenir, effect yeniden çalışır
+  // useRef: re-render tetiklemez, AnimatePresence ile çakışmaz
+  const iyzicoContainerRef = useRef<HTMLDivElement>(null);
+  // Çift enjeksiyonu engeller (StrictMode + gereksiz effect tekrarları)
+  const injectedRef = useRef(false);
+
   useEffect(() => {
-    if (step !== "payment" || !checkoutHtml || !paymentContainer) return;
+    if (step !== "payment" || !checkoutHtml || !iyzicoContainerRef.current || injectedRef.current) return;
 
-    const container = paymentContainer;
+    injectedRef.current = true;
+    const container = iyzicoContainerRef.current;
     container.innerHTML = checkoutHtml;
 
-    // Script tag'lerini manuel olarak yeniden oluştur ki tarayıcı çalıştırsın
+    // innerHTML ile eklenen script'ler tarayıcı tarafından çalıştırılmaz;
+    // manuel olarak yeniden oluşturulması gerekir.
     container.querySelectorAll("script").forEach((oldScript) => {
       const newScript = document.createElement("script");
       Array.from(oldScript.attributes).forEach((attr) =>
@@ -63,9 +68,18 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
       }
       oldScript.parentNode?.replaceChild(newScript, oldScript);
     });
-  }, [step, checkoutHtml, paymentContainer]);
+  }, [step, checkoutHtml]);
 
-  // Sepet boşsa form gösterme
+  // Kullanıcı "tekrar dene" ile form'a dönerse injection flag'ini sıfırla
+  useEffect(() => {
+    if (step === "form") {
+      injectedRef.current = false;
+      if (iyzicoContainerRef.current) {
+        iyzicoContainerRef.current.innerHTML = "";
+      }
+    }
+  }, [step]);
+
   if (items.length === 0 && step === "form") {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
@@ -120,7 +134,6 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
         return;
       }
 
-      // State'e kaydet; useEffect DOM mount edildikten sonra enjekte edecek
       setCheckoutHtml(data.checkoutFormContent ?? null);
       setStep("payment");
     } catch {
@@ -144,6 +157,18 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <h1 className="mb-10 font-serif text-3xl text-foreground">{t("title")}</h1>
+
+      {/*
+        iyzico container — AnimatePresence DIŞINDA, her zaman DOM'da.
+        React hiçbir zaman bu elementi unmount etmez; sadece CSS ile gizlenir/gösterilir.
+        Bu sayede AnimatePresence render döngüleri iframe'i etkileyemez.
+      */}
+      <div
+        ref={iyzicoContainerRef}
+        id="iyzico-payment-container"
+        style={{ display: step === "payment" && !devMode ? "block" : "none" }}
+        className="w-full"
+      />
 
       <AnimatePresence mode="wait">
         {step === "form" && (
@@ -307,35 +332,32 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
           </motion.div>
         )}
 
-        {step === "payment" && (
+        {/* devMode mock — sadece development'ta, gerçek iyzico yokken */}
+        {step === "payment" && devMode && process.env.NODE_ENV !== "production" && (
           <motion.div
-            key="payment"
+            key="payment-dev"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="flex flex-col items-center gap-6"
           >
-            {devMode && process.env.NODE_ENV !== "production" ? (
-              <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-8 text-center max-w-md">
-                <p className="mb-2 text-sm font-semibold text-yellow-400">{t("devModeTitle")}</p>
-                <p className="text-xs text-muted">{t("devModeDesc")}</p>
-                <div className="mt-6 flex gap-3 justify-center">
-                  <button
-                    onClick={handleSuccess}
-                    className="rounded bg-accent px-5 py-2 text-sm font-bold text-[#0a0a0a]"
-                  >
-                    {t("simulateSuccess")}
-                  </button>
-                  <button
-                    onClick={() => setStep("error")}
-                    className="rounded border border-red-500/40 px-5 py-2 text-sm text-red-400"
-                  >
-                    {t("simulateFailure")}
-                  </button>
-                </div>
+            <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-8 text-center max-w-md">
+              <p className="mb-2 text-sm font-semibold text-yellow-400">{t("devModeTitle")}</p>
+              <p className="text-xs text-muted">{t("devModeDesc")}</p>
+              <div className="mt-6 flex gap-3 justify-center">
+                <button
+                  onClick={handleSuccess}
+                  className="rounded bg-accent px-5 py-2 text-sm font-bold text-[#0a0a0a]"
+                >
+                  {t("simulateSuccess")}
+                </button>
+                <button
+                  onClick={() => setStep("error")}
+                  className="rounded border border-red-500/40 px-5 py-2 text-sm text-red-400"
+                >
+                  {t("simulateFailure")}
+                </button>
               </div>
-            ) : (
-              <div ref={setPaymentContainer} className="w-full" />
-            )}
+            </div>
           </motion.div>
         )}
 
