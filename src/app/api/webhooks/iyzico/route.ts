@@ -4,20 +4,31 @@ import { getIyzicoClient } from "@/lib/iyzico";
 
 // iyzico Checkout Form callback — tarayıcı formu olarak POST gelir (form-urlencoded)
 // Sadece `token` parametresi gelir; HMAC imzası bu akışta YOKTUR.
-// Doğru akış: token → checkoutFormRetrieve.retrieve() → sipariş güncelle → yönlendir
 export async function POST(req: NextRequest) {
-  const text = await req.text();
-  const params = new URLSearchParams(text);
+  let origin = "https://www.nerishoes.com.tr";
+  try {
+    origin = new URL(req.url).origin;
+  } catch {
+    // req.url geçersiz olsa bile devam et
+  }
 
+  let text = "";
+  try {
+    text = await req.text();
+  } catch (e) {
+    console.error("[iyzico callback] req.text() hatası:", e);
+    return NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=parse`, { status: 303 });
+  }
+
+  const params = new URLSearchParams(text);
   const allParams: Record<string, string> = {};
   params.forEach((v, k) => { allParams[k] = v; });
   console.log("[iyzico callback] Gelen parametreler:", JSON.stringify(allParams));
 
   const token = params.get("token");
-  const origin = new URL(req.url).origin;
 
   if (!token) {
-    console.error("[iyzico callback] Token yok. Parametreler:", JSON.stringify(allParams));
+    console.error("[iyzico callback] Token yok.");
     return NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=no_token`, { status: 303 });
   }
 
@@ -29,12 +40,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=config`, { status: 303 });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new Promise<NextResponse>((resolve) => {
-    iyzico.checkoutFormRetrieve.retrieve(
-      { token },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (err: any, result: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    iyzico.checkoutFormRetrieve.retrieve({ token }, async (err: any, result: any) => {
+      try {
         console.log("[iyzico callback] Retrieve sonucu:", JSON.stringify({
           status: result?.status,
           paymentStatus: result?.paymentStatus,
@@ -46,7 +55,11 @@ export async function POST(req: NextRequest) {
         if (err || result?.status !== "success") {
           const detail = err?.message ?? result?.errorMessage ?? "retrieve başarısız";
           console.error("[iyzico callback] Retrieve hatası:", detail);
-          await supabaseAdmin.from("orders").update({ status: "failed" }).eq("iyzico_token", token);
+          try {
+            await supabaseAdmin.from("orders").update({ status: "failed" }).eq("iyzico_token", token);
+          } catch (dbErr) {
+            console.error("[iyzico callback] DB update hatası (failed):", dbErr);
+          }
           resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed`, { status: 303 }));
           return;
         }
@@ -55,43 +68,50 @@ export async function POST(req: NextRequest) {
         const paymentId: string = result.paymentId ?? "";
         const newStatus = paymentStatus === "SUCCESS" ? "paid" : "failed";
 
-        const { error: updateErr } = await supabaseAdmin
-          .from("orders")
-          .update({ status: newStatus, payment_reference: paymentId || null })
-          .eq("iyzico_token", token);
-
-        if (updateErr) {
-          console.error("[iyzico callback] Order update hatası:", updateErr);
+        try {
+          await supabaseAdmin
+            .from("orders")
+            .update({ status: newStatus, payment_reference: paymentId || null })
+            .eq("iyzico_token", token);
+        } catch (dbErr) {
+          console.error("[iyzico callback] Order update hatası:", dbErr);
         }
 
         if (newStatus === "paid") {
-          const { data: order } = await supabaseAdmin
-            .from("orders")
-            .select("id")
-            .eq("iyzico_token", token)
-            .single();
+          try {
+            const { data: order } = await supabaseAdmin
+              .from("orders")
+              .select("id")
+              .eq("iyzico_token", token)
+              .single();
 
-          if (order) {
-            const { data: items } = await supabaseAdmin
-              .from("order_items")
-              .select("product_id, size, quantity")
-              .eq("order_id", order.id);
+            if (order) {
+              const { data: items } = await supabaseAdmin
+                .from("order_items")
+                .select("product_id, size, quantity")
+                .eq("order_id", order.id);
 
-            if (items) {
-              for (const item of items) {
-                await supabaseAdmin.rpc("decrement_stock", {
-                  p_product_id: item.product_id,
-                  p_size: item.size,
-                  p_qty: item.quantity,
-                });
+              if (items) {
+                for (const item of items) {
+                  await supabaseAdmin.rpc("decrement_stock", {
+                    p_product_id: item.product_id,
+                    p_size: item.size,
+                    p_qty: item.quantity,
+                  });
+                }
               }
             }
+          } catch (stockErr) {
+            console.error("[iyzico callback] Stok güncelleme hatası:", stockErr);
           }
           resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=success`, { status: 303 }));
         } else {
           resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed`, { status: 303 }));
         }
+      } catch (callbackErr) {
+        console.error("[iyzico callback] Beklenmedik hata:", callbackErr);
+        resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=error`, { status: 303 }));
       }
-    );
+    });
   });
 }
