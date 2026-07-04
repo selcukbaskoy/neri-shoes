@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { StockEntry, computeStockStatus } from "@/lib/stock";
 import { formatPrice } from "@/lib/currency";
 import { RegionalPrice, findRegionalPrice, formatRegionalPrice } from "@/lib/regional-prices";
@@ -46,6 +46,47 @@ export default function ProductDetailContent({
   const [isZoomed, setIsZoomed] = useState(false);
   const [transformOrigin, setTransformOrigin] = useState("50% 50%");
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  // Touch swipe — main image
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchDidSwipe = useRef(false);
+  // Touch swipe — lightbox
+  const lbTouchStartX = useRef<number | null>(null);
+  const lbTouchStartY = useRef<number | null>(null);
+  const lbTouchDidSwipe = useRef(false);
+
+  function handleImgTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    touchDidSwipe.current = false;
+  }
+  function handleImgTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null || images.length <= 1) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - (touchStartY.current ?? 0));
+    if (Math.abs(dx) > 40 && Math.abs(dx) > dy) {
+      touchDidSwipe.current = true;
+      setActiveImg((i) => dx < 0 ? Math.min(images.length - 1, i + 1) : Math.max(0, i - 1));
+      setIsZoomed(false);
+    }
+    touchStartX.current = null;
+  }
+  function handleLbTouchStart(e: React.TouchEvent) {
+    lbTouchStartX.current = e.touches[0].clientX;
+    lbTouchStartY.current = e.touches[0].clientY;
+    lbTouchDidSwipe.current = false;
+  }
+  function handleLbTouchEnd(e: React.TouchEvent) {
+    if (lbTouchStartX.current === null || images.length <= 1) return;
+    const dx = e.changedTouches[0].clientX - lbTouchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - (lbTouchStartY.current ?? 0));
+    if (Math.abs(dx) > 40 && Math.abs(dx) > dy) {
+      lbTouchDidSwipe.current = true;
+      setLightboxImg((i) => dx < 0 ? Math.min(images.length - 1, i + 1) : Math.max(0, i - 1));
+    }
+    lbTouchStartX.current = null;
+  }
   const [lightboxImg, setLightboxImg] = useState(0);
 
   const images = product.images?.length ? product.images : [product.image];
@@ -156,7 +197,9 @@ export default function ProductDetailContent({
             onMouseMove={handleMouseMove}
             onMouseEnter={() => setIsZoomed(true)}
             onMouseLeave={() => setIsZoomed(false)}
-            onClick={openLightbox}
+            onClick={() => { if (!touchDidSwipe.current) openLightbox(); }}
+            onTouchStart={handleImgTouchStart}
+            onTouchEnd={handleImgTouchEnd}
             role="button"
             tabIndex={0}
             aria-label={t("zoomImage")}
@@ -505,7 +548,9 @@ export default function ProductDetailContent({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-sm"
-            onClick={() => setLightboxOpen(false)}
+            onClick={() => { if (!lbTouchDidSwipe.current) setLightboxOpen(false); }}
+            onTouchStart={handleLbTouchStart}
+            onTouchEnd={handleLbTouchEnd}
           >
             {/* Close */}
             <button
