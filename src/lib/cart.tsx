@@ -168,6 +168,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = useCallback(() => {
     setItems([]);
     setStockMap({});
+    // localStorage'ı anında temizle — hydration race'ini önler
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
   }, []);
 
   const totalAmount = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
