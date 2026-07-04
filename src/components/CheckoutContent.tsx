@@ -80,6 +80,23 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
     }
   }, [step]);
 
+  // iyzico callback URL parametrelerini işle (payment_status=success/failed)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get("payment_status");
+    if (paymentStatus === "success") {
+      clearCart();
+      setStep("success");
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (paymentStatus === "failed") {
+      setErrorMsg("Ödeme başarısız. Lütfen tekrar deneyin.");
+      setStep("error");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (items.length === 0 && step === "form") {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">

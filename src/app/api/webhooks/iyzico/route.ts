@@ -1,82 +1,97 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { getIyzicoClient } from "@/lib/iyzico";
 
-// iyzico webhook: Ã¶deme sonucu POST ile gelir (form-urlencoded)
+// iyzico Checkout Form callback — tarayıcı formu olarak POST gelir (form-urlencoded)
+// Sadece `token` parametresi gelir; HMAC imzası bu akışta YOKTUR.
+// Doğru akış: token → checkoutFormRetrieve.retrieve() → sipariş güncelle → yönlendir
 export async function POST(req: NextRequest) {
   const text = await req.text();
   const params = new URLSearchParams(text);
 
-  const status = params.get("status");
-  const paymentId = params.get("paymentId");
+  const allParams: Record<string, string> = {};
+  params.forEach((v, k) => { allParams[k] = v; });
+  console.log("[iyzico callback] Gelen parametreler:", JSON.stringify(allParams));
+
   const token = params.get("token");
-  const conversationId = params.get("conversationId");
-  const merchantToken = params.get("merchantToken");
-  const iyziReferenceCode = params.get("iyziReferenceCode") ?? "";
+  const origin = new URL(req.url).origin;
 
   if (!token) {
-    return NextResponse.json({ error: "Token yok" }, { status: 400 });
+    console.error("[iyzico callback] Token yok. Parametreler:", JSON.stringify(allParams));
+    return NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=no_token`, { status: 303 });
   }
 
-  // HMAC imza doÄŸrulamasÄ± â€” zorunlu, key eksikse 503
-  const secretKey = process.env.IYZICO_SECRET_KEY;
-  if (!secretKey) {
-    console.error("IYZICO_SECRET_KEY not set â€” webhook disabled for security");
-    return NextResponse.json({ error: "webhook disabled" }, { status: 503 });
-  }
-  if (!merchantToken || !iyziReferenceCode) {
-    return NextResponse.json({ error: "Ä°mza parametreleri eksik" }, { status: 400 });
-  }
-  const crypto = await import("crypto");
-  const expected = crypto
-    .createHmac("sha256", secretKey)
-    .update(`${iyziReferenceCode}${conversationId ?? ""}${merchantToken}`)
-    .digest("base64");
-  if (expected !== merchantToken) {
-    console.warn("iyzico webhook imza doÄŸrulamasÄ± baÅŸarÄ±sÄ±z");
-    return NextResponse.json({ error: "Ä°mza geÃ§ersiz" }, { status: 403 });
+  let iyzico;
+  try {
+    iyzico = getIyzicoClient();
+  } catch (err) {
+    console.error("[iyzico callback] Client hatası:", err);
+    return NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=config`, { status: 303 });
   }
 
-  const newStatus = status === "SUCCESS" ? "paid" : "failed";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new Promise<NextResponse>((resolve) => {
+    iyzico.checkoutFormRetrieve.retrieve(
+      { token },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (err: any, result: any) => {
+        console.log("[iyzico callback] Retrieve sonucu:", JSON.stringify({
+          status: result?.status,
+          paymentStatus: result?.paymentStatus,
+          errorCode: result?.errorCode,
+          errorMessage: result?.errorMessage,
+          paymentId: result?.paymentId,
+        }));
 
-  const { error } = await supabaseAdmin
-    .from("orders")
-    .update({
-      status: newStatus,
-      payment_reference: paymentId,
-    })
-    .eq("iyzico_token", token);
+        if (err || result?.status !== "success") {
+          const detail = err?.message ?? result?.errorMessage ?? "retrieve başarısız";
+          console.error("[iyzico callback] Retrieve hatası:", detail);
+          await supabaseAdmin.from("orders").update({ status: "failed" }).eq("iyzico_token", token);
+          resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed`, { status: 303 }));
+          return;
+        }
 
-  if (error) {
-    console.error("Webhook order update error:", error);
-    return NextResponse.json({ error: "GÃ¼ncelleme hatasÄ±" }, { status: 500 });
-  }
+        const paymentStatus: string = result.paymentStatus ?? "";
+        const paymentId: string = result.paymentId ?? "";
+        const newStatus = paymentStatus === "SUCCESS" ? "paid" : "failed";
 
-  // Stok dÃ¼ÅŸÃ¼mÃ¼: paid sipariÅŸlerde
-  if (newStatus === "paid") {
-    const { data: order } = await supabaseAdmin
-      .from("orders")
-      .select("id")
-      .eq("iyzico_token", token)
-      .single();
+        const { error: updateErr } = await supabaseAdmin
+          .from("orders")
+          .update({ status: newStatus, payment_reference: paymentId || null })
+          .eq("iyzico_token", token);
 
-    if (order) {
-      const { data: items } = await supabaseAdmin
-        .from("order_items")
-        .select("product_id, size, quantity")
-        .eq("order_id", order.id);
+        if (updateErr) {
+          console.error("[iyzico callback] Order update hatası:", updateErr);
+        }
 
-      if (items) {
-        for (const item of items) {
-          await supabaseAdmin.rpc("decrement_stock", {
-            p_product_id: item.product_id,
-            p_size: item.size,
-            p_qty: item.quantity,
-          });
+        if (newStatus === "paid") {
+          const { data: order } = await supabaseAdmin
+            .from("orders")
+            .select("id")
+            .eq("iyzico_token", token)
+            .single();
+
+          if (order) {
+            const { data: items } = await supabaseAdmin
+              .from("order_items")
+              .select("product_id, size, quantity")
+              .eq("order_id", order.id);
+
+            if (items) {
+              for (const item of items) {
+                await supabaseAdmin.rpc("decrement_stock", {
+                  p_product_id: item.product_id,
+                  p_size: item.size,
+                  p_qty: item.quantity,
+                });
+              }
+            }
+          }
+          resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=success`, { status: 303 }));
+        } else {
+          resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed`, { status: 303 }));
         }
       }
-    }
-  }
-
-  return NextResponse.json({ received: true });
+    );
+  });
 }
-
