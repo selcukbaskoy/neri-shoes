@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
     "85.34.78.112";
 
   const priceStr = totalAmount.toFixed(2);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nerishoes.com.tr";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.nerishoes.com.tr";
 
   return new Promise<NextResponse>((resolve) => {
     iyzico.checkoutFormInitialize.create(

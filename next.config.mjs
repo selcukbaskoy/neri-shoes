@@ -8,10 +8,10 @@ const cspHeader = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' https:",
-  "connect-src 'self' https://*.supabase.co https://*.iyzipay.com",
+  "connect-src 'self' https://*.supabase.co https://*.iyzipay.com https://*.iyzico.com",
   "frame-src 'self' https://*.iyzipay.com",
   "frame-ancestors 'self'",
-  "form-action 'self'",
+  "form-action 'self' https://nerishoes.com.tr https://www.nerishoes.com.tr",
   "base-uri 'self'",
 ].join("; ");
 
