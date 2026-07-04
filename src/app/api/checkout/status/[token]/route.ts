@@ -24,7 +24,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
   }
 
   return new Promise<NextResponse>((resolve) => {
-    iyzico.checkoutFormRetrieve.retrieve({ token }, (err, result) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (iyzico as any).checkoutForm.retrieve({ token }, (err: any, result: any) => {
       if (err || result.status !== "success") {
         resolve(
           NextResponse.json(

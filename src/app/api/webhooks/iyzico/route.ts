@@ -41,8 +41,10 @@ export async function POST(req: NextRequest) {
   }
 
   return new Promise<NextResponse>((resolve) => {
+    try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    iyzico.checkoutFormRetrieve.retrieve({ token }, async (err: any, result: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (iyzico as any).checkoutForm.retrieve({ token }, async (err: any, result: any) => {
       try {
         console.log("[iyzico callback] Retrieve sonucu:", JSON.stringify({
           status: result?.status,
@@ -113,5 +115,9 @@ export async function POST(req: NextRequest) {
         resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=error`, { status: 303 }));
       }
     });
+    } catch (sdkErr) {
+      console.error("[iyzico callback] SDK sync hatası:", sdkErr);
+      resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=sdk`, { status: 303 }));
+    }
   });
 }
