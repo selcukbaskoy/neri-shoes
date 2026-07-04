@@ -133,7 +133,7 @@ export default function Footer({ whatsappNumber }: { whatsappNumber: string }) {
         {/* Ödeme logoları */}
         <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:justify-center">
           <span className="text-xs uppercase tracking-[0.12em] text-accent/40">{t("securePayment")}</span>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Image
               src="/payment-logos/logo_band_colored.svg"
               alt="Visa Mastercard"
