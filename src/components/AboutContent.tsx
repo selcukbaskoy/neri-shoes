@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
@@ -130,7 +130,7 @@ export default function AboutContent({ whatsappNumber }: { whatsappNumber: strin
   const t = useTranslations("about");
   const tWa = useTranslations("whatsapp");
   const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
-  const heroChars = Array.from(t("heroTitle"));
+  const heroWords = t("heroTitle").split(" ");
 
   const iconCards = [
     { icon: <LeatherIcon />, text: t("icon1") },
@@ -161,10 +161,15 @@ export default function AboutContent({ whatsappNumber }: { whatsappNumber: strin
           animate="visible"
           aria-label={t("heroTitle")}
         >
-          {heroChars.map((char, i) => (
-            <motion.span key={i} variants={heroLetter} className="inline-block">
-              {char === " " ? " " : char}
-            </motion.span>
+          {heroWords.map((word, wi) => (
+            <span key={wi} className="whitespace-nowrap">
+              {Array.from(word).map((char, ci) => (
+                <motion.span key={ci} variants={heroLetter} className="inline-block">
+                  {char}
+                </motion.span>
+              ))}
+              {wi < heroWords.length - 1 && " "}
+            </span>
           ))}
         </motion.h1>
 
