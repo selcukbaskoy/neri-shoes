@@ -105,7 +105,7 @@ export default function HomeContent({ featured, stocksMap, rates, whatsappNumber
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: shouldReduceMotion ? 0.01 : 1.4, delay: shouldReduceMotion ? 0 : 1.8 }}
-            className="strip-mask pointer-events-none absolute bottom-20 left-0 w-full overflow-hidden"
+            className="strip-mask pointer-events-none absolute bottom-20 left-0 z-[1] w-full overflow-hidden"
             aria-hidden="true"
           >
             <div
