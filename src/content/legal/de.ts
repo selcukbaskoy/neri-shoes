@@ -269,7 +269,6 @@ export const distanceSalesContract: LegalDocument = {
       id: "garanti",
       heading: "6. Garantie",
       body: [
-        "Verkaufte Produkte sind durch eine gesetzliche Garantie von 2 (zwei) Jahren abgedeckt.",
         "Bei herstellungsbedingten Mängeln erfolgt eine kostenlose Reparatur oder ein Austausch.",
         "Normaler Verschleiß ist von der Garantie ausgeschlossen.",
       ],

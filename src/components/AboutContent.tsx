@@ -155,7 +155,7 @@ export default function AboutContent({ whatsappNumber }: { whatsappNumber: strin
         <div className="pointer-events-none absolute inset-0 product-pattern opacity-20" />
 
         <motion.h1
-          className="relative z-10 font-serif text-3xl font-bold leading-tight text-white md:text-5xl lg:text-6xl"
+          className="relative z-10 font-serif text-2xl font-bold leading-tight text-white sm:text-3xl md:text-5xl lg:text-6xl"
           variants={heroContainer}
           initial="hidden"
           animate="visible"

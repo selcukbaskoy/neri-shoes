@@ -269,7 +269,6 @@ export const distanceSalesContract: LegalDocument = {
       id: "garanti",
       heading: "6. Garanzia",
       body: [
-        "I prodotti venduti sono coperti da una garanzia legale di 2 (due) anni.",
         "I prodotti difettosi dovuti a difetti di produzione sono idonei a riparazione o sostituzione gratuita.",
         "L'usura normale è esclusa dalla garanzia.",
       ],

@@ -170,7 +170,6 @@ export default function Footer({ whatsappNumber }: { whatsappNumber: string }) {
               {t("distanceSales")}
             </Link>
           </div>
-          <span className="font-serif italic text-[#444]">Made with craft &amp; passion</span>
         </div>
       </div>
     </footer>

@@ -297,20 +297,13 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
                 {loading ? t("processing") : t("proceedToPayment")}
               </button>
 
-              <div className="flex flex-col items-center gap-2 pt-2">
+              <div className="flex items-center justify-center pt-2">
                 <Image
                   src="/payment-logos/pay_with_iyzico_white.svg"
                   alt="iyzico ile güvenli öde"
                   width={140}
                   height={32}
                   className="h-8 w-auto opacity-60"
-                />
-                <Image
-                  src="/payment-logos/logo_band_colored.svg"
-                  alt="Visa Mastercard"
-                  width={130}
-                  height={24}
-                  className="h-6 w-auto opacity-50"
                 />
               </div>
             </form>

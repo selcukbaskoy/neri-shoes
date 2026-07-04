@@ -280,7 +280,6 @@ export const distanceSalesContract: LegalDocument = {
       id: "garanti",
       heading: "6. Garanti",
       body: [
-        "Satılan ürünler 2 (iki) yıl yasal garanti kapsamındadır.",
         "Üretim kaynaklı ayıplı ürünlerde ücretsiz onarım veya değişim yapılır.",
         "Normal aşınma ve yıpranma garanti kapsamı dışındadır.",
       ],

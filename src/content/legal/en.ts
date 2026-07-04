@@ -269,7 +269,6 @@ export const distanceSalesContract: LegalDocument = {
       id: "garanti",
       heading: "6. Warranty",
       body: [
-        "Products sold are covered by a 2 (two) year statutory warranty.",
         "Defective products resulting from manufacturing are eligible for free repair or replacement.",
         "Normal wear and tear is excluded from the warranty.",
       ],
