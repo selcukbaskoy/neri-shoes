@@ -201,7 +201,7 @@ export default function Header({ whatsappNumber }: { whatsappNumber: string }) {
             })}
           </nav>
           <div className="mt-4 flex items-center justify-between">
-            <LanguageSwitcher />
+            <LanguageSwitcher side="left" />
             <div className="flex items-center gap-2">
               <a
                 href={whatsappLink}

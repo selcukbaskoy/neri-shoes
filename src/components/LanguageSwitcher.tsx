@@ -14,7 +14,7 @@ const FLAGS: Record<Locale, string> = {
   ru: "🇷🇺",
 };
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ side = "right" }: { side?: "left" | "right" }) {
   const t = useTranslations("languages");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
@@ -54,7 +54,7 @@ export default function LanguageSwitcher() {
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-44 rounded-md border border-[#333] bg-surface py-1 shadow-lg">
+        <div className={`absolute ${side === "left" ? "left-0" : "right-0"} z-50 mt-2 w-44 rounded-md border border-[#333] bg-surface py-1 shadow-lg`}>
           {locales.map((loc) => (
             <button
               key={loc}
