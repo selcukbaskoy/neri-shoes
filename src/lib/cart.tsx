@@ -55,7 +55,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setItems(JSON.parse(stored) as CartItem[]);
+      if (stored) {
+        const parsed = JSON.parse(stored) as CartItem[];
+        // Sanitize: drop old-format items that lack unitPrice (would cause NaN totals)
+        const valid = parsed.filter(
+          (item) =>
+            item.productId &&
+            item.productName &&
+            typeof item.unitPrice === "number" &&
+            !isNaN(item.unitPrice)
+        );
+        setItems(valid);
+      }
     } catch {}
     setHydrated(true);
   }, []);
