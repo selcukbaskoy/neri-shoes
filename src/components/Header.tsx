@@ -11,7 +11,9 @@ import WhatsAppIcon from "./icons/WhatsAppIcon";
 import InstagramIcon from "./icons/InstagramIcon";
 import TiktokIcon from "./icons/TiktokIcon";
 import CartIcon from "./icons/CartIcon";
+import UserIcon from "./icons/UserIcon";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth-context";
 
 const INSTAGRAM_URL = "https://www.instagram.com/nerishoess/";
 const TIKTOK_URL = "https://www.tiktok.com/@nerishoes.outlet";
@@ -19,10 +21,14 @@ const TIKTOK_URL = "https://www.tiktok.com/@nerishoes.outlet";
 export default function Header({ whatsappNumber }: { whatsappNumber: string }) {
   const t = useTranslations("nav");
   const tWa = useTranslations("whatsapp");
+  const tAuth = useTranslations("auth");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { totalCount, setOpen: setCartOpen } = useCart();
+  const { user } = useAuth();
+  const accountHref = user ? "/hesap" : "/giris";
+  const accountLabel = user ? tAuth("myAccount") : tAuth("login");
   const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
 
   useEffect(() => {
@@ -107,6 +113,15 @@ export default function Header({ whatsappNumber }: { whatsappNumber: string }) {
           >
             <TiktokIcon className="h-4 w-4" />
           </a>
+          {/* Account icon: girişli → /hesap, girişsiz → /giris */}
+          <Link
+            href={accountHref}
+            aria-label={accountLabel}
+            title={accountLabel}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-accent/60 text-accent transition-all duration-300 hover:border-accent hover:bg-accent hover:text-black hover:shadow-[0_0_15px_rgba(255,208,0,0.5)]"
+          >
+            <UserIcon className="h-4 w-4" />
+          </Link>
           {/* Cart icon with badge */}
           <button
             type="button"
@@ -132,6 +147,15 @@ export default function Header({ whatsappNumber }: { whatsappNumber: string }) {
           </button>
         </div>
 
+        {/* Mobile account icon */}
+        <Link
+          href={accountHref}
+          aria-label={accountLabel}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-accent/60 text-accent transition-all duration-300 hover:border-accent hover:bg-accent hover:text-black md:hidden"
+          onClick={() => setOpen(false)}
+        >
+          <UserIcon className="h-4 w-4" />
+        </Link>
         {/* Mobile cart icon */}
         <button
           type="button"

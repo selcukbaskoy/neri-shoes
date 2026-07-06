@@ -42,23 +42,48 @@ test.describe("iyzico Ödeme Formu Stabilite", () => {
   test.beforeAll(async () => {
     admin = makeAdmin();
 
-    // Test ürünü ekle
-    await admin.from("products").upsert({
-      id: STABILITY_PRODUCT_ID,
-      name: "Stabilite Test Ayakkabısı",
-      slug: STABILITY_SLUG,
-      description: "E2E stabilite testi için",
-      price: STABILITY_PRICE,
-      category: "kadin",
-      images: [],
-      details: {},
-    });
+    // Test ürünü ekle (products şemasına uygun — description/details kolonu yok)
+    const { error: productErr } = await admin.from("products").upsert(
+      {
+        id: STABILITY_PRODUCT_ID,
+        slug: STABILITY_SLUG,
+        name: "Stabilite Test Ayakkabısı",
+        category: "klasik",
+        image: "/logo.jpeg",
+        images: ["/logo.jpeg"],
+        wholesale: false,
+        retail: true,
+        featured: false,
+        is_active: true,
+        price: STABILITY_PRICE,
+        compare_at_price: null,
+        discount_percentage: null,
+        sku: "E2E-STAB-001",
+        translation_status: "completed",
+        content: {
+          tr: {
+            shortDescription: "E2E stabilite testi için",
+            description: "Bu ürün otomatik test amaçlıdır.",
+            features: [],
+            styling: [],
+          },
+        },
+      },
+      { onConflict: "id" }
+    );
+    if (productErr) throw new Error(`[Setup] Ürün eklenemedi: ${productErr.message}`);
 
-    await admin.from("product_stock").upsert({
+    await admin
+      .from("product_stock")
+      .delete()
+      .eq("product_id", STABILITY_PRODUCT_ID)
+      .eq("size", STABILITY_SIZE);
+    const { error: stockErr } = await admin.from("product_stock").insert({
       product_id: STABILITY_PRODUCT_ID,
       size: STABILITY_SIZE,
       quantity: 10,
     });
+    if (stockErr) throw new Error(`[Setup] Stok eklenemedi: ${stockErr.message}`);
   });
 
   test.afterAll(async () => {
@@ -144,6 +169,9 @@ test.describe("iyzico Ödeme Formu Stabilite", () => {
 
     await page.goto(`${BASE_URL}/tr/odeme`);
     await page.waitForLoadState("domcontentloaded");
+
+    // Sepet localStorage'dan hidrate olana kadar bekle (form görünmeli)
+    await page.locator('input[placeholder*="Ad"]').first().waitFor({ state: "visible", timeout: 10_000 });
 
     // iyzico container her zaman DOM'da olmalı (sadece gizli)
     const containerExists = await page.locator("#iyzico-payment-container").count();

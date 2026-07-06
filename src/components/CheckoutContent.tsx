@@ -7,8 +7,21 @@ import Image from "next/image";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/currency";
 import { Link } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 type Step = "form" | "payment" | "success" | "error";
+
+type SavedAddress = {
+  id: string;
+  title: string;
+  full_name: string;
+  phone: string | null;
+  address_line: string;
+  city: string;
+  district: string | null;
+  is_default: boolean;
+};
 
 interface FormData {
   name: string;
@@ -41,6 +54,9 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
   const [errorMsg, setErrorMsg] = useState("");
   const [devMode, setDevMode] = useState(false);
   const [checkoutHtml, setCheckoutHtml] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
   // useRef: re-render tetiklemez, AnimatePresence ile çakışmaz
   const iyzicoContainerRef = useRef<HTMLDivElement>(null);
@@ -79,6 +95,32 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
       }
     }
   }, [step]);
+
+  // Girişli müşteri: kayıtlı adresleri getir, e-postayı önceden doldur
+  useEffect(() => {
+    if (!user) return;
+    setForm((prev) => (prev.email ? prev : { ...prev, email: user.email ?? "" }));
+    const sb = getSupabaseBrowserClient();
+    sb.from("customer_addresses")
+      .select("id, title, full_name, phone, address_line, city, district, is_default")
+      .order("is_default", { ascending: false })
+      .then(({ data }) => setSavedAddresses(data ?? []));
+  }, [user]);
+
+  function applyAddress(addr: SavedAddress) {
+    const parts = addr.full_name.trim().split(/\s+/);
+    const surname = parts.length > 1 ? parts.pop()! : "";
+    setForm((prev) => ({
+      ...prev,
+      name: parts.join(" ") || addr.full_name,
+      surname,
+      phone: addr.phone || prev.phone,
+      address: addr.address_line,
+      city: addr.city,
+      district: addr.district ?? "",
+    }));
+    setSelectedAddressId(addr.id);
+  }
 
   // iyzico callback URL parametrelerini işle (payment_status=success/failed)
   useEffect(() => {
@@ -252,6 +294,27 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-accent">
                   {t("shippingInfo")}
                 </h2>
+                {savedAddresses.length > 0 && (
+                  <div className="mb-4">
+                    <p className={labelClass}>{t("savedAddresses")}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {savedAddresses.map((addr) => (
+                        <button
+                          key={addr.id}
+                          type="button"
+                          onClick={() => applyAddress(addr)}
+                          className={`rounded border px-3 py-2 text-xs transition-colors ${
+                            selectedAddressId === addr.id
+                              ? "border-accent bg-accent/10 text-accent"
+                              : "border-white/10 text-white/50 hover:border-accent/50 hover:text-white"
+                          }`}
+                        >
+                          {addr.title} — {addr.city}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="grid gap-4">
                   <div>
                     <label className={labelClass}>{t("address")}</label>

@@ -33,6 +33,14 @@
     "terms": {
       "title": "Termini di Utilizzo | Neri Shoes",
       "description": "Termini e condizioni d'uso del sito web Neri Shoes, diritti di proprietà intellettuale e regolamenti legali."
+    },
+    "delivery": {
+      "title": "Teslimat ve İade Şartları | Neri Shoes",
+      "description": "Neri Shoes teslimat süreleri, iade koşulları ve 14 günlük cayma hakkı hakkında bilgi edinin."
+    },
+    "distanceSales": {
+      "title": "Mesafeli Satış Sözleşmesi | Neri Shoes",
+      "description": "6502 sayılı Kanun kapsamında Neri Shoes mesafeli satış sözleşmesi ve tüketici hakları."
     }
   },
   "nav": {
@@ -326,11 +334,99 @@
     "goToProducts": "Torna ai prodotti",
     "cityPlaceholder": "Milano",
     "district": "Distretto",
-    "districtPlaceholder": "Kadıköy"
+    "districtPlaceholder": "Kadıköy",
+    "savedAddresses": "I miei indirizzi salvati"
   },
   "whatsapp": {
     "productInfo": "Ciao, vorrei avere informazioni sul modello {productName}.",
     "wholesale": "Ciao, vorrei ricevere il listino prezzi all'ingrosso per il modello {productName}.",
     "generalContact": "Ciao, vorrei avere informazioni sui prodotti di Neri Shoes."
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Hesap Oluştur",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifre Tekrar",
+    "fullName": "Ad Soyad",
+    "forgotPassword": "Şifremi Unuttum",
+    "sendResetLink": "Sıfırlama Bağlantısı Gönder",
+    "backToLogin": "Girişe Dön",
+    "loginSuccess": "Hoş geldiniz!",
+    "registerSuccess": "Hesabınız oluşturuldu. E-postanızı doğrulamak için gelen kutusuzu kontrol edin.",
+    "resetEmailSent": "Şifre sıfırlama bağlantısı e-postanıza gönderildi.",
+    "invalidCredentials": "E-posta veya şifre hatalı.",
+    "emailAlreadyUsed": "Bu e-posta adresi zaten kullanımda.",
+    "emailRequired": "E-posta zorunludur.",
+    "passwordMinLength": "Şifre en az 8 karakter olmalıdır.",
+    "passwordMismatch": "Şifreler eşleşmiyor.",
+    "or": "veya",
+    "noAccount": "Hesabınız yok mu?",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "logout": "Çıkış Yap",
+    "myAccount": "Hesabım",
+    "loginTab": "Giriş",
+    "registerTab": "Kayıt Ol",
+    "pageTitle": "Hesap",
+    "continueAsGuest": "Misafir olarak devam et"
+  },
+  "account": {
+    "title": "Hesabım",
+    "hello": "Merhaba",
+    "orders": "Siparişlerim",
+    "addresses": "Adres Defterim",
+    "profile": "Profil Bilgileri",
+    "noOrders": "Henüz siparişiniz bulunmuyor.",
+    "shopNow": "Alışverişe Başla",
+    "orderNumber": "Sipariş #",
+    "orderDate": "Tarih",
+    "orderTotal": "Toplam",
+    "orderStatus": "Durum",
+    "orderItems": "Ürünler",
+    "viewOrder": "Detay",
+    "status": {
+      "pending": "Bekliyor",
+      "paid": "Ödendi",
+      "processing": "Hazırlanıyor",
+      "shipped": "Kargoya Verildi",
+      "delivered": "Teslim Edildi",
+      "cancelled": "İptal Edildi",
+      "failed": "Başarısız"
+    },
+    "welcomeCoupon": "Hoş Geldin Kuponu",
+    "welcomeCouponDesc": "İlk siparişinizde kullanabileceğiniz %10 indirim kuponu kazandınız!",
+    "couponCode": "Kupon Kodunuz",
+    "noAddresses": "Kayıtlı adresiniz bulunmuyor.",
+    "addAddress": "Yeni Adres Ekle",
+    "editAddress": "Düzenle",
+    "deleteAddress": "Sil",
+    "setDefault": "Varsayılan Yap",
+    "defaultAddress": "Varsayılan",
+    "addressTitle": "Adres Başlığı",
+    "fullName": "Ad Soyad",
+    "phone": "Telefon",
+    "addressLine": "Açık Adres",
+    "city": "Şehir",
+    "district": "İlçe",
+    "saveAddress": "Adresi Kaydet",
+    "cancel": "İptal",
+    "profileName": "Ad Soyad",
+    "profileEmail": "E-posta",
+    "saveProfile": "Kaydet",
+    "changePassword": "Şifre Değiştir",
+    "currentPassword": "Mevcut Şifre",
+    "newPassword": "Yeni Şifre",
+    "updatePassword": "Şifreyi Güncelle",
+    "deleteAccount": "Hesabımı Sil",
+    "deleteAccountDesc": "Tüm kişisel verileriniz silinecek, siparişleriniz anonimleştirilecektir.",
+    "deleteAccountConfirm": "Bu işlem geri alınamaz. Devam etmek istediğinizden emin misiniz?",
+    "saving": "Kaydediliyor…",
+    "saved": "Kaydedildi",
+    "error": "Bir hata oluştu",
+    "nav": {
+      "orders": "Siparişlerim",
+      "addresses": "Adreslerim",
+      "profile": "Profilim"
+    }
   }
 }

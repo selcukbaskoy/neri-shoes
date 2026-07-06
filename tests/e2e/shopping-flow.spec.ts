@@ -245,8 +245,10 @@ test.describe("Alışveriş Akışı E2E", () => {
     const cartIcon = page.locator('[aria-label="Cart"]').first();
     await cartIcon.click();
 
-    // Panelde ürün adını bekle
-    await expect(page.getByText(TEST_PRODUCT_NAME)).toBeVisible({ timeout: 8_000 });
+    // Panelde ürün adını bekle (sayfadaki h1/breadcrumb ile karışmasın diye panele scope'lu)
+    await expect(
+      page.getByTestId("cart-panel").getByText(TEST_PRODUCT_NAME)
+    ).toBeVisible({ timeout: 8_000 });
     console.log("[Adım 5] ✓ Sepet paneli açıldı, ürün görünüyor");
 
     //
@@ -269,7 +271,7 @@ test.describe("Alışveriş Akışı E2E", () => {
     //
     console.log("[Adım 7] Müşteri bilgileri formu dolduruluyor...");
 
-    await page.getByPlaceholder("Adınız").fill("Test");
+    await page.getByPlaceholder("Adınız", { exact: true }).fill("Test");
     await page.getByPlaceholder("Soyadınız").fill("Kullanıcı");
     await page.getByPlaceholder("ornek@email.com").fill(TEST_EMAIL);
     await page.getByPlaceholder("05XX XXX XX XX").fill("05001234567");
@@ -300,7 +302,7 @@ test.describe("Alışveriş Akışı E2E", () => {
     // ╚══════════════════════════════════════════╝
     //
     console.log("[Adım 9] Başarılı ödeme simüle ediliyor...");
-    const simulateBtn = page.getByRole("button", { name: /Simüle Et/ });
+    const simulateBtn = page.getByRole("button", { name: /Başarılı .*Simüle Et/ });
     await expect(simulateBtn).toBeVisible({ timeout: 5_000 });
     await simulateBtn.click();
 

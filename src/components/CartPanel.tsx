@@ -49,6 +49,7 @@ export default function CartPanel({ rates }: { rates: Record<string, number> }) 
           {/* Panel */}
           <motion.div
             key="cart-panel"
+            data-testid="cart-panel"
             initial={{ x: isRTL ? "-100%" : "100%" }}
             animate={{ x: 0 }}
             exit={{ x: isRTL ? "-100%" : "100%" }}

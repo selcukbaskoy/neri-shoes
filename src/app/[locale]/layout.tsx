@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 import HtmlAttributes from "@/components/HtmlAttributes";
 import { getWhatsAppNumber } from "@/lib/whatsapp";
 import { CartProvider } from "@/lib/cart";
+import { AuthProvider } from "@/lib/auth-context";
 import CartPanel from "@/components/CartPanel";
 import { getExchangeRates } from "@/lib/currency";
 
@@ -108,16 +109,18 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <CartProvider>
-        <JsonLd data={organizationSchema} />
-        <HtmlAttributes locale={locale} />
-        <div className="flex min-h-screen flex-col">
-          <Header whatsappNumber={whatsappNumber} />
-          <main className="flex-1">{children}</main>
-          <Footer whatsappNumber={whatsappNumber} />
-          <CartPanel rates={exchangeRates} />
-        </div>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <JsonLd data={organizationSchema} />
+          <HtmlAttributes locale={locale} />
+          <div className="flex min-h-screen flex-col">
+            <Header whatsappNumber={whatsappNumber} />
+            <main className="flex-1">{children}</main>
+            <Footer whatsappNumber={whatsappNumber} />
+            <CartPanel rates={exchangeRates} />
+          </div>
+        </CartProvider>
+      </AuthProvider>
     </NextIntlClientProvider>
   );
 }

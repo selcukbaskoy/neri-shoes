@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getIyzicoClient } from "@/lib/iyzico";
 
 interface CartItem {
@@ -40,6 +41,18 @@ export async function POST(req: NextRequest) {
   const orderId = crypto.randomUUID();
   const conversationId = orderId;
 
+  // Girişli müşteri ise siparişi hesabına bağla (misafir checkout değişmez)
+  let authUserId: string | null = null;
+  try {
+    const supabase = await getSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    authUserId = user?.id ?? null;
+  } catch {
+    // Oturum okunamazsa misafir olarak devam et
+  }
+
   // 1. Siparişi veritabanına kaydet
   const { error: orderErr } = await supabaseAdmin.from("orders").insert({
     id: orderId,
@@ -52,6 +65,7 @@ export async function POST(req: NextRequest) {
     total_amount: totalAmount,
     status: "pending",
     payment_provider: "iyzico",
+    auth_user_id: authUserId,
   });
 
   if (orderErr) {
