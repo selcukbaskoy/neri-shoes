@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getIyzicoClient } from "@/lib/iyzico";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 // iyzico Checkout Form callback — tarayıcı formu olarak POST gelir (form-urlencoded)
 // Sadece `token` parametresi gelir; HMAC imzası bu akışta YOKTUR.
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest) {
           try {
             const { data: order } = await supabaseAdmin
               .from("orders")
-              .select("id")
+              .select("id, confirmation_email_sent_at")
               .eq("iyzico_token", token)
               .single();
 
@@ -102,9 +103,24 @@ export async function POST(req: NextRequest) {
                   });
                 }
               }
+
+              // Sipariş onay maili — ödeme akışını asla bloklamaz, hata sadece loglanır.
+              // confirmation_email_sent_at dolu ise (callback ikinci kez geldiyse) tekrar gönderilmez.
+              if (!order.confirmation_email_sent_at) {
+                const mailResult = await sendOrderConfirmationEmail(order.id);
+                if (mailResult.sent) {
+                  await supabaseAdmin
+                    .from("orders")
+                    .update({ confirmation_email_sent_at: new Date().toISOString() })
+                    .eq("id", order.id);
+                  console.log("[iyzico callback] Onay maili gönderildi:", mailResult.emailId);
+                } else {
+                  console.error("[iyzico callback] Onay maili gönderilemedi:", mailResult.error);
+                }
+              }
             }
           } catch (stockErr) {
-            console.error("[iyzico callback] Stok güncelleme hatası:", stockErr);
+            console.error("[iyzico callback] Stok/mail güncelleme hatası:", stockErr);
           }
           resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=success`, { status: 303 }));
         } else {
