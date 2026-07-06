@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase";
 
-const EMAIL_FROM = "Neri Shoes <info@nerishoes.com.tr>";
+const EMAIL_FROM = process.env.EMAIL_FROM ?? "Neri Shoes <info@nerishoes.com.tr>";
 const SITE_URL = "https://www.nerishoes.com.tr";
 
 let resendClient: Resend | null = null;
