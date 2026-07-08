@@ -64,6 +64,16 @@ export async function getProducts(): Promise<Product[]> {
   return (data ?? []).map(mapRow);
 }
 
+function deduplicateByColorFamily(products: Product[]): Product[] {
+  const seen = new Set<string>();
+  return products.filter((p) => {
+    if (!p.colorFamily) return true; // Tekil ürünler aynen kalır
+    if (seen.has(p.colorFamily)) return false; // Aile zaten temsil ediliyor
+    seen.add(p.colorFamily);
+    return true; // İlk temsilci tutulur
+  });
+}
+
 export async function getActiveProducts(): Promise<Product[]> {
   noStore();
   const { data, error } = await supabase
@@ -72,7 +82,7 @@ export async function getActiveProducts(): Promise<Product[]> {
     .eq("is_active", true)
     .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data ?? []).map(mapRow);
+  return deduplicateByColorFamily((data ?? []).map(mapRow));
 }
 
 export async function getActiveProductImages(limit = 12): Promise<string[]> {
@@ -106,12 +116,14 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
     .order("created_at", { ascending: false });
   if (e1) throw new Error(e1.message);
 
-  const featuredRows = (featuredData ?? []).filter(hasStock);
-  if (featuredRows.length >= limit) return featuredRows.slice(0, limit).map(mapRow);
+  const featuredProducts = deduplicateByColorFamily(
+    (featuredData ?? []).filter(hasStock).map(mapRow)
+  );
+  if (featuredProducts.length >= limit) return featuredProducts.slice(0, limit);
 
   // Priority 2: fill remaining slots with in-stock discounted active products
-  const needed = limit - featuredRows.length;
-  const excludeIds = (featuredData ?? []).map((p) => p.id);
+  const needed = limit - featuredProducts.length;
+  const excludeIds = featuredProducts.map((p) => p.id);
 
   const fillerBase = supabase
     .from("products")
@@ -127,8 +139,9 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
     : await fillerBase;
   if (e2) throw new Error(e2.message);
 
-  const inStockFiller = (fillerData ?? []).filter(hasStock).slice(0, needed);
-  return [...featuredRows, ...inStockFiller].map(mapRow);
+  const fillerProducts = (fillerData ?? []).filter(hasStock).map(mapRow);
+  const combined = [...featuredProducts, ...fillerProducts];
+  return deduplicateByColorFamily(combined).slice(0, limit);
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | undefined> {
