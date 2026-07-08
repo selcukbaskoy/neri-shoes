@@ -111,6 +111,8 @@
     "outOfStockMessage": "Bu ürün şu anda stokta bulunmamaktadır.",
     "availableSizesMessage": "Stokta kalan numaralar: {sizes}",
     "zoomImage": "Görseli büyüt",
+    "colorLabel": "Renk",
+    "colorOutOfStock": "Tükendi",
     "sortLabel": "Sıralama",
     "sortNewest": "Yeni",
     "sortPriceAsc": "Fiyat ↑",

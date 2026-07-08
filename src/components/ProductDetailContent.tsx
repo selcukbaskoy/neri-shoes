@@ -9,7 +9,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { Product, ProductContent } from "@/lib/types";
+import { Product, ProductContent, ColorSibling } from "@/lib/types";
+import ColorSwatches from "@/components/ColorSwatches";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
 
@@ -24,6 +25,7 @@ export default function ProductDetailContent({
   rates,
   regionalPrices = [],
   whatsappNumber,
+  siblings = [],
 }: {
   product: Product;
   content: ProductContent;
@@ -31,6 +33,7 @@ export default function ProductDetailContent({
   rates: Record<string, number>;
   regionalPrices?: RegionalPrice[];
   whatsappNumber: string;
+  siblings?: ColorSibling[];
 }) {
   const t = useTranslations("products");
   const tCart = useTranslations("cart");
@@ -102,6 +105,11 @@ export default function ProductDetailContent({
     setLightboxImg(activeImg);
     setLightboxOpen(true);
   }
+
+  useEffect(() => {
+    setActiveImg(0);
+    setSelectedSize(null);
+  }, [product.id]);
 
   useEffect(() => {
     if (!lightboxOpen) return;
@@ -369,6 +377,11 @@ export default function ProductDetailContent({
             <p className="text-sm italic text-muted/70">
               {t("outOfStockMessage")}
             </p>
+          )}
+
+          {/* Renk seçici */}
+          {siblings.length > 0 && (
+            <ColorSwatches siblings={siblings} currentSlug={product.slug} />
           )}
 
           {/* Beden seçici — yalnızca stoklu bedenler varsa */}

@@ -116,7 +116,9 @@
     "sortPriceAsc": "Price ↑",
     "sortPriceDesc": "Price ↓",
     "activeFilters": "{count} filters active",
-    "whatsappAria": "Ask about {name} on WhatsApp"
+    "whatsappAria": "Ask about {name} on WhatsApp",
+    "colorLabel": "Renk",
+    "colorOutOfStock": "Tükendi"
   },
   "about": {
     "title": "About Us",

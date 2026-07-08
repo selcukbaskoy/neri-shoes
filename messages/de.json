@@ -116,7 +116,9 @@
     "sortPriceAsc": "Preis ↑",
     "sortPriceDesc": "Preis ↓",
     "activeFilters": "{count} Filter aktiv",
-    "whatsappAria": "Über WhatsApp nach {name} fragen"
+    "whatsappAria": "Über WhatsApp nach {name} fragen",
+    "colorLabel": "Renk",
+    "colorOutOfStock": "Tükendi"
   },
   "about": {
     "title": "Über Uns",

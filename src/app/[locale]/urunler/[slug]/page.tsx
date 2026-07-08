@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { getActiveProducts, getProductBySlug, getProductContent, getProductMeta } from "@/lib/products";
+import { getActiveProducts, getProductBySlug, getProductContent, getProductMeta, getColorFamily } from "@/lib/products";
 import { getProductStock } from "@/lib/stock";
 import { getExchangeRates } from "@/lib/currency";
 import { getRegionalPrices } from "@/lib/regional-prices";
@@ -69,10 +69,11 @@ export default async function ProductDetailPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [stock, rates, regionalPrices] = await Promise.all([
+  const [stock, rates, regionalPrices, siblings] = await Promise.all([
     getProductStock(product.id),
     getExchangeRates(),
     getRegionalPrices(product.id),
+    product.colorFamily ? getColorFamily(product.colorFamily, product.id) : Promise.resolve([]),
   ]);
   const content = getProductContent(product, locale as Locale);
   const meta = getProductMeta(product, locale as Locale);
@@ -117,6 +118,7 @@ export default async function ProductDetailPage({ params }: Props) {
         rates={rates}
         regionalPrices={regionalPrices}
         whatsappNumber={getWhatsAppNumber()}
+        siblings={siblings}
       />
     </>
   );
