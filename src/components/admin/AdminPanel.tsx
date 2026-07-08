@@ -906,6 +906,7 @@ export default function AdminPanel({
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
+                    {p.colorName?.tr ? ` (${p.colorName.tr})` : ""}
                   </option>
                 ))}
               </select>
@@ -981,6 +982,9 @@ export default function AdminPanel({
                             className="text-accent hover:underline"
                           >
                             {p.name}
+                            {p.colorName?.tr ? (
+                              <span className="ml-1 text-muted/60">({p.colorName.tr})</span>
+                            ) : null}
                           </button>
                         </td>
                         <td className="p-3">
