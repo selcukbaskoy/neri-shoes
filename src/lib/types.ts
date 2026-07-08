@@ -27,6 +27,19 @@ export interface Product {
   discountPercentage?: number | null;
   sku?: string | null;
   is_active?: boolean;
+  colorFamily?: string | null;
+  colorName?: Partial<Record<Locale, string>> | null;
+  colorHex?: string | null;
+}
+
+export interface ColorSibling {
+  id: string;
+  slug: string;
+  name: string;
+  colorName?: Partial<Record<Locale, string>> | null;
+  colorHex?: string | null;
+  images: string[];
+  inStock: boolean;
 }
 
 export const PRODUCT_CATEGORIES: ProductCategory[] = [

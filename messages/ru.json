@@ -257,7 +257,12 @@
     "confirmDeleteBlog": "Вы уверены, что хотите удалить эту запись?",
     "blogSaved": "Запись сохранена! Нажмите 'Обработать переводы' для перевода на все языки.",
     "loginErrorRemaining": "Geçersiz şifre. {count} deneme hakkınız kaldı.",
-    "loginErrorLocked": "Çok fazla hatalı deneme. {mins} dakika sonra tekrar deneyin."
+    "loginErrorLocked": "Çok fazla hatalı deneme. {mins} dakika sonra tekrar deneyin.",
+    "colorFamilyLabel": "Renk Ailesi",
+    "colorNameLabel": "Renk Adı (TR)",
+    "colorHexLabel": "Renk Kodu",
+    "familyPreviewLabel": "Aile Önizleme",
+    "familyPreviewEmpty": "Bu ailede başka ürün yok."
   },
   "blog": {
     "title": "Блог",

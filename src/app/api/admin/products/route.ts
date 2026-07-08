@@ -141,6 +141,14 @@ export async function POST(request: NextRequest) {
   const skuRaw = formData.get("sku");
   const isActiveRaw = formData.get("is_active");
 
+  const colorFamilyRaw = formData.get("colorFamily");
+  const colorNameRaw = formData.get("colorName");
+  const colorHexRaw = formData.get("colorHex");
+
+  const colorFamily = colorFamilyRaw && String(colorFamilyRaw).trim() ? String(colorFamilyRaw).trim() : null;
+  const colorName = colorNameRaw && String(colorNameRaw).trim() ? { tr: String(colorNameRaw).trim() } : null;
+  const colorHex = colorHexRaw && String(colorHexRaw).trim() ? String(colorHexRaw).trim() : null;
+
   const newProduct: Product = {
     id: slug,
     slug,
@@ -160,6 +168,9 @@ export async function POST(request: NextRequest) {
     discountPercentage,
     sku: skuRaw && String(skuRaw).trim() ? String(skuRaw).trim() : null,
     is_active: isActiveRaw !== null ? isActiveRaw === "true" : true,
+    colorFamily,
+    colorName,
+    colorHex,
   };
 
   await saveProduct(newProduct);
@@ -224,6 +235,14 @@ export async function PUT(request: NextRequest) {
   const putSkuRaw = formData.get("sku");
   const putIsActiveRaw = formData.get("is_active");
 
+  const putColorFamilyRaw = formData.get("colorFamily");
+  const putColorNameRaw = formData.get("colorName");
+  const putColorHexRaw = formData.get("colorHex");
+
+  const putColorFamily = putColorFamilyRaw && String(putColorFamilyRaw).trim() ? String(putColorFamilyRaw).trim() : null;
+  const putColorName = putColorNameRaw && String(putColorNameRaw).trim() ? { tr: String(putColorNameRaw).trim() } : null;
+  const putColorHex = putColorHexRaw && String(putColorHexRaw).trim() ? String(putColorHexRaw).trim() : null;
+
   const updated: Product = {
     ...existing,
     name,
@@ -242,6 +261,9 @@ export async function PUT(request: NextRequest) {
     discountPercentage: putDiscountPercentage,
     sku: putSkuRaw && String(putSkuRaw).trim() ? String(putSkuRaw).trim() : null,
     is_active: putIsActiveRaw !== null ? putIsActiveRaw === "true" : (existing.is_active ?? true),
+    colorFamily: putColorFamily,
+    colorName: putColorName,
+    colorHex: putColorHex,
   };
 
   await updateProduct(updated);

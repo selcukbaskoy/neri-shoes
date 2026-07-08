@@ -1,6 +1,6 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { supabase, supabaseAdmin } from "./supabase";
-import { Product, ProductContent, Locale, ProductCategory } from "./types";
+import { Product, ProductContent, Locale, ProductCategory, ColorSibling } from "./types";
 
 function mapRow(row: Record<string, unknown>): Product {
   return {
@@ -22,6 +22,9 @@ function mapRow(row: Record<string, unknown>): Product {
     discountPercentage: row.discount_percentage != null ? Number(row.discount_percentage) : null,
     sku: row.sku != null ? String(row.sku) : null,
     is_active: row.is_active !== false,
+    colorFamily: row.color_family != null ? String(row.color_family) : null,
+    colorName: row.color_name as Product["colorName"] ?? null,
+    colorHex: row.color_hex != null ? String(row.color_hex) : null,
   };
 }
 
@@ -45,6 +48,9 @@ function toRow(p: Product) {
     discount_percentage: p.discountPercentage ?? null,
     sku: p.sku ?? null,
     is_active: p.is_active ?? true,
+    color_family: p.colorFamily ?? null,
+    color_name: p.colorName ?? null,
+    color_hex: p.colorHex ?? null,
   };
 }
 
@@ -135,6 +141,30 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data ? mapRow(data) : undefined;
+}
+
+export async function getColorFamily(family: string, excludeId: string): Promise<ColorSibling[]> {
+  noStore();
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, slug, name, color_name, color_hex, images, product_stock(quantity)")
+    .eq("color_family", family)
+    .eq("is_active", true)
+    .neq("id", excludeId);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row: Record<string, unknown>) => {
+    const stocks = (row.product_stock as Array<{ quantity: number }>) ?? [];
+    const inStock = stocks.reduce((sum, s) => sum + (s.quantity ?? 0), 0) > 0;
+    return {
+      id: row.id as string,
+      slug: row.slug as string,
+      name: row.name as string,
+      colorName: row.color_name as Partial<Record<Locale, string>> | null,
+      colorHex: row.color_hex as string | null,
+      images: (row.images as string[]) || [],
+      inStock,
+    };
+  });
 }
 
 export async function saveProduct(product: Product): Promise<void> {

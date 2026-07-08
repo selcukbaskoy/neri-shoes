@@ -269,7 +269,12 @@
     "statusDraft": "Taslak",
     "statusPublished": "Yayında",
     "confirmDeleteBlog": "Bu yazıyı silmek istediğinize emin misiniz?",
-    "blogSaved": "Yazı kaydedildi! Çeviriler için 'Çevirileri İşle' butonuna basın."
+    "blogSaved": "Yazı kaydedildi! Çeviriler için 'Çevirileri İşle' butonuna basın.",
+    "colorFamilyLabel": "Renk Ailesi",
+    "colorNameLabel": "Renk Adı (TR)",
+    "colorHexLabel": "Renk Kodu",
+    "familyPreviewLabel": "Aile Önizleme",
+    "familyPreviewEmpty": "Bu ailede başka ürün yok."
   },
   "notFound": {
     "title": "Sayfa Bulunamadı",

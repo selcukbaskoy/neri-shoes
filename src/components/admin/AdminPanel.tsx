@@ -26,6 +26,9 @@ const EMPTY_PRODUCT_FORM = {
   sku: "",
   price: "",
   compareAtPrice: "",
+  colorFamily: "",
+  colorName: "",
+  colorHex: "",
 };
 
 const EMPTY_BLOG_FORM = {
@@ -150,6 +153,9 @@ export default function AdminPanel({
       sku: product.sku ?? "",
       price: product.price != null ? String(product.price) : "",
       compareAtPrice: product.compareAtPrice != null ? String(product.compareAtPrice) : "",
+      colorFamily: product.colorFamily ?? "",
+      colorName: product.colorName?.tr ?? "",
+      colorHex: product.colorHex ?? "",
     });
     const existingUrls = product.images?.length ? product.images : [product.image];
     setImageItems(existingUrls.map((url) => ({ type: "existing" as const, url })));
@@ -257,6 +263,12 @@ export default function AdminPanel({
     if (skuVal) formData.set("sku", skuVal);
     if (priceVal) formData.set("price", priceVal);
     if (compareAtPriceVal) formData.set("compareAtPrice", compareAtPriceVal);
+    const colorFamilyVal = productForm.colorFamily.trim();
+    if (colorFamilyVal) formData.set("colorFamily", colorFamilyVal);
+    const colorNameVal = productForm.colorName.trim();
+    if (colorNameVal) formData.set("colorName", colorNameVal);
+    const colorHexVal = productForm.colorHex.trim();
+    if (colorHexVal) formData.set("colorHex", colorHexVal);
     const imageOrder: (string | null)[] = imageItems.map((item) =>
       item.type === "existing" ? item.url : null
     );
@@ -1112,6 +1124,71 @@ export default function AdminPanel({
                   className="input-field min-h-24"
                 />
               </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm text-muted">{t("colorFamilyLabel")}</label>
+                  <input
+                    type="text"
+                    list="colorFamilyList"
+                    value={productForm.colorFamily}
+                    onChange={(e) => setProductForm({ ...productForm, colorFamily: e.target.value })}
+                    placeholder="örn: NS-Runner-314"
+                    className="input-field"
+                  />
+                  <datalist id="colorFamilyList">
+                    {Array.from(new Set(products.map((p) => p.colorFamily).filter((f): f is string => !!f))).map((f) => (
+                      <option key={f} value={f} />
+                    ))}
+                  </datalist>
+                  <p className="mt-1 text-[11px] text-muted/60">NS-{"{MODEL}"} formatı önerilir.</p>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm text-muted">{t("colorNameLabel")}</label>
+                  <input
+                    type="text"
+                    value={productForm.colorName}
+                    onChange={(e) => setProductForm({ ...productForm, colorName: e.target.value })}
+                    placeholder="örn: Siyah"
+                    className="input-field"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="block text-sm text-muted">{t("colorHexLabel")}</label>
+                <input
+                  type="color"
+                  value={productForm.colorHex || "#000000"}
+                  onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                  className="h-8 w-8 cursor-pointer rounded border-0 bg-transparent p-0"
+                />
+                <input
+                  type="text"
+                  value={productForm.colorHex}
+                  onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                  placeholder="#000000"
+                  className="input-field max-w-[120px]"
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                />
+              </div>
+              {(() => {
+                const familyPreview = productForm.colorFamily
+                  ? products.filter((p) => p.colorFamily === productForm.colorFamily && p.id !== productForm.id)
+                  : [];
+                if (familyPreview.length === 0) return null;
+                return (
+                  <div className="rounded border border-[#333] bg-[#111] p-3">
+                    <p className="mb-2 text-xs text-muted">{t("familyPreviewLabel")}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {familyPreview.map((p) => (
+                        <span key={p.id} className="rounded bg-[#222] px-2 py-1 text-xs text-foreground">
+                          {p.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </AccordionSection>
 
             {/* Section 2: Fiyat & Satış */}
