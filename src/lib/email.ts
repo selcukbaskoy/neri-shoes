@@ -269,9 +269,70 @@ export async function sendOrderConfirmationEmail(orderId: string): Promise<Email
 // Gelecekte kullanılacak şablonlar (stub)
 // ============================================================
 
-export async function sendPostPurchaseCheckinEmail(_orderId: string): Promise<EmailResult> {
-  // Adım 8'te implemente edilecek
-  return { sent: false, error: "Not implemented" };
+export async function sendPostPurchaseCheckinEmail(orderId: string): Promise<EmailResult> {
+  try {
+    const { data: order, error: orderErr } = await (await import("@/lib/supabase")).supabaseAdmin
+      .from("orders")
+      .select("id, customer_name, customer_email, total_amount, created_at")
+      .eq("id", orderId)
+      .single();
+
+    if (orderErr || !order) {
+      return { sent: false, error: orderErr?.message ?? "Sipariş bulunamadı" };
+    }
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.nerishoes.com.tr";
+    const checkinUrl = `${siteUrl}/api/checkins/respond?orderId=${order.id}`;
+
+    const html = brandEmailTemplate({
+      subject: `Neri Shoes Siparişiniz — Memnun musunuz?`,
+      preheader: `Siparişiniz hakkında kısa bir geri bildirim rica ediyoruz.`,
+      bodyHtml: `
+        <p style="margin:0 0 24px; font-size:14px; line-height:1.6; color:#bbbbbb;">
+          Merhaba ${escapeHtml(order.customer_name || "Değerli Müşterimiz")},
+        </p>
+        <p style="margin:0 0 24px; font-size:14px; line-height:1.6; color:#bbbbbb;">
+          #${order.id.slice(0, 8).toUpperCase()} numaralı siparişiniz üzerinden bir hafta geçti.
+          Ürünlerimizden memnun kaldınız mı? Kısa bir yanıtınız bizim için çok değerli.
+        </p>
+
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:32px 0;">
+          <tr>
+            <td align="center">
+              <a href="${checkinUrl}&response=memnun" style="display:inline-block; padding:14px 32px; background-color:#1a1a1a; border:1px solid #333; border-radius:4px; color:#ffd700; font-size:13px; font-weight:600; text-decoration:none; text-transform:uppercase; letter-spacing:0.08em; margin-right:12px;">
+                ✓ Memnunum
+              </a>
+              <a href="${checkinUrl}&response=memnun_degil" style="display:inline-block; padding:14px 32px; background-color:#1a1a1a; border:1px solid #333; border-radius:4px; color:#bbbbbb; font-size:13px; font-weight:600; text-decoration:none; text-transform:uppercase; letter-spacing:0.08em;">
+                ✗ Memnun Değilim
+              </a>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:0; font-size:12px; line-height:1.6; color:#666666;">
+          Her iki durumda da size yardımcı olmaktan mutluluk duyarız.
+          Memnun kaldıysanız <a href="${siteUrl}/urunler" style="color:#ffd700; text-decoration:none; border-bottom:1px solid #ffd700;">diğer ürünlerimizi</a> inceleyebilir,
+          yardıma ihtiyacınız varsa <a href="https://wa.me/905443191977" style="color:#ffd700; text-decoration:none; border-bottom:1px solid #ffd700;">WhatsApp</a> üzerinden bize ulaşabilirsiniz.
+        </p>
+      `,
+    });
+
+    const { data, error } = await getResend().emails.send({
+      from: fromEmail,
+      to: order.customer_email,
+      subject: `Neri Shoes — Siparişiniz Hakkında Geri Bildirim`,
+      html,
+    });
+
+    if (error) {
+      return { sent: false, error: error.message };
+    }
+
+    return { sent: true, emailId: data?.id };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { sent: false, error: msg };
+  }
 }
 
 export async function sendStockAlertEmail(_productName: string, _email: string): Promise<EmailResult> {

@@ -115,6 +115,21 @@ export async function POST(req: NextRequest) {
                 }
               }
 
+              // Post-purchase check-in kaydı oluştur (+7 gün)
+              try {
+                const scheduledAt = new Date();
+                scheduledAt.setDate(scheduledAt.getDate() + 7);
+                await supabaseAdmin
+                  .from("post_purchase_checkins")
+                  .insert({
+                    order_id: order.id,
+                    scheduled_at: scheduledAt.toISOString(),
+                  });
+                console.log("[iyzico callback] Post-purchase check-in oluşturuldu:", order.id);
+              } catch (checkinErr) {
+                console.error("[iyzico callback] Check-in oluşturma hatası:", checkinErr);
+              }
+
               // Sipariş onay maili — ödeme akışını asla bloklamaz, hata sadece loglanır.
               // confirmation_email_sent_at dolu ise (callback ikinci kez geldiyse) tekrar gönderilmez.
               if (!order.confirmation_email_sent_at) {
