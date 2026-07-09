@@ -464,5 +464,31 @@
     "status.delivered": "Teslim Edildi",
     "status.cancelled": "İptal Edildi",
     "status.failed": "Başarısız"
+  },
+  "reviews": {
+    "reviewsTitle": "Değerlendirmeler",
+    "basedOn": "{count} değerlendirmeye göre",
+    "verifiedPurchases": "doğrulanmış satın alım",
+    "verified": "Doğrulanmış Satın Alım",
+    "writeReview": "Değerlendirme Yaz",
+    "cancel": "İptal",
+    "yourRating": "Puanınız",
+    "yourReview": "Yorumunuz",
+    "reviewPlaceholder": "{productName} hakkındaki deneyiminizi paylaşın...",
+    "addPhotos": "Fotoğraf / Video Ekle",
+    "uploadPhotos": "Yükle",
+    "submitting": "Gönderiliyor...",
+    "submitReview": "Değerlendirmeyi Gönder",
+    "submitSuccess": "Değerlendirmeniz alındı!",
+    "submitSuccessDesc": "Yorumunuz incelendikten sonra yayınlanacaktır.",
+    "noReviews": "Henüz değerlendirme yapılmamış.",
+    "fileTooLarge": "Dosya 5MB limitini aşıyor.",
+    "invalidFileType": "Desteklenmeyen dosya formatı.",
+    "maxImages": "En fazla {max} dosya yükleyebilirsiniz.",
+    "notAuthenticated": "Oturum açmanız gerekiyor.",
+    "ratingRequired": "Lütfen puan seçin.",
+    "commentRequired": "Lütfen yorum yazın.",
+    "submitError": "Gönderim başarısız.",
+    "linkGuestOrders": "Misafir Siparişlerini Eşleştir"
   }
 }

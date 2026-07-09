@@ -11,6 +11,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Product, ProductContent, ColorSibling } from "@/lib/types";
 import ColorSwatches from "@/components/ColorSwatches";
+import ProductReviews from "@/components/ProductReviews";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
 
@@ -635,6 +636,8 @@ export default function ProductDetailContent({
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Yorumlar */}
+      <ProductReviews productId={product.id} productName={product.name} />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Product, ProductCategory, PRODUCT_CATEGORIES, BlogPost, BlogCategory, BLOG_CATEGORIES } from "@/lib/types";
+import AdminReviews from "./AdminReviews";
 
 const MAX_IMAGES = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -51,7 +52,7 @@ export default function AdminPanel({
   const tb = useTranslations("blog");
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"products" | "blog" | "stock">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "blog" | "stock" | "reviews">("products");
 
   // ─── Products state ───────────────────────────────────────────────────────
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -620,7 +621,7 @@ export default function AdminPanel({
 
       {/* Tab switcher */}
       <div className="mb-6 flex gap-2 border-b border-[#222]">
-        {(["products", "blog", "stock"] as const).map((tab) => (
+        {(["products", "blog", "stock", "reviews"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -635,7 +636,9 @@ export default function AdminPanel({
               ? t("productsTabTitle")
               : tab === "blog"
               ? t("blogTabTitle")
-              : "Stok Yönetimi"}
+              : tab === "stock"
+              ? "Stok Yönetimi"
+              : "Yorumlar"}
           </button>
         ))}
       </div>
@@ -1004,6 +1007,17 @@ export default function AdminPanel({
               </table>
             </div>
           </div>
+        </>
+      )}
+
+      {/* ─── Reviews Tab ─────────────────────────────────────────────────────── */}
+      {activeTab === "reviews" && (
+        <>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">Yorum Moderasyonu</h2>
+            <p className="text-xs text-muted">Onaysız yorumlar siteye yansımaz.</p>
+          </div>
+          <AdminReviews />
         </>
       )}
 
