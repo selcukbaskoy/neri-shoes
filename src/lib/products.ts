@@ -156,6 +156,21 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
   return data ? mapRow(data) : undefined;
 }
 
+export async function getSimilarProducts(category: ProductCategory, excludeId: string, limit = 4): Promise<Product[]> {
+  noStore();
+  const { data, error } = await supabase
+    .from("products")
+    .select("*, product_stock(quantity)")
+    .eq("category", category)
+    .eq("is_active", true)
+    .neq("id", excludeId)
+    .order("created_at", { ascending: false })
+    .limit(limit + 4);
+
+  if (error) throw new Error(error.message);
+  return deduplicateByColorFamily((data ?? []).filter(hasStock).map(mapRow)).slice(0, limit);
+}
+
 export async function getColorFamily(family: string, excludeId: string): Promise<ColorSibling[]> {
   noStore();
   const { data, error } = await supabase
