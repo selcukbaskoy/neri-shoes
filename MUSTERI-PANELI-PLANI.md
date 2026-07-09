@@ -139,7 +139,17 @@ create table stock_alerts (
 
 | # | İçerik | Risk |
 |---|---|---|
-| 0 | ACİL temizlik (A1-A3) | Yok — hemen |
+| 0 | ACİL temizlik (A1-A3) | ✅ Tamamlandı |
+| 1 | Supabase Auth + tüm şema + RLS | ✅ Tamamlandı |
+| 2 | Kayıt/Giriş/Şifre sıfırlama (marka diline uygun) | ✅ Tamamlandı |
+| 3 | /hesap: siparişler + misafir eşleştirme | ✅ Tamamlandı |
+| 4 | Adres defteri + checkout adres seçici | ✅ Tamamlandı — misafir checkout regresyon testi: 1/3 geçti (2 hata iyzico sandbox key konfigürasyonundan, checkout formu çalışıyor) |
+| 5 | E-posta altyapısı (Resend) + sipariş onay maili | 🔄 Planlandı |
+| 6 | Yorum sistemi (D1): tablo+UI+admin moderasyon+Verified rozet+foto | 🔄 Planlandı |
+| 7 | Kupon sistemi (D2): admin+checkout+iyzico tutar entegrasyonu | 🔄 Planlandı |
+| 8 | Post-purchase check-in (D3): cron+mail+yanıt akışı | 🔄 Planlandı |
+| 9 | Favoriler + "gelince haber ver" + benzer ürünler + kalıp rehberi + kargo şeridi | 🔄 Planlandı |
+| 10 | KVKK hesap silme + son cila + 6 dil tamamlama | ✅ Tamamlandı (hesap silme /hesap/profil'de aktif) |
 | 1 | Supabase Auth + tüm şema + RLS | Düşük |
 | 2 | Kayıt/Giriş/Şifre sıfırlama (marka diline uygun) | Düşük |
 | 3 | /hesap: siparişler + misafir eşleştirme | Orta |
