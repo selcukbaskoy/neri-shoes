@@ -60,7 +60,7 @@ Call log:
   - heading "Ödeme" [level=1]
   - img
   - heading "Ödeme Başarısız" [level=2]
-  - paragraph: "Ödeme başlatılamadı: api bilgileri bulunamadı"
+  - paragraph: Sipariş oluşturulamadı
   - button "Tekrar Dene"
 - contentinfo:
   - link "Neri Shoes NERI SHOES":

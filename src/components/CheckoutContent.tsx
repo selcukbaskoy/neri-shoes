@@ -8,18 +8,16 @@ import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/currency";
 import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { getAddresses } from "@/lib/customer-client";
 
 type Step = "form" | "payment" | "success" | "error";
 
 type SavedAddress = {
   id: string;
   title: string;
-  full_name: string;
-  phone: string | null;
-  address_line: string;
+  full_address: string;
   city: string;
-  district: string | null;
+  district: string;
   is_default: boolean;
 };
 
@@ -96,28 +94,21 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
     }
   }, [step]);
 
-  // Girişli müşteri: kayıtlı adresleri getir, e-postayı önceden doldur
+  // Girişli müşteri: kayıtlı adresleri API'den getir, e-postayı önceden doldur
   useEffect(() => {
     if (!user) return;
     setForm((prev) => (prev.email ? prev : { ...prev, email: user.email ?? "" }));
-    const sb = getSupabaseBrowserClient();
-    sb.from("customer_addresses")
-      .select("id, title, full_name, phone, address_line, city, district, is_default")
-      .order("is_default", { ascending: false })
-      .then(({ data }) => setSavedAddresses(data ?? []));
+    getAddresses()
+      .then((data) => setSavedAddresses(data.addresses ?? []))
+      .catch((err) => console.error("[checkout] Adres yükleme hatası:", err));
   }, [user]);
 
   function applyAddress(addr: SavedAddress) {
-    const parts = addr.full_name.trim().split(/\s+/);
-    const surname = parts.length > 1 ? parts.pop()! : "";
     setForm((prev) => ({
       ...prev,
-      name: parts.join(" ") || addr.full_name,
-      surname,
-      phone: addr.phone || prev.phone,
-      address: addr.address_line,
+      address: addr.full_address,
       city: addr.city,
-      district: addr.district ?? "",
+      district: addr.district,
     }));
     setSelectedAddressId(addr.id);
   }
@@ -136,7 +127,7 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
       setStep("error");
       window.history.replaceState({}, "", window.location.pathname);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (items.length === 0 && step === "form") {
@@ -294,6 +285,7 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
                 <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-accent">
                   {t("shippingInfo")}
                 </h2>
+                {/* === ADRES SEÇİCİ (sadece girişli kullanıcılar) === */}
                 {savedAddresses.length > 0 && (
                   <div className="mb-4">
                     <p className={labelClass}>{t("savedAddresses")}</p>
@@ -306,10 +298,13 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
                           className={`rounded border px-3 py-2 text-xs transition-colors ${
                             selectedAddressId === addr.id
                               ? "border-accent bg-accent/10 text-accent"
-                              : "border-white/10 text-white/50 hover:border-accent/50 hover:text-white"
+                              : "border-[#333] text-muted hover:border-accent/50 hover:text-foreground"
                           }`}
                         >
                           {addr.title} — {addr.city}
+                          {addr.is_default && (
+                            <span className="ml-1 text-[10px] text-accent/60">• Varsayılan</span>
+                          )}
                         </button>
                       ))}
                     </div>
