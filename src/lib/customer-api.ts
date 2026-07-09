@@ -159,19 +159,23 @@ export async function createCustomerAddress(address: Omit<CustomerAddress, "id" 
   return data as CustomerAddress;
 }
 
-export async function updateCustomerAddress(id: string, address: Partial<CustomerAddress>): Promise<CustomerAddress> {
-  if (address.is_default && address.customer_id) {
+export async function updateCustomerAddress(id: string, customerId: string, address: Partial<CustomerAddress>): Promise<CustomerAddress> {
+  // customer_id'yi update payload'dan çıkar, ayrı parametre zorunlu
+  const { customer_id: _, ...safeAddress } = address as any;
+
+  if (safeAddress.is_default) {
     await supabaseAdmin
       .from("customer_addresses")
       .update({ is_default: false })
-      .eq("customer_id", address.customer_id)
+      .eq("customer_id", customerId)
       .neq("id", id);
   }
 
   const { data, error } = await supabaseAdmin
     .from("customer_addresses")
-    .update(address)
+    .update(safeAddress)
     .eq("id", id)
+    .eq("customer_id", customerId)
     .select()
     .single();
 
@@ -179,11 +183,12 @@ export async function updateCustomerAddress(id: string, address: Partial<Custome
   return data as CustomerAddress;
 }
 
-export async function deleteCustomerAddress(id: string): Promise<void> {
+export async function deleteCustomerAddress(id: string, customerId: string): Promise<void> {
   const { error } = await supabaseAdmin
     .from("customer_addresses")
     .delete()
-    .eq("id", id);
+    .eq("id", id)
+    .eq("customer_id", customerId);
   if (error) throw new Error(error.message);
 }
 

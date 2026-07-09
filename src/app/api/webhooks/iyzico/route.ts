@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { getIyzicoClient } from "@/lib/iyzico";
+import { getIyzicoClient, verifyIyzicoWebhookSignature } from "@/lib/iyzico";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 
 // iyzico Checkout Form callback — tarayıcı formu olarak POST gelir (form-urlencoded)
@@ -33,6 +33,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed&reason=no_token`, { status: 303 });
   }
 
+  const secretKey = process.env.IYZICO_SECRET_KEY?.trim();
+  if (!secretKey) {
+    console.error("[iyzico webhook] IYZICO_SECRET_KEY eksik");
+    return NextResponse.json({ error: "webhook disabled" }, { status: 503 });
+  }
+
+  // HMAC doğrulama (iyzico Checkout Form callback'te bu parametreler form-urlencoded olarak gelir)
+  const iyziReferenceCode = params.get("iyziReferenceCode");
+  const conversationId = params.get("conversationId");
+  const merchantToken = params.get("merchantToken");
+
+  if (iyziReferenceCode && conversationId && merchantToken) {
+    const valid = verifyIyzicoWebhookSignature(
+      iyziReferenceCode,
+      conversationId,
+      merchantToken,
+      secretKey
+    );
+    if (!valid) {
+      console.error("[iyzico webhook] HMAC doğrulama başarısız");
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+  }
+
   let iyzico;
   try {
     iyzico = getIyzicoClient();
@@ -58,6 +82,19 @@ export async function POST(req: NextRequest) {
         if (err || result?.status !== "success") {
           const detail = err?.message ?? result?.errorMessage ?? "retrieve başarısız";
           console.error("[iyzico callback] Retrieve hatası:", detail);
+          
+          // Idempotency: Zaten failed ise tekrar failed yapma (stok/kupon etkilenmemeli)
+          const { data: existingOrder } = await supabaseAdmin
+            .from("orders")
+            .select("status")
+            .eq("iyzico_token", token)
+            .single();
+          
+          if (existingOrder?.status === "failed") {
+            resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=failed`, { status: 303 }));
+            return;
+          }
+          
           try {
             await supabaseAdmin.from("orders").update({ status: "failed" }).eq("iyzico_token", token);
           } catch (dbErr) {
@@ -81,6 +118,19 @@ export async function POST(req: NextRequest) {
         }
 
         if (newStatus === "paid") {
+          // Idempotency: Sipariş zaten paid ise işlem yapma
+          const { data: existingOrder } = await supabaseAdmin
+            .from("orders")
+            .select("status")
+            .eq("iyzico_token", token)
+            .single();
+
+          if (existingOrder?.status === "paid") {
+            console.log("[iyzico webhook] Sipariş zaten paid, tekrar işlem yapılmıyor:", token);
+            resolve(NextResponse.redirect(`${origin}/tr/odeme?payment_status=success`, { status: 303 }));
+            return;
+          }
+          
           try {
             const { data: order } = await supabaseAdmin
               .from("orders")

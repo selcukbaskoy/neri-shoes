@@ -457,6 +457,23 @@ BEGIN
   UPDATE coupons SET used_count = used_count + 1 WHERE id = p_coupon_id;
 END;
 $$ LANGUAGE plpgsql;
+-- ============================================
+-- decrement_stock RPC: Sipariş sonrası stok düşürme
+-- ============================================
+CREATE OR REPLACE FUNCTION decrement_stock(
+  p_product_id UUID,
+  p_size INTEGER,
+  p_qty INTEGER
+) RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  UPDATE product_stock
+  SET quantity = GREATEST(0, quantity - p_qty)
+  WHERE product_id = p_product_id AND size = p_size;
+END;
+$$;
 
 -- ============================================================
 -- KURALLAR (Manuel kontrol listesi)

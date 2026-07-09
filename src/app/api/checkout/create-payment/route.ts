@@ -40,6 +40,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
   }
 
+  // Fiyat doğrulama: Client unitPrice ile DB price karşılaştır
+  for (const item of items) {
+    const { data: product } = await supabaseAdmin
+      .from("products")
+      .select("price")
+      .eq("id", item.productId)
+      .single();
+
+    const dbPrice = product?.price ?? 0;
+    if (dbPrice !== item.unitPrice) {
+      return NextResponse.json(
+        { error: "Fiyat uyuşmazlığı. Lütfen sayfayı yenileyin." },
+        { status: 400 }
+      );
+    }
+  }
+
   const totalAmount = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
 
   // Kupon doğrulama ve indirim hesaplama
@@ -112,7 +129,13 @@ export async function POST(req: NextRequest) {
     unit_price: item.unitPrice,
   }));
 
-  await supabaseAdmin.from("order_items").insert(orderItems);
+  const { error: itemsErr } = await supabaseAdmin.from("order_items").insert(orderItems);
+  if (itemsErr) {
+    console.error("[create-payment] Order items insert error:", itemsErr);
+    // Siparişi failed yap ve hata dön
+    await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", orderId);
+    return NextResponse.json({ error: "Sipariş kalemleri kaydedilemedi" }, { status: 500 });
+  }
 
   // 3. iyzico checkout form token al
   let iyzico;
@@ -141,7 +164,7 @@ export async function POST(req: NextRequest) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
     req.headers.get("x-real-ip") ??
-    "85.34.78.112";
+    "127.0.0.1";
 
   const priceStr = totalAmount.toFixed(2);
   const paidPriceStr = finalAmount.toFixed(2);

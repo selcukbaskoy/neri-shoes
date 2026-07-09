@@ -50,8 +50,6 @@ export default function SignUpPage() {
       return;
     }
 
-    // Supabase Auth confirmation email gönderirse (default), onay gerekir
-    // Eğer email confirmation kapalıysa direkt giriş yapılır
     if (data.session) {
       await refreshUser();
       router.push("/");

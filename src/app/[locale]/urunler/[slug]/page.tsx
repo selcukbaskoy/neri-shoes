@@ -81,6 +81,11 @@ export default async function ProductDetailPage({ params }: Props) {
   const canonicalUrl = `${SITE_URL}/${locale}/urunler/${slug}`;
   const primaryImage = product.images?.[0] ?? `${SITE_URL}/logo.jpeg`;
 
+  const isOutOfStock = stock.length > 0 && stock.every((s) => s.quantity === 0);
+  const availability = isOutOfStock
+    ? "https://schema.org/OutOfStock"
+    : "https://schema.org/InStock";
+
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -90,7 +95,7 @@ export default async function ProductDetailPage({ params }: Props) {
     brand: { "@type": "Brand", name: SITE_NAME },
     offers: {
       "@type": "Offer",
-      availability: "https://schema.org/InStock",
+      availability,
       priceCurrency: "TRY",
       url: canonicalUrl,
       seller: { "@type": "Organization", name: SITE_NAME },

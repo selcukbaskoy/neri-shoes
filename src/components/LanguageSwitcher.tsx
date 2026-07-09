@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { locales, type Locale } from "@/i18n/routing";
 
 const FLAGS: Record<Locale, string> = {
@@ -18,6 +18,7 @@ export default function LanguageSwitcher({ side = "right" }: { side?: "left" | "
   const t = useTranslations("languages");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -33,7 +34,7 @@ export default function LanguageSwitcher({ side = "right" }: { side?: "left" | "
 
   function handleSelect(nextLocale: Locale) {
     setOpen(false);
-    window.location.href = `/${nextLocale}${pathname}`;
+    router.replace(pathname, { locale: nextLocale });
   }
 
   return (

@@ -7,7 +7,6 @@ import { SITE_URL, SITE_NAME, localeToOgLocale } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import HtmlAttributes from "@/components/HtmlAttributes";
 import { getWhatsAppNumber } from "@/lib/whatsapp";
 import { CartProvider } from "@/lib/cart";
 import { AuthProvider } from "@/lib/auth-context";
@@ -112,7 +111,6 @@ export default async function LocaleLayout({
       <AuthProvider>
         <CartProvider>
           <JsonLd data={organizationSchema} />
-          <HtmlAttributes locale={locale} />
           <div className="flex min-h-screen flex-col">
             <Header whatsappNumber={whatsappNumber} />
             <main className="flex-1">{children}</main>

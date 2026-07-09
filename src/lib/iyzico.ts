@@ -1,4 +1,5 @@
 import Iyzipay from "iyzipay";
+import { createHmac, timingSafeEqual } from "crypto";
 
 export function getIyzicoClient(): Iyzipay {
   const apiKey = process.env.IYZICO_API_KEY?.trim();
@@ -25,10 +26,11 @@ export function verifyIyzicoWebhookSignature(
   merchantToken: string,
   secretKey: string
 ): boolean {
-  const crypto = require("crypto") as typeof import("crypto");
-  const hash = crypto
-    .createHmac("sha256", secretKey)
+  const hash = createHmac("sha256", secretKey)
     .update(`${iyziReferenceCode}${conversationId}${merchantToken}`)
     .digest("base64");
-  return hash === merchantToken;
+  const expected = Buffer.from(hash, "utf8");
+  const actual = Buffer.from(merchantToken, "utf8");
+  if (expected.length !== actual.length) return false;
+  return timingSafeEqual(expected, actual);
 }

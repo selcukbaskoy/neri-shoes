@@ -73,10 +73,7 @@ export async function PUT(req: NextRequest) {
     const customer = await getCustomerByAuthUserId(user.id);
     if (!customer) return NextResponse.json({ error: "Müşteri kaydı bulunamadı" }, { status: 404 });
 
-    const address = await updateCustomerAddress(id, {
-      ...body,
-      customer_id: customer.id,
-    });
+    const address = await updateCustomerAddress(id, customer.id, body);
 
     return NextResponse.json({ address });
   } catch (err) {
@@ -94,7 +91,10 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: "Adres ID gerekli" }, { status: 400 });
 
   try {
-    await deleteCustomerAddress(id);
+    const customer = await getCustomerByAuthUserId(user.id);
+    if (!customer) return NextResponse.json({ error: "Müşteri kaydı bulunamadı" }, { status: 404 });
+
+    await deleteCustomerAddress(id, customer.id);
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Bilinmeyen hata";
