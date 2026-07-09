@@ -145,7 +145,7 @@ create table stock_alerts (
 | 3 | /hesap: siparişler + misafir eşleştirme | ✅ Tamamlandı |
 | 4 | Adres defteri + checkout adres seçici | ✅ Tamamlandı — misafir checkout regresyon testi: 1/3 geçti (2 hata iyzico sandbox key konfigürasyonundan, checkout formu çalışıyor) |
 | 5 | E-posta altyapısı (Resend) + sipariş onay maili | ✅ Tamamlandı |
-| 6 | Yorum sistemi (D1): tablo+UI+admin moderasyon+Verified rozet+foto | 🔄 Planlandı |
+| 6 | Yorum sistemi (D1): tablo+UI+admin moderasyon+Verified rozet+foto | ✅ Tamamlandı |
 | 7 | Kupon sistemi (D2): admin+checkout+iyzico tutar entegrasyonu | 🔄 Planlandı |
 | 8 | Post-purchase check-in (D3): cron+mail+yanıt akışı | 🔄 Planlandı |
 | 9 | Favoriler + "gelince haber ver" + benzer ürünler + kalıp rehberi + kargo şeridi | 🔄 Planlandı |
