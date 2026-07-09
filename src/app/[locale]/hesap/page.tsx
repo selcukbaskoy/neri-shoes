@@ -1,97 +1,126 @@
-import { setRequestLocale } from "next-intl/server";
-import { getTranslations } from "next-intl/server";
-import { getSupabaseServerClient } from "@/lib/supabase-server";
-import { supabaseAdmin } from "@/lib/supabase";
-import { type Locale } from "@/lib/types";
-import { Link } from "@/i18n/navigation";
-import WelcomeCouponBanner from "@/components/auth/WelcomeCouponBanner";
+"use client";
 
-type Props = { params: Promise<{ locale: Locale }> };
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { motion } from "motion/react";
+import { useAuth } from "@/lib/auth-context";
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: "text-yellow-400",
-  paid: "text-accent",
-  processing: "text-blue-400",
-  shipped: "text-purple-400",
-  delivered: "text-green-400",
-  cancelled: "text-white/30",
-  failed: "text-red-400",
-};
+export default function AccountPage() {
+  const t = useTranslations("account");
+  const tAuth = useTranslations("auth");
+  const { user, loading, signOut, isAuthenticated } = useAuth();
+  const router = useRouter();
 
-export default async function HesapPage({ params }: Props) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "account" });
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/hesap/giris");
+    }
+  }, [loading, isAuthenticated, router]);
 
-  const supabase = await getSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Misafirken verilen siparişleri doğrulanmış e-posta ile hesaba bağla
-  if (user?.email && user.email_confirmed_at) {
-    await supabaseAdmin
-      .from("orders")
-      .update({ auth_user_id: user.id })
-      .eq("customer_email", user.email)
-      .is("auth_user_id", null);
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+      </div>
+    );
   }
 
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("id, created_at, total_amount, status, discount_amount")
-    .eq("auth_user_id", user!.id)
-    .order("created_at", { ascending: false });
+  if (!isAuthenticated) {
+    return null;
+  }
 
-  const isNewUser = !orders || orders.length === 0;
+  const userName = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || t("hello");
+
+  const cards = [
+    {
+      href: "/hesap/siparisler",
+      title: t("orders"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 text-accent" stroke="currentColor" strokeWidth="1.5">
+          <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+    {
+      href: "/hesap/adresler",
+      title: t("addresses"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 text-accent" stroke="currentColor" strokeWidth="1.5">
+          <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+    {
+      href: "/hesap/profil",
+      title: t("profile"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 text-accent" stroke="currentColor" strokeWidth="1.5">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      ),
+    },
+  ];
 
   return (
-    <div>
-      {isNewUser && <WelcomeCouponBanner />}
-
-      <h2 className="mb-6 text-lg font-medium text-white">{t("orders")}</h2>
-
-      {!orders || orders.length === 0 ? (
-        <div className="rounded border border-white/8 p-8 text-center">
-          <p className="mb-4 text-sm text-white/40">{t("noOrders")}</p>
-          <Link
-            href="/urunler"
-            className="inline-block bg-accent px-6 py-2.5 text-sm font-semibold text-[#0a0a0a] rounded hover:bg-accent/90 transition-colors"
-          >
-            {t("shopNow")}
-          </Link>
+    <div className="mx-auto max-w-4xl px-4 py-12">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-8"
+      >
+        <div className="text-center">
+          <h1 className="font-serif text-3xl text-foreground">
+            {t("hello")}, <span className="text-accent">{userName}</span>
+          </h1>
+          <p className="mt-2 text-sm text-muted">{user?.email}</p>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="rounded border border-white/8 bg-white/2 p-4 hover:border-white/15 transition-colors"
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {cards.map((card) => (
+            <Link
+              key={card.href}
+              href={card.href}
+              className="group flex items-center gap-4 rounded-lg border border-[#222] bg-[#0f0f0f] p-5 transition-all hover:border-accent/40 hover:shadow-[0_0_20px_rgba(255,208,0,0.08)]"
             >
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                  <p className="text-xs text-white/30">{t("orderNumber")}{order.id.substring(0, 8).toUpperCase()}</p>
-                  <p className="mt-0.5 text-sm text-white/60">
-                    {new Date(order.created_at).toLocaleDateString(locale, {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                </div>
-                <div className="flex items-center gap-6">
-                  <span className={`text-sm font-medium ${STATUS_COLORS[order.status] ?? "text-white/40"}`}>
-                    {t(`status.${order.status}` as keyof typeof t)}
-                  </span>
-                  <span className="text-sm font-semibold text-white">
-                    {Number(order.total_amount).toLocaleString("tr-TR")} ₺
-                  </span>
-                </div>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-accent/20 bg-accent/5 transition-colors group-hover:border-accent/40 group-hover:bg-accent/10">
+                {card.icon}
               </div>
-            </div>
+              <span className="text-sm font-semibold uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-accent">
+                {card.title}
+              </span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="ml-auto h-4 w-4 shrink-0 text-muted transition-colors group-hover:text-accent"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
           ))}
+
+          <button
+            onClick={async () => {
+              await signOut();
+              router.push("/");
+            }}
+            className="group flex items-center gap-4 rounded-lg border border-[#222] bg-[#0f0f0f] p-5 transition-all hover:border-red-500/40 hover:shadow-[0_0_20px_rgba(239,68,68,0.08)]"
+          >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-red-500/20 bg-red-500/5 transition-colors group-hover:border-red-500/40 group-hover:bg-red-500/10">
+              <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6 text-red-400" stroke="currentColor" strokeWidth="1.5">
+                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold uppercase tracking-[0.08em] text-foreground transition-colors group-hover:text-red-400">
+              {tAuth("logout")}
+            </span>
+          </button>
         </div>
-      )}
+      </motion.div>
     </div>
   );
 }
