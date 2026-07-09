@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
           try {
             const { data: order } = await supabaseAdmin
               .from("orders")
-              .select("id, confirmation_email_sent_at")
+              .select("id, confirmation_email_sent_at, coupon_id, customer_id, discount_amount")
               .eq("iyzico_token", token)
               .single();
 
@@ -101,6 +101,17 @@ export async function POST(req: NextRequest) {
                     p_size: item.size,
                     p_qty: item.quantity,
                   });
+                }
+              }
+
+              // Kupon kullanımını kaydet
+              if (order.coupon_id && order.discount_amount > 0) {
+                try {
+                  const { recordCouponRedemption } = await import("@/lib/coupon");
+                  await recordCouponRedemption(order.coupon_id, order.id, order.customer_id, order.discount_amount);
+                  console.log("[iyzico callback] Kupon kullanımı kaydedildi:", order.coupon_id);
+                } catch (couponErr) {
+                  console.error("[iyzico callback] Kupon kayıt hatası:", couponErr);
                 }
               }
 

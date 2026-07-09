@@ -55,6 +55,12 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
   const { user } = useAuth();
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  // Kupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponId, setCouponId] = useState<string | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
 
   // useRef: re-render tetiklemez, AnimatePresence ile çakışmaz
   const iyzicoContainerRef = useRef<HTMLDivElement>(null);
@@ -168,7 +174,7 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
       const res = await fetch("/api/checkout/create-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, customer: form }),
+        body: JSON.stringify({ items, customer: form, couponId }),
       });
       const data = await res.json();
 
@@ -347,6 +353,60 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
                 </div>
               </section>
 
+              {/* Kupon Kodu */}
+              <div className="space-y-2">
+                <label className={labelClass}>Kupon Kodu</label>
+                <div className="flex gap-2">
+                  <input
+                    className={inputClass}
+                    value={couponCode}
+                    onChange={(e) => {
+                      setCouponCode(e.target.value.toUpperCase());
+                      setCouponError("");
+                    }}
+                    placeholder="KODUNUZU GİRİN"
+                    disabled={couponLoading}
+                  />
+                  <button
+                    type="button"
+                    disabled={couponLoading || !couponCode.trim()}
+                    onClick={async () => {
+                      setCouponLoading(true);
+                      setCouponError("");
+                      try {
+                        const res = await fetch("/api/coupons/validate", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ code: couponCode, cartTotal: totalAmount }),
+                        });
+                        const data = await res.json();
+                        if (data.valid) {
+                          setCouponDiscount(data.discountAmount || 0);
+                          setCouponId(data.couponId || null);
+                        } else {
+                          setCouponError(data.error || "Geçersiz kupon");
+                          setCouponDiscount(0);
+                          setCouponId(null);
+                        }
+                      } catch {
+                        setCouponError("Doğrulama hatası");
+                      } finally {
+                        setCouponLoading(false);
+                      }
+                    }}
+                    className="shrink-0 rounded border border-accent/40 px-4 py-2 text-xs font-semibold text-accent transition-colors hover:border-accent hover:bg-accent/10 disabled:opacity-50"
+                  >
+                    {couponLoading ? "..." : "Uygula"}
+                  </button>
+                </div>
+                {couponError && <p className="text-xs text-red-400">{couponError}</p>}
+                {couponDiscount > 0 && (
+                  <p className="text-xs text-green-400">
+                    İndirim uygulandı: -{formatPrice(couponDiscount, locale, rates)}
+                  </p>
+                )}
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -392,9 +452,14 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
               <div className="flex items-center justify-between border-t border-[#222] pt-4">
                 <span className="text-sm uppercase tracking-[0.1em] text-muted">{t("total")}</span>
                 <span className="text-xl font-bold text-accent">
-                  {formatPrice(totalAmount, locale, rates)}
+                  {formatPrice(Math.max(0, totalAmount - couponDiscount), locale, rates)}
                 </span>
               </div>
+              {couponDiscount > 0 && (
+                <p className="mt-2 text-right text-xs text-green-400">
+                  İndirim: -{formatPrice(couponDiscount, locale, rates)}
+                </p>
+              )}
               <p className="mt-3 text-xs text-muted/60">{t("tryNote")}</p>
             </aside>
           </motion.div>

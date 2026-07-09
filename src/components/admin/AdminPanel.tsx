@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Product, ProductCategory, PRODUCT_CATEGORIES, BlogPost, BlogCategory, BLOG_CATEGORIES } from "@/lib/types";
 import AdminReviews from "./AdminReviews";
+import AdminCoupons from "./AdminCoupons";
 
 const MAX_IMAGES = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -52,7 +53,7 @@ export default function AdminPanel({
   const tb = useTranslations("blog");
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"products" | "blog" | "stock" | "reviews">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "blog" | "stock" | "reviews" | "coupons">("products");
 
   // ─── Products state ───────────────────────────────────────────────────────
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -621,7 +622,7 @@ export default function AdminPanel({
 
       {/* Tab switcher */}
       <div className="mb-6 flex gap-2 border-b border-[#222]">
-        {(["products", "blog", "stock", "reviews"] as const).map((tab) => (
+        {(["products", "blog", "stock", "reviews", "coupons"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -638,7 +639,9 @@ export default function AdminPanel({
               ? t("blogTabTitle")
               : tab === "stock"
               ? "Stok Yönetimi"
-              : "Yorumlar"}
+              : tab === "reviews"
+              ? "Yorumlar"
+              : "Kuponlar"}
           </button>
         ))}
       </div>
@@ -1019,6 +1022,11 @@ export default function AdminPanel({
           </div>
           <AdminReviews />
         </>
+      )}
+
+      {/* ─── Coupons Tab ───────────────────────────────────────────────────────── */}
+      {activeTab === "coupons" && (
+        <AdminCoupons />
       )}
 
       {/* ─── Product Form Modal ───────────────────────────────────────────────── */}

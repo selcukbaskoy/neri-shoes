@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getIyzicoClient } from "@/lib/iyzico";
 import { getOrCreateCustomer, getOrCreateGuestCustomer } from "@/lib/customer-api";
+import { validateCoupon, recordCouponRedemption } from "@/lib/coupon";
 
 interface CartItem {
   productId: string;
@@ -23,6 +24,7 @@ interface CheckoutBody {
     city: string;
     district: string;
   };
+  couponId?: string | null;
 }
 
 export async function POST(req: NextRequest) {
@@ -33,12 +35,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Geçersiz istek" }, { status: 400 });
   }
 
-  const { items, customer } = body;
+  const { items, customer, couponId } = body;
   if (!items?.length || !customer?.name || !customer?.email || !customer?.phone) {
     return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
   }
 
   const totalAmount = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+
+  // Kupon doğrulama ve indirim hesaplama
+  let discountAmount = 0;
+  let validatedCouponId: string | null = null;
+  if (couponId) {
+    const couponResult = await validateCoupon(couponId, totalAmount);
+    if (couponResult.valid && couponResult.couponId) {
+      discountAmount = couponResult.discountAmount || 0;
+      validatedCouponId = couponResult.couponId;
+    }
+  }
+
+  const finalAmount = Math.max(0, totalAmount - discountAmount);
   const orderId = crypto.randomUUID();
   const conversationId = orderId;
 
@@ -74,10 +89,12 @@ export async function POST(req: NextRequest) {
     shipping_city: customer.city,
     shipping_district: customer.district,
     total_amount: totalAmount,
+    discount_amount: discountAmount,
     status: "pending",
     payment_provider: "iyzico",
     auth_user_id: authUserId,
     customer_id: customerId,
+    coupon_id: validatedCouponId,
   });
 
   if (orderErr) {
@@ -127,6 +144,7 @@ export async function POST(req: NextRequest) {
     "85.34.78.112";
 
   const priceStr = totalAmount.toFixed(2);
+  const paidPriceStr = finalAmount.toFixed(2);
   // NEXT_PUBLIC_SITE_URL Vercel'de www'suz ayarlanmış olabilir; callbackUrl daima www ile olsun.
   const rawSite = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.nerishoes.com.tr";
   const siteUrl = rawSite.replace("https://nerishoes.com.tr", "https://www.nerishoes.com.tr");
@@ -137,7 +155,7 @@ export async function POST(req: NextRequest) {
         locale: "tr",
         conversationId,
         price: priceStr,
-        paidPrice: priceStr,
+        paidPrice: paidPriceStr,
         currency: "TRY",
         basketId: orderId,
         paymentGroup: "PRODUCT",

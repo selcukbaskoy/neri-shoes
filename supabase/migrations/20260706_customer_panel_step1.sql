@@ -447,6 +447,17 @@ BEGIN
 END
 $$;
 
+-- -----------------------------------------------------------
+-- 15. RPC: Kupon kullanım sayacı artırma
+-- -----------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION increment_coupon_used(p_coupon_id uuid)
+RETURNS void AS $$
+BEGIN
+  UPDATE coupons SET used_count = used_count + 1 WHERE id = p_coupon_id;
+END;
+$$ LANGUAGE plpgsql;
+
 -- ============================================================
 -- KURALLAR (Manuel kontrol listesi)
 -- ============================================================
