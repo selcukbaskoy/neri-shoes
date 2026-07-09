@@ -148,7 +148,7 @@ create table stock_alerts (
 | 6 | Yorum sistemi (D1): tablo+UI+admin moderasyon+Verified rozet+foto | ✅ Tamamlandı |
 | 7 | Kupon sistemi (D2): admin+checkout+iyzico tutar entegrasyonu | ✅ Tamamlandı |
 | 8 | Post-purchase check-in (D3): cron+mail+yanıt akışı | ✅ Tamamlandı |
-| 9 | Favoriler + "gelince haber ver" + benzer ürünler + kalıp rehberi + kargo şeridi | 🔄 Planlandı |
+| 9 | Favoriler + "gelince haber ver" + benzer ürünler + kalıp rehberi + kargo şeridi | ✅ Tamamlandı |
 | 10 | KVKK hesap silme + son cila + 6 dil tamamlama | ✅ Tamamlandı (hesap silme /hesap/profil'de aktif) |
 | 1 | Supabase Auth + tüm şema + RLS | Düşük |
 | 2 | Kayıt/Giriş/Şifre sıfırlama (marka diline uygun) | Düşük |
