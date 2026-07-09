@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 import { getIyzicoClient } from "@/lib/iyzico";
+import { getOrCreateCustomer, getOrCreateGuestCustomer } from "@/lib/customer-api";
 
 interface CartItem {
   productId: string;
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
   const conversationId = orderId;
 
   // Girişli müşteri ise siparişi hesabına bağla (misafir checkout değişmez)
+  let customerId: string | null = null;
   let authUserId: string | null = null;
   try {
     const supabase = await getSupabaseServerClient();
@@ -49,8 +51,17 @@ export async function POST(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
     authUserId = user?.id ?? null;
-  } catch {
-    // Oturum okunamazsa misafir olarak devam et
+
+    if (authUserId && user) {
+      const customerRecord = await getOrCreateCustomer(authUserId, user.email || customer.email || "", customer.phone);
+      customerId = customerRecord.id;
+    } else {
+      const guest = await getOrCreateGuestCustomer(customer.email, customer.phone, `${customer.name} ${customer.surname}`);
+      customerId = guest.id;
+    }
+  } catch (err) {
+    // Customer oluşturma hatası kritik değil, sipariş devam etsin
+    console.error("[create-payment] Customer oluşturma hatası:", err);
   }
 
   // 1. Siparişi veritabanına kaydet
@@ -66,6 +77,7 @@ export async function POST(req: NextRequest) {
     status: "pending",
     payment_provider: "iyzico",
     auth_user_id: authUserId,
+    customer_id: customerId,
   });
 
   if (orderErr) {

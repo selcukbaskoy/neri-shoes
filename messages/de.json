@@ -439,7 +439,7 @@
     "cancel": "İptal",
     "profileName": "Ad Soyad",
     "profileEmail": "E-posta",
-    "saveProfile": "Kaydet",
+    "saveProfile": "Profili Kaydet",
     "changePassword": "Şifre Değiştir",
     "currentPassword": "Mevcut Şifre",
     "newPassword": "Yeni Şifre",
@@ -454,6 +454,15 @@
       "orders": "Siparişlerim",
       "addresses": "Adreslerim",
       "profile": "Profilim"
-    }
+    },
+    "linkGuestOrders": "Misafir Siparişlerini Eşleştir",
+    "confirmPassword": "Şifre Tekrar",
+    "status.pending": "Bekliyor",
+    "status.paid": "Ödendi",
+    "status.processing": "Hazırlanıyor",
+    "status.shipped": "Kargoya Verildi",
+    "status.delivered": "Teslim Edildi",
+    "status.cancelled": "İptal Edildi",
+    "status.failed": "Başarısız"
   }
 }
