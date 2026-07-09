@@ -17,10 +17,12 @@ export interface SignInData {
 }
 
 export async function signUp({ email, password, name, surname }: SignUpData) {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: `${origin}/auth/callback`,
       data: {
         name,
         surname,
@@ -45,8 +47,9 @@ export async function signOut() {
 }
 
 export async function resetPassword(email: string) {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/tr/hesap/sifre-yenile`,
+    redirectTo: `${origin}/tr/hesap/sifre-yenile`,
   });
   return { data, error };
 }
