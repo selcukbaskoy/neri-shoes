@@ -51,10 +51,10 @@ export async function getOrCreateCustomer(authUserId: string, email: string, pho
     return updated as Customer;
   }
 
-  // 3. Yeni customer oluştur
+  // 3. Yeni customer oluştur (name/phone nullable, email zorunlu değil)
   const { data: created, error: cErr } = await supabaseAdmin
     .from("customers")
-    .insert({ auth_user_id: authUserId, email: email || null, phone: phone || null })
+    .insert({ auth_user_id: authUserId, email: email || null, phone: phone || null, name: null })
     .select()
     .single();
 
@@ -68,6 +68,7 @@ export async function getOrCreateCustomer(authUserId: string, email: string, pho
  */
 export async function linkGuestOrdersToCustomer(customer: Customer): Promise<number> {
   if (!customer.email && !customer.phone) return 0;
+  if (!customer.auth_user_id) return 0;
 
   const conditions: string[] = [];
   if (customer.email) conditions.push(`customer_email.eq.${customer.email}`);
@@ -76,7 +77,7 @@ export async function linkGuestOrdersToCustomer(customer: Customer): Promise<num
   const { data: orders, error: oErr } = await supabaseAdmin
     .from("orders")
     .select("id")
-    .is("customer_id", null)
+    .is("auth_user_id", null)
     .or(conditions.join(","));
 
   if (oErr) throw new Error(oErr.message);
@@ -85,7 +86,7 @@ export async function linkGuestOrdersToCustomer(customer: Customer): Promise<num
   const orderIds = orders.map((o) => o.id);
   const { error: uErr } = await supabaseAdmin
     .from("orders")
-    .update({ customer_id: customer.id })
+    .update({ auth_user_id: customer.auth_user_id })
     .in("id", orderIds);
 
   if (uErr) throw new Error(uErr.message);
@@ -96,11 +97,11 @@ export async function linkGuestOrdersToCustomer(customer: Customer): Promise<num
 // Siparişler
 // ============================================================
 
-export async function getCustomerOrders(customerId: string): Promise<OrderData[]> {
+export async function getCustomerOrders(authUserId: string): Promise<OrderData[]> {
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select("*")
-    .eq("customer_id", customerId)
+    .eq("auth_user_id", authUserId)
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);

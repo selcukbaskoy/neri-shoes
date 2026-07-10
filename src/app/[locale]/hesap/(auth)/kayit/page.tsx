@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { motion } from "motion/react";
 import { signUp } from "@/lib/auth-client";
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 export default function SignUpPage() {
   const t = useTranslations("auth");

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import {
-  getCustomerByAuthUserId,
+  getOrCreateCustomer,
   getCustomerAddresses,
   createCustomerAddress,
   updateCustomerAddress,
@@ -23,8 +23,8 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
 
   try {
-    const customer = await getCustomerByAuthUserId(user.id);
-    if (!customer) return NextResponse.json({ addresses: [] });
+    const customer = await getOrCreateCustomer(user.id, user.email || "");
+
     const addresses = await getCustomerAddresses(customer.id);
     return NextResponse.json({ addresses });
   } catch (err) {
@@ -40,8 +40,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const customer = await getCustomerByAuthUserId(user.id);
-    if (!customer) return NextResponse.json({ error: "Müşteri kaydı bulunamadı" }, { status: 404 });
+    const customer = await getOrCreateCustomer(user.id, user.email || "");
+
 
     const address = await createCustomerAddress({
       customer_id: customer.id,
@@ -70,8 +70,8 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const customer = await getCustomerByAuthUserId(user.id);
-    if (!customer) return NextResponse.json({ error: "Müşteri kaydı bulunamadı" }, { status: 404 });
+    const customer = await getOrCreateCustomer(user.id, user.email || "");
+
 
     const address = await updateCustomerAddress(id, customer.id, body);
 
@@ -91,8 +91,8 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: "Adres ID gerekli" }, { status: 400 });
 
   try {
-    const customer = await getCustomerByAuthUserId(user.id);
-    if (!customer) return NextResponse.json({ error: "Müşteri kaydı bulunamadı" }, { status: 404 });
+    const customer = await getOrCreateCustomer(user.id, user.email || "");
+
 
     await deleteCustomerAddress(id, customer.id);
     return NextResponse.json({ success: true });

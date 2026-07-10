@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { getCustomerByAuthUserId } from "@/lib/customer-api";
+import { getOrCreateCustomer } from "@/lib/customer-api";
 
 // GET /api/favorites/list — kullanıcının favori ürünlerini listele
 export async function GET(req: NextRequest) {
@@ -11,8 +11,7 @@ export async function GET(req: NextRequest) {
     const { data: userData } = await supabaseAdmin.auth.getUser(token);
     if (!userData.user) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
-    const customer = await getCustomerByAuthUserId(userData.user.id);
-    if (!customer) return NextResponse.json({ favorites: [] });
+    const customer = await getOrCreateCustomer(userData.user.id, userData.user.email || "");
 
     const { data } = await supabaseAdmin
       .from("customer_favorites")

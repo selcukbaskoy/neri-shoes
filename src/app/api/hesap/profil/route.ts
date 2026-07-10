@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { getCustomerByAuthUserId, updateCustomerProfile } from "@/lib/customer-api";
+import { getOrCreateCustomer, updateCustomerProfile } from "@/lib/customer-api";
 
 async function getAuthUser(req: NextRequest) {
   const token = req.headers.get("authorization")?.replace("Bearer ", "").trim();

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { getCustomerByAuthUserId } from "@/lib/customer-api";
+import { getOrCreateCustomer } from "@/lib/customer-api";
 
 // GET /api/favorites?productId=xxx — favori kontrolü
 export async function GET(req: NextRequest) {
@@ -11,9 +11,7 @@ export async function GET(req: NextRequest) {
     const { data: userData } = await supabaseAdmin.auth.getUser(token);
     if (!userData.user) return NextResponse.json({ isFavorite: false });
 
-    const customer = await getCustomerByAuthUserId(userData.user.id);
-    if (!customer) return NextResponse.json({ isFavorite: false });
-
+    const customer = await getOrCreateCustomer(userData.user.id, userData.user.email || "");
     const productId = new URL(req.url).searchParams.get("productId");
     if (!productId) return NextResponse.json({ isFavorite: false });
 
@@ -43,9 +41,7 @@ export async function POST(req: NextRequest) {
     const { data: userData } = await supabaseAdmin.auth.getUser(token);
     if (!userData.user) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
-    const customer = await getCustomerByAuthUserId(userData.user.id);
-    if (!customer) return NextResponse.json({ error: "Müşteri bulunamadı" }, { status: 404 });
-
+    const customer = await getOrCreateCustomer(userData.user.id, userData.user.email || "");
     await supabaseAdmin.from("customer_favorites").insert({ customer_id: customer.id, product_id: productId });
     return NextResponse.json({ success: true });
   } catch (err) {
@@ -67,9 +63,7 @@ export async function DELETE(req: NextRequest) {
     const { data: userData } = await supabaseAdmin.auth.getUser(token);
     if (!userData.user) return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
 
-    const customer = await getCustomerByAuthUserId(userData.user.id);
-    if (!customer) return NextResponse.json({ error: "Müşteri bulunamadı" }, { status: 404 });
-
+    const customer = await getOrCreateCustomer(userData.user.id, userData.user.email || "");
     await supabaseAdmin
       .from("customer_favorites")
       .delete()
