@@ -1,4 +1,4 @@
-{
+﻿{
   "meta": {
     "title": "Neri Shoes | Collezione Premium di Scarpe",
     "description": "Neri Shoes - Marchio di calzature da uomo con sede ad Adana. Ingrosso e dettaglio in scarpe classiche, sportive e casual.",
@@ -457,13 +457,15 @@
     },
     "linkGuestOrders": "Misafir Siparişlerini Eşleştir",
     "confirmPassword": "Şifre Tekrar",
-    "status.pending": "Bekliyor",
-    "status.paid": "Ödendi",
-    "status.processing": "Hazırlanıyor",
-    "status.shipped": "Kargoya Verildi",
-    "status.delivered": "Teslim Edildi",
-    "status.cancelled": "İptal Edildi",
-    "status.failed": "Başarısız"
+    "status": {
+      "pending": "Bekliyor",
+      "paid": "Ödendi",
+      "processing": "Hazırlanıyor",
+      "shipped": "Kargoya Verildi",
+      "delivered": "Teslim Edildi",
+      "cancelled": "İptal Edildi",
+      "failed": "Başarısız"
+    }
   },
   "reviews": {
     "reviewsTitle": "Değerlendirmeler",

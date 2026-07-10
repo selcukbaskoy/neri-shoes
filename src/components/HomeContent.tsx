@@ -9,7 +9,7 @@ import ProductCard from "@/components/ProductCard";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { Product } from "@/lib/types";
-import { StockEntry } from "@/lib/stock";
+import { StockEntry } from "@/lib/stock-utils";
 
 interface Props {
   featured: Product[];

@@ -5,8 +5,8 @@ import { motion, useReducedMotion } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Product, Locale } from "@/lib/types";
-import { StockEntry, computeStockStatus } from "@/lib/stock";
-import { formatPrice } from "@/lib/currency";
+import { StockEntry, computeStockStatus } from "@/lib/stock-utils";
+import { formatPrice } from "@/lib/currency-utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppIcon from "./icons/WhatsAppIcon";
 

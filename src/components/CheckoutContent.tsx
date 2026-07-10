@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
 import { useCart } from "@/lib/cart";
-import { formatPrice } from "@/lib/currency";
+import { formatPrice } from "@/lib/currency-utils";
 import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { getAddresses } from "@/lib/customer-client";

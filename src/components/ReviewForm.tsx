@@ -7,7 +7,7 @@ import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import StarRating from "./StarRating";
 
 interface ReviewFormProps {
@@ -69,12 +69,13 @@ export default function ReviewForm({ productId, productName, onSubmitted }: Revi
     const urls: string[] = [];
     for (const file of images) {
       const path = `${user?.id}/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage.from("review_images").upload(path, file, {
+      const client = getSupabaseBrowserClient();
+      const { data, error } = await client.storage.from("review_images").upload(path, file, {
         cacheControl: "3600",
         upsert: false,
       });
       if (error) throw new Error(error.message);
-      const { data: publicUrl } = supabase.storage.from("review_images").getPublicUrl(data.path);
+      const { data: publicUrl } = client.storage.from("review_images").getPublicUrl(data.path);
       urls.push(publicUrl.publicUrl);
     }
     return urls;
@@ -94,7 +95,7 @@ export default function ReviewForm({ productId, productName, onSubmitted }: Revi
     setLoading(true);
     try {
       const mediaUrls = await uploadImages();
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const token = (await getSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
       if (!token) throw new Error(t("notAuthenticated"));
 
       const res = await fetch("/api/reviews", {

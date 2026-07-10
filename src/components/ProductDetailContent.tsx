@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { StockEntry, computeStockStatus } from "@/lib/stock";
-import { formatPrice } from "@/lib/currency";
-import { RegionalPrice, findRegionalPrice, formatRegionalPrice } from "@/lib/regional-prices";
+import { StockEntry, computeStockStatus } from "@/lib/stock-utils";
+import { formatPrice } from "@/lib/currency-utils";
+import { RegionalPrice, findRegionalPrice, formatRegionalPrice } from "@/lib/regional-prices-utils";
 import { useCart } from "@/lib/cart";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";

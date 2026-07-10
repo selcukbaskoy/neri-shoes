@@ -6,7 +6,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth-context";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { Product } from "@/lib/types";
 
 export default function FavoritesPage() {
@@ -27,7 +27,7 @@ export default function FavoritesPage() {
   async function loadFavorites() {
     setLoading(true);
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const token = (await getSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
       if (!token) return;
       const res = await fetch("/api/favorites/list", {
         headers: { Authorization: `Bearer ${token}` },
@@ -42,7 +42,7 @@ export default function FavoritesPage() {
   }
 
   async function removeFavorite(productId: string) {
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const token = (await getSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
     if (!token) return;
     await fetch("/api/favorites", {
       method: "DELETE",

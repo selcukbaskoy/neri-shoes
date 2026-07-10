@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 
 export default function FavoriteButton({ productId }: { productId: string }) {
@@ -15,7 +15,7 @@ export default function FavoriteButton({ productId }: { productId: string }) {
   }, [isAuthenticated, productId]);
 
   async function checkFavorite() {
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const token = (await getSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
     if (!token) return;
     try {
       const res = await fetch(`/api/favorites?productId=${productId}`, {
@@ -31,7 +31,7 @@ export default function FavoriteButton({ productId }: { productId: string }) {
   async function toggle() {
     if (loading) return;
     setLoading(true);
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const token = (await getSupabaseBrowserClient().auth.getSession()).data.session?.access_token;
     if (!token) return;
     try {
       const method = isFav ? "DELETE" : "POST";

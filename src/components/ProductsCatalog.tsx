@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import { Product, ProductCategory, Locale } from "@/lib/types";
-import { StockEntry } from "@/lib/stock";
+import { StockEntry } from "@/lib/stock-utils";
 import ProductCard from "./ProductCard";
 
 const CATEGORIES: ProductCategory[] = ["erkek", "spor", "klasik", "gunluk"];

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useCart } from "@/lib/cart";
-import { formatPrice } from "@/lib/currency";
+import { formatPrice } from "@/lib/currency-utils";
 
 export default function CartPanel({ rates }: { rates: Record<string, number> }) {
   const t = useTranslations("cart");

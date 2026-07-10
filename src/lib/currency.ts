@@ -1,21 +1,13 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { supabase, supabaseAdmin } from "./supabase";
 
+export { LOCALE_CURRENCY, formatPrice } from "./currency-utils";
+
 // 1 TRY = X (target currency) — fawazahmed0/currency-api (CDN hosted, no key needed)
 const API_URL =
   "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/try.json";
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 saat
-
-// Locale → {ISO code (lowercase), display symbol}
-export const LOCALE_CURRENCY: Record<string, { code: string; symbol: string }> = {
-  tr: { code: "try", symbol: "₺" },
-  en: { code: "usd", symbol: "$" },
-  de: { code: "eur", symbol: "€" },
-  it: { code: "eur", symbol: "€" },
-  ar: { code: "usd", symbol: "$" },
-  ru: { code: "rub", symbol: "₽" },
-};
 
 async function fetchFreshRates(): Promise<Record<string, number>> {
   const res = await fetch(API_URL, { cache: "no-store" });
@@ -62,25 +54,3 @@ export async function getExchangeRates(): Promise<Record<string, number>> {
   }
 }
 
-/**
- * priceTRY'ı locale'e göre formatlar.
- * tr  → "1.800 TL" (değişmez)
- * diğer → "~$39" veya "~€34" (yaklaşık, yuvarlanmış)
- */
-export function formatPrice(
-  priceTRY: number,
-  locale: string,
-  rates: Record<string, number>
-): string {
-  if (locale === "tr") {
-    return `${priceTRY.toLocaleString("tr-TR")} TL`;
-  }
-  const { code, symbol } = LOCALE_CURRENCY[locale] ?? { code: "usd", symbol: "$" };
-  const rate = rates[code];
-  if (!rate) {
-    // Kur alınamadıysa TL'ye fallback
-    return `${priceTRY.toLocaleString("tr-TR")} TL`;
-  }
-  const converted = Math.round(priceTRY * rate);
-  return `~${symbol}${converted.toLocaleString("en-US")}`;
-}

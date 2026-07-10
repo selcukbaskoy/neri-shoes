@@ -1,10 +1,10 @@
 // src/lib/customer-client.ts
 // Client-side helper: auth token ile /api/hesap/* route'larına istek atar.
 
-import { supabase } from "./supabase";
+import { getSupabaseBrowserClient } from "./supabase-browser";
 
 async function getToken(): Promise<string | null> {
-  const { data } = await supabase.auth.getSession();
+  const { data } = await getSupabaseBrowserClient().auth.getSession();
   return data.session?.access_token ?? null;
 }
 
