@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Yetkisiz erişim" }, { status: 401 });
 
   try {
-    const customer = await getCustomerByAuthUserId(user.id);
+    const customer = await getOrCreateCustomer(user.id, user.email || "");
     return NextResponse.json({
       customer,
       user: {
@@ -38,7 +38,7 @@ export async function PUT(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const customer = await getCustomerByAuthUserId(user.id);
+    const customer = await getOrCreateCustomer(user.id, user.email || "");
 
     // Supabase Auth user metadata güncelle (isim)
     if (body.name || body.surname) {

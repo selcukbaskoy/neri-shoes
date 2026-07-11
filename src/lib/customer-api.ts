@@ -258,13 +258,13 @@ export async function deleteCustomerAccount(customerId: string, authUserId: stri
   // Yorumlar anonimleştir (customer_id = NULL, status = 'approved' kalır)
   await supabaseAdmin.from("product_reviews").update({ customer_id: null }).eq("customer_id", customerId);
 
-  // 2. Siparişler anonimleştir (customer_id = NULL, customer_name/email/phone = NULL)
+  // 2. Siparişler anonimleştir (auth_user_id = NULL, customer PII redact)
   await supabaseAdmin.from("orders").update({
-    customer_id: null,
-    customer_name: null,
+    auth_user_id: null,
+    customer_name: "[silindi]",
     customer_email: null,
-    customer_phone: null,
-  }).eq("customer_id", customerId);
+    customer_phone: "[silindi]",
+  }).eq("auth_user_id", authUserId);
 
   // 3. customers kaydını sil
   await supabaseAdmin.from("customers").delete().eq("id", customerId);
