@@ -452,6 +452,7 @@
     "error": "Bir hata oluştu",
     "nav": {
       "orders": "Siparişlerim",
+      "favorites": "Favorilerim",
       "addresses": "Adreslerim",
       "profile": "Profilim"
     },

@@ -1,4 +1,4 @@
-﻿{
+{
   "meta": {
     "title": "Neri Shoes | Premium Shoe Collection",
     "description": "Neri Shoes - Adana-based men's footwear brand. Wholesale and retail in classic leather, sports and casual men's shoes.",
@@ -453,19 +453,11 @@
     "nav": {
       "orders": "Siparişlerim",
       "addresses": "Adreslerim",
-      "profile": "Profilim"
+      "profile": "Profilim",
+      "favorites": "My Favorites"
     },
     "linkGuestOrders": "Misafir Siparişlerini Eşleştir",
-    "confirmPassword": "Şifre Tekrar",
-    "status": {
-      "pending": "Bekliyor",
-      "paid": "Ödendi",
-      "processing": "Hazırlanıyor",
-      "shipped": "Kargoya Verildi",
-      "delivered": "Teslim Edildi",
-      "cancelled": "İptal Edildi",
-      "failed": "Başarısız"
-    }
+    "confirmPassword": "Şifre Tekrar"
   },
   "reviews": {
     "reviewsTitle": "Değerlendirmeler",

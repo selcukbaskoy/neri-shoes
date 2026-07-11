@@ -1,4 +1,4 @@
-﻿{
+{
   "meta": {
     "title": "Neri Shoes | مجموعة أحذية بريميوم",
     "description": "نيري شوز - علامة أحذية رجالية مقرها أضنة. جملة وتجزئة في الأحذية الكلاسيكية والرياضية واليومية للرجال.",
@@ -453,19 +453,11 @@
     "nav": {
       "orders": "Siparişlerim",
       "addresses": "Adreslerim",
-      "profile": "Profilim"
+      "profile": "Profilim",
+      "favorites": "المفضلة"
     },
     "linkGuestOrders": "Misafir Siparişlerini Eşleştir",
-    "confirmPassword": "Şifre Tekrar",
-    "status": {
-      "pending": "Bekliyor",
-      "paid": "Ödendi",
-      "processing": "Hazırlanıyor",
-      "shipped": "Kargoya Verildi",
-      "delivered": "Teslim Edildi",
-      "cancelled": "İptal Edildi",
-      "failed": "Başarısız"
-    }
+    "confirmPassword": "Şifre Tekrar"
   },
   "reviews": {
     "reviewsTitle": "Değerlendirmeler",

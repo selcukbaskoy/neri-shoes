@@ -6,9 +6,10 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "@/i18n/navigation";
 
 const ITEMS = [
-  { href: "/hesap", key: "orders" as const },
+  { href: "/hesap/siparisler", key: "orders" as const },
+  { href: "/hesap/favoriler", key: "favorites" as const },
   { href: "/hesap/adresler", key: "addresses" as const },
-  { href: "/hesap/bilgiler", key: "profile" as const },
+  { href: "/hesap/profil", key: "profile" as const },
 ] as const;
 
 export default function AccountNav({ locale }: { locale: string }) {
@@ -27,7 +28,7 @@ export default function AccountNav({ locale }: { locale: string }) {
   return (
     <nav className="flex flex-row gap-1 lg:flex-col">
       {ITEMS.map(({ href, key }) => {
-        const active = pathname === href || (href !== "/hesap" && pathname.startsWith(href));
+        const active = pathname.startsWith(href);
         return (
           <Link
             key={href}
