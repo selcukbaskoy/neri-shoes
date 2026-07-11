@@ -30,7 +30,7 @@ export default function AddressesPage() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push("/hesap/giris");
+      router.push("/giris");
       return;
     }
     if (isAuthenticated) loadAddresses();

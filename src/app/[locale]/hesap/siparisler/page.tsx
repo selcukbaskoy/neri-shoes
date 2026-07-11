@@ -21,7 +21,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push("/hesap/giris");
+      router.push("/giris");
       return;
     }
     if (isAuthenticated) loadOrders();

@@ -14,7 +14,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      router.push("/hesap/giris");
+      router.push("/giris");
     }
   }, [loading, isAuthenticated, router]);
 

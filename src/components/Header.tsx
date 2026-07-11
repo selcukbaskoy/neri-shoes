@@ -27,7 +27,7 @@ export default function Header({ whatsappNumber }: { whatsappNumber: string }) {
   const [scrolled, setScrolled] = useState(false);
   const { totalCount, setOpen: setCartOpen } = useCart();
   const { user } = useAuth();
-  const accountHref = user ? "/hesap" : "/hesap/giris";
+  const accountHref = user ? "/hesap" : "/giris";
   const accountLabel = user ? tAuth("myAccount") : tAuth("login");
   const whatsappLink = buildWhatsAppLink(whatsappNumber, tWa("generalContact"));
 

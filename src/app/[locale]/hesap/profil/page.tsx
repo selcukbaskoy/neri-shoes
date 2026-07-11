@@ -38,7 +38,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push("/hesap/giris");
+      router.push("/giris");
       return;
     }
     if (isAuthenticated) loadProfile();

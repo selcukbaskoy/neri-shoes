@@ -12,7 +12,7 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     if (!code) {
-      router.push("/hesap/giris");
+      router.push("/giris");
       return;
     }
 
@@ -42,7 +42,7 @@ export default function AuthCallbackPage() {
         <h1 className="font-serif text-2xl text-foreground">Doğrulama Başarısız</h1>
         <p className="max-w-sm text-sm text-muted">{error}</p>
         <button
-          onClick={() => router.push("/hesap/giris")}
+          onClick={() => router.push("/giris")}
           className="rounded border border-accent/40 px-6 py-2.5 text-sm text-accent transition-colors hover:border-accent hover:bg-accent/10"
         >
           Giriş Sayfasına Dön

@@ -18,7 +18,7 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/hesap/giris");
+      router.push("/giris");
       return;
     }
     loadFavorites();
