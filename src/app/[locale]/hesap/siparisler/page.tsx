@@ -6,7 +6,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@/lib/auth-context";
 import { getOrders, linkGuestOrders } from "@/lib/customer-client";
-import { formatPrice } from "@/lib/currency";
+import { formatPrice } from "@/lib/currency-utils";
 import type { OrderData } from "@/lib/types";
 
 export default function OrdersPage() {
