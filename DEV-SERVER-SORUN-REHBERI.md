@@ -270,13 +270,13 @@ src/app/apple-icon.png  → 180×180 PNG (Apple touch icon)
 
 ---
 
-## KOD KEŞFİ KURALI — codebase-memory-mcp
+## KOD KEŞFİ KURALI — CodeGraph
 
-codebase-memory-mcp global olarak kurulu ve aktif. Yapısal kod soruları için (kim çağırıyor, nerede kullanılıyor, mimari nasıl) grep/Explore yerine ÖNCELİKLE graph tool'larını kullan:
-- `search_graph` — fonksiyon/class/route bul
-- `trace_path` — çağrı zinciri izle
-- `get_code_snippet` — tam kaynak konumunu al
-- `get_architecture` — proje yapısına bak
+CodeGraph global olarak kurulu ve bu proje indeksli (`.codegraph/`, otomatik file watcher — manuel reindex yok). Yapısal kod soruları için (kim çağırıyor, nerede kullanılıyor, mimari nasıl) grep/Explore yerine ÖNCELİKLE CodeGraph kullan:
+- `codegraph_explore` (MCP, mevcutsa) — sembol/soru bazlı kaynak kod + çağrı zinciri tek çağrıda
+- `codegraph explore "<sorgu>"` (shell) — aynı çıktı
+- `codegraph callers <symbol>` / `codegraph callees <symbol>` — çağrı zinciri
+- `codegraph impact <symbol>` — değişiklik etkisi
 
-Yeni bir proje açıldığında: önce `index_repository` çalıştır (bir kerelik), sonrası otomatik.
+Yeni bir proje açıldığında: `codegraph init` çalıştır (bir kerelik), sonrası otomatik senkronize.
 

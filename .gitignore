@@ -35,6 +35,7 @@ yarn-error.log*
 # Local Claude Code and tool caches
 .claude/settings.local.json
 .impeccable/
+.codegraph/
 
 # local env files
 .env
