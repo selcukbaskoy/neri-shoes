@@ -33,6 +33,7 @@ function brandEmailTemplate(options: {
   return `<!DOCTYPE html>
 <html lang="tr">
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(options.subject)}</title>
