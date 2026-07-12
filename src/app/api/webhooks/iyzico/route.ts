@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
           try {
             const { data: order } = await supabaseAdmin
               .from("orders")
-              .select("id, confirmation_email_sent_at, coupon_id, customer_id, discount_amount")
+              .select("id, confirmation_email_sent_at, coupon_id, customer_id, discount_amount, customer_email")
               .eq("iyzico_token", token)
               .single();
 
@@ -162,6 +162,13 @@ export async function POST(req: NextRequest) {
                   console.log("[iyzico callback] Kupon kullanımı kaydedildi:", order.coupon_id);
                 } catch (couponErr) {
                   console.error("[iyzico callback] Kupon kayıt hatası:", couponErr);
+                }
+                // Kupon kullanıldı → welcome_20h hatırlatıcısını iptal et
+                if (order.customer_email) {
+                  try {
+                    const { cancelByKey } = await import("@/lib/email-queue");
+                    await cancelByKey(`welcome_used_${order.customer_email}`);
+                  } catch { /* non-critical */ }
                 }
               }
 

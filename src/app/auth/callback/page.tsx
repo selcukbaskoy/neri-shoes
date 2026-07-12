@@ -20,11 +20,21 @@ export default function AuthCallbackPage() {
 
     supabase.auth
       .exchangeCodeForSession(code)
-      .then(({ error: err }) => {
+      .then(async ({ error: err, data }) => {
         if (err) {
           console.error("[auth/callback] exchangeCodeForSession hatası:", err.message);
           setError(err.message);
           return;
+        }
+        // Welcome email akışını tetikle (fire & forget)
+        const user = data?.user;
+        if (user?.email) {
+          const name = user.user_metadata?.name ?? user.user_metadata?.full_name ?? "";
+          fetch("/api/email/welcome", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: user.email, name }),
+          }).catch(() => {/* non-critical */});
         }
         // Başarılı — kullanıcıyı hesap sayfasına yönlendir
         router.push("/hesap");
