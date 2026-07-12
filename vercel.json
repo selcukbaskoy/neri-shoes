@@ -3,6 +3,10 @@
     {
       "path": "/api/checkins/process",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/email-queue/process",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
