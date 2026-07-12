@@ -2,24 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { createHmac } from "crypto";
 
-// Resend webhook signature: t=TIMESTAMP,v1=HMAC-SHA256(timestamp.body, secret)
-function verifySignature(body: string, header: string | null, secret: string): boolean {
-  if (!header) return false;
+// Resend, Svix altyapısı kullanır.
+// Headers: svix-id, svix-timestamp, svix-signature
+// İmzalama: HMAC-SHA256({svix-id}.{svix-timestamp}.{body}, base64-decoded-secret)
+// Secret formatı: whsec_{base64}
+function verifySignature(
+  body: string,
+  msgId: string | null,
+  timestamp: string | null,
+  sigHeader: string | null,
+  secret: string
+): boolean {
+  if (!msgId || !timestamp || !sigHeader) return false;
   try {
-    const parts = Object.fromEntries(header.split(",").map((p) => p.split("=")));
-    const timestamp = parts["t"];
-    const sig = parts["v1"];
-    if (!timestamp || !sig) return false;
-
     // Replay attack: 5 dakikadan eski istekleri reddet
     const age = Date.now() / 1000 - parseInt(timestamp, 10);
-    if (age > 300) return false;
+    if (age > 300 || age < -300) return false;
 
-    const expected = createHmac("sha256", secret)
-      .update(`${timestamp}.${body}`)
-      .digest("hex");
+    // whsec_ prefix'ini kaldır, base64 decode et
+    const rawSecret = Buffer.from(secret.replace(/^whsec_/, ""), "base64");
+    const toSign = `${msgId}.${timestamp}.${body}`;
+    const expected = createHmac("sha256", rawSecret).update(toSign).digest("base64");
 
-    return expected === sig;
+    // svix-signature: "v1,<base64sig> v1,<base64sig2> ..."
+    const sigs = sigHeader.split(" ").map((s) => s.replace(/^v1,/, ""));
+    return sigs.some((s) => s === expected);
   } catch {
     return false;
   }
@@ -29,10 +36,11 @@ export async function POST(req: NextRequest) {
   const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
   const rawBody = await req.text();
 
-  // Webhook secret tanımlıysa imzayı doğrula
   if (webhookSecret) {
-    const sig = req.headers.get("resend-signature");
-    if (!verifySignature(rawBody, sig, webhookSecret)) {
+    const msgId    = req.headers.get("svix-id");
+    const ts       = req.headers.get("svix-timestamp");
+    const sigHeader = req.headers.get("svix-signature");
+    if (!verifySignature(rawBody, msgId, ts, sigHeader, webhookSecret)) {
       return NextResponse.json({ error: "Geçersiz imza" }, { status: 401 });
     }
   }
