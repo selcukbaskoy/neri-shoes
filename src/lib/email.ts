@@ -5,7 +5,8 @@
 import { Resend } from "resend";
 
 const resendApiKey = process.env.RESEND_API_KEY;
-const fromEmail = process.env.FROM_EMAIL ?? "info@nerishoes.com.tr";
+const fromEmail = process.env.FROM_EMAIL ?? "siparis@nerishoes.com.tr";
+const promotionalFromEmail = process.env.PROMOTIONAL_FROM_EMAIL ?? "firsat@nerishoes.com.tr";
 
 let resendClient: Resend | null = null;
 
@@ -338,4 +339,9 @@ export async function sendPostPurchaseCheckinEmail(orderId: string): Promise<Ema
 export async function sendStockAlertEmail(_productName: string, _email: string): Promise<EmailResult> {
   // Adım 9'da implemente edilecek
   return { sent: false, error: "Not implemented" };
+}
+
+// Promosyon akışları için gönderici (firsat@nerishoes.com.tr)
+export function getPromotionalFrom(): string {
+  return promotionalFromEmail;
 }
