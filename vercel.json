@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/email-queue/process",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
