@@ -106,4 +106,21 @@ Amaç: Tamamen otomatik, ikna edici, spam'a düşmeyen, KVKK uyumlu davranışsa
 - `.env.local` güncellendi: `FROM_EMAIL` + `PROMOTIONAL_FROM_EMAIL` eklendi
 - **Vercel'e de eklenmesi gereken env vars:** `FROM_EMAIL=siparis@nerishoes.com.tr` + `PROMOTIONAL_FROM_EMAIL=firsat@nerishoes.com.tr`
 
-**Sıradaki:** Aşama 2 — email_queue / email_events / unsubscribe_logs tabloları + migration SQL
+## AŞAMA 2-5 TAMAMLANDI
+
+- Şema: `email_queue`, `email_events`, `unsubscribe_logs`, `user_email_preferences`, `product_affinity` tabloları Supabase'de doğrulandı (mevcut).
+- Kuyruk motoru: `src/app/api/email-queue/process/route.ts` — `dispatchTemplate` + `isBlacklisted` + `hasHitDailyPromoCap` + `isPromotional` guard'ları çalışıyor.
+- Resend webhook: `src/app/api/webhooks/iyzico/route.ts` içinde imza doğrulamalı (Svix formatı).
+- Akış 1 (Welcome + double opt-in + %15 kupon) commit b3023da.
+
+## AŞAMA 6 TAMAMLANDI — 2026-07-13
+
+**Sepet Terk Akışı**
+- `src/app/api/email/cart-abandon/route.ts` — checkout ödeme adımına geçildiğinde tetiklenir, önce eski `cart_abandon_{email}` kaydını iptal eder, sonra +1s/+24s/+72s kuyruğa yazar.
+- `src/lib/email-templates.ts` — `cart_1h` (yardımcı ton), `cart_24h` (canlı stok verisiyle FOMO), `cart_72h` (ücretsiz kargo kuponu, `coupons` tablosuna otomatik insert) şablonları eklendi.
+- `src/components/CheckoutContent.tsx` — ödeme adımına geçişte fire&forget fetch eklendi.
+- `src/app/api/webhooks/iyzico/route.ts` — sipariş `paid` olunca `cart_abandon_{email}` kuyruğu ANINDA iptal ediliyor (PRD'nin "satın alma olursa iptal" kuralı).
+- Doğrulama: `npx tsc --noEmit` temiz, `npx next build` başarılı, `shopping-flow.spec.ts` E2E testi geçti (regresyon yok), backend curl testiyle `email_queue`'ya 3 satır (cart_1h/24h/72h, doğru `cancel_key`) yazıldığı doğrulandı, test satırları temizlendi.
+- Düzeltilen buglar: `CheckoutContent.tsx`'de yanlış alan adları (`it.name`→`it.productName`, `it.price`→`it.unitPrice`, tsc hatası veriyordu); `coupons_discount_value_check` (>0) constraint'i `discount_value: 0` ile ihlal ediliyordu → `1` yapıldı; webhook'ta cart_abandon iptali eksikti → eklendi.
+
+**Sıradaki:** Aşama 7 (Review akışı), Aşama 8 (Cross-sell aksesuar kapısı + Win-back), Aşama 9 (tercih yönetimi sayfası + unsubscribe + sunset cron).

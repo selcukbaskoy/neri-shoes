@@ -192,6 +192,24 @@ export default function CheckoutContent({ rates }: { rates: Record<string, numbe
 
       setCheckoutHtml(data.checkoutFormContent ?? null);
       setStep("payment");
+      // Sepet terk akışı — fire & forget
+      fetch("/api/email/cart-abandon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          name: `${form.name} ${form.surname}`.trim(),
+          items: items.map((it) => ({
+            product_id: it.productId,
+            product_name: it.productName,
+            size: it.size,
+            quantity: it.quantity,
+            unit_price: it.unitPrice,
+          })),
+          cart_total: totalAmount,
+          at_payment_step: true,
+        }),
+      }).catch(() => {/* non-critical */});
     } catch {
       setErrorMsg(t("networkError"));
       setStep("error");

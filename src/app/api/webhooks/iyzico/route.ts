@@ -172,6 +172,14 @@ export async function POST(req: NextRequest) {
                 }
               }
 
+              // Sepet terk hatırlatıcılarını iptal et — satın alma tamamlandı
+              if (order.customer_email) {
+                try {
+                  const { cancelByKey } = await import("@/lib/email-queue");
+                  await cancelByKey(`cart_abandon_${order.customer_email.toLowerCase().trim()}`);
+                } catch { /* non-critical */ }
+              }
+
               // Post-purchase check-in kaydı oluştur (+7 gün)
               try {
                 const scheduledAt = new Date();

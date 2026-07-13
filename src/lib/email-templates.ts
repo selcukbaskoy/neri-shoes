@@ -68,6 +68,18 @@ function unsubFooter(email: string, flow: string) {
   </p>`;
 }
 
+interface CartItem {
+  product_id?: string;
+  product_name: string;
+  size: number;
+  quantity: number;
+  unit_price: number;
+}
+
+function fmt(n: number) {
+  return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 }).format(n);
+}
+
 // ============================================================
 // Aşama 5 — Welcome akışı
 // ============================================================
@@ -115,6 +127,97 @@ ${ctaBtn(shopUrl, "Alışverişe Git")}`,
 }
 
 // ============================================================
+// Aşama 6 — Sepet terk şablonları
+// ============================================================
+
+function cartItemsTable(items: CartItem[]): string {
+  const rows = items.map(
+    (it) => `<tr>
+      <td style="padding:10px 0;border-bottom:1px solid #1e1e1e;font-size:13px;color:#ccc;">
+        ${esc(it.product_name)}<span style="color:#666;"> · Beden ${it.size} × ${it.quantity}</span>
+      </td>
+      <td style="padding:10px 0;border-bottom:1px solid #1e1e1e;text-align:right;font-size:13px;color:#ffd700;font-weight:600;">
+        ${fmt(it.unit_price * it.quantity)}
+      </td>
+    </tr>`
+  ).join("");
+  return `<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;">${rows}</table>`;
+}
+
+function cartAbandon1h(
+  name: string, items: CartItem[], total: number,
+  atPayment: boolean, cartUrl: string, email: string
+): string {
+  const problemBlock = atPayment
+    ? `<p style="margin:0 0 20px;font-size:13px;line-height:1.6;color:#999;background:#0f0f0f;border:1px solid #222;border-radius:4px;padding:14px 18px;">
+        Ödeme adımında bir sorunla mı karşılaştınız?
+        <a href="https://wa.me/905302608771" style="color:#ffd700;text-decoration:none;">WhatsApp'tan anında yardım alın →</a>
+      </p>`
+    : "";
+  return shell(
+    "Sepetin hâlâ seni bekliyor",
+    `${name}, sepetindeki ürünler güvende — istediğinde devam edebilirsin.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#bbb;">
+Sepetindeki ürünler seni bekliyor. Dilediğin zaman kaldığın yerden devam edebilirsin.
+</p>
+${problemBlock}
+${cartItemsTable(items)}
+<p style="margin:0 0 6px;text-align:right;font-size:12px;color:#666;">Toplam</p>
+<p style="margin:0 0 24px;text-align:right;font-size:18px;font-weight:700;color:#ffd700;">${fmt(total)}</p>
+${ctaBtn(cartUrl, "Sepetime Dön")}`,
+    unsubFooter(email, "cart_abandon")
+  );
+}
+
+function cartAbandon24h(
+  name: string, items: CartItem[], total: number,
+  stockMsg: string, cartUrl: string, email: string
+): string {
+  const fomoBlock = stockMsg
+    ? `<p style="margin:0 0 20px;font-size:13px;line-height:1.6;color:#e5a000;background:#1a1200;border:1px solid #2a1e00;border-radius:4px;padding:14px 18px;">⚠ ${stockMsg}</p>`
+    : "";
+  return shell(
+    "Sepetindeki ürünler hâlâ seni bekliyor",
+    `${name}, seçtiğin numarada stok azalıyor — hızlı ol.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+${fomoBlock}
+<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#bbb;">
+Dün sepetine eklediğin ürünler seni bekliyor.
+</p>
+${cartItemsTable(items)}
+<p style="margin:0 0 6px;text-align:right;font-size:12px;color:#666;">Toplam</p>
+<p style="margin:0 0 24px;text-align:right;font-size:18px;font-weight:700;color:#ffd700;">${fmt(total)}</p>
+${ctaBtn(cartUrl, "Siparişi Tamamla")}`,
+    unsubFooter(email, "cart_abandon")
+  );
+}
+
+function cartAbandon72h(
+  name: string, items: CartItem[], shippingCode: string,
+  cartUrl: string, email: string
+): string {
+  return shell(
+    "Kargonuz bizden — ücretsiz gönderim",
+    `${name}, kargo ücreti bizden. Bugün sipariş verin, kapınıza kadar ücretsiz gelsin.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#bbb;">
+Bu kez kargo ücreti bizden. Aşağıdaki kodu kullanarak siparişinizde ücretsiz gönderim kazanın.
+</p>
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;">
+<tr><td style="padding:20px 24px;text-align:center;">
+  <p style="margin:0 0 6px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.12em;">Ücretsiz Kargo Kodunuz</p>
+  <p style="margin:0;font-size:20px;font-weight:700;color:#ffd700;letter-spacing:.1em;">${esc(shippingCode)}</p>
+  <p style="margin:6px 0 0;font-size:11px;color:#555;">7 gün geçerli · tek kullanım</p>
+</td></tr>
+</table>
+${cartItemsTable(items)}
+${ctaBtn(cartUrl, "Ücretsiz Kargo ile Sipariş Ver")}`,
+    unsubFooter(email, "cart_abandon")
+  );
+}
+
+// ============================================================
 // Dispatcher
 // ============================================================
 
@@ -152,10 +255,84 @@ export async function dispatchTemplate(
     }
 
     // Aşama 6 — Sepet terk
-    case "cart_1h":
-    case "cart_24h":
-    case "cart_72h":
-      return null;
+    case "cart_1h": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const items = (payload.items ?? []) as CartItem[];
+      const total = Number(payload.cart_total ?? 0);
+      const atPayment = Boolean(payload.at_payment_step);
+      const cartUrl = `${siteUrl}/tr/odeme`;
+      return {
+        subject: "Sepetin hâlâ seni bekliyor",
+        html: cartAbandon1h(name, items, total, atPayment, cartUrl, email),
+        from: `Neri Shoes <siparis@nerishoes.com.tr>`,
+      };
+    }
+
+    case "cart_24h": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const items = (payload.items ?? []) as CartItem[];
+      const total = Number(payload.cart_total ?? 0);
+      const cartUrl = `${siteUrl}/tr/odeme`;
+      // Canlı stok çek
+      let stockMsg = "";
+      if (items.length > 0) {
+        const first = items[0];
+        if (first.product_id && first.size) {
+          const { supabaseAdmin } = await import("@/lib/supabase");
+          const { data: stockRow } = await supabaseAdmin
+            .from("product_stock")
+            .select("quantity")
+            .eq("product_id", first.product_id)
+            .eq("size", first.size)
+            .maybeSingle();
+          const qty = stockRow?.quantity ?? 0;
+          if (qty > 0 && qty <= 3) {
+            stockMsg = `${esc(first.product_name)} — Beden ${first.size}'de yalnızca <strong style="color:#ffd700;">${qty} adet</strong> kaldı.`;
+          } else if (qty === 0) {
+            stockMsg = `${esc(first.product_name)} — Beden ${first.size} tükendi. Diğer bedenler mevcut olabilir.`;
+          }
+        }
+      }
+      return {
+        subject: stockMsg
+          ? "Seçtiğin numarada son birkaç adet kaldı"
+          : "Sepetindeki ürünler hâlâ seni bekliyor",
+        html: cartAbandon24h(name, items, total, stockMsg, cartUrl, email),
+        from: `Neri Shoes Fırsatlar <firsat@nerishoes.com.tr>`,
+      };
+    }
+
+    case "cart_72h": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const items = (payload.items ?? []) as CartItem[];
+      const cartUrl = `${siteUrl}/tr/odeme`;
+      // Ücretsiz kargo kuponu — önceki girişimde oluşturulmuşsa payload'dan al
+      let shippingCode = String(payload.free_shipping_code ?? "");
+      if (!shippingCode) {
+        const { supabaseAdmin } = await import("@/lib/supabase");
+        const { randomBytes } = await import("crypto");
+        const suffix = randomBytes(3).toString("hex").toUpperCase();
+        shippingCode = `KARGOBEDAVA-${suffix}`;
+        await supabaseAdmin.from("coupons").insert({
+          code: shippingCode,
+          discount_type: "shipping",
+          discount_value: 1,
+          free_shipping: true,
+          min_order_amount: 0,
+          valid_until: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          max_uses: 1,
+          is_active: true,
+        });
+      }
+      return {
+        subject: "Kargonuz bizden — ücretsiz gönderim",
+        html: cartAbandon72h(name, items, shippingCode, cartUrl, email),
+        from: `Neri Shoes Fırsatlar <firsat@nerishoes.com.tr>`,
+      };
+    }
 
     // Aşama 7 — Satın alma sonrası değerlendirme
     case "review_5d":
