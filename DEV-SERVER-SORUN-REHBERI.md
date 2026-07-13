@@ -280,3 +280,11 @@ CodeGraph global olarak kurulu ve bu proje indeksli (`.codegraph/`, otomatik fil
 
 Yeni bir proje açıldığında: `codegraph init` çalıştır (bir kerelik), sonrası otomatik senkronize.
 
+---
+
+## VERCEL HOBBY CRON LİMİTİ → pg_cron ÇÖZÜMÜ (2026-07-13)
+
+Semptom: Vercel Hobby plan cron job'ları günde 1 çalışmaya limitli — `vercel.json`'da 5 dk'lık schedule tanımlansa bile deploy'da reddediliyor/günlüğe düşüyor.
+
+Çözüm: Vercel cron'a bağlı kalma, Supabase `pg_cron` + `pg_net` extension'larıyla (ücretsiz, proje içi) istenen sıklıkta `net.http_post` ile endpoint tetikle. Shared secret `app_config` tablosunda saklanır, endpoint hem Vercel'in `CRON_SECRET`'ını hem Supabase'in `CRON_SHARED_SECRET`'ını kabul eder. Doğrulama: `net._http_response` tablosunda `status_code=200` görülmesi.
+

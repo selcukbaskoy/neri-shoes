@@ -67,6 +67,8 @@ Amaç: Tamamen otomatik, ikna edici, spam'a düşmeyen, KVKK uyumlu davranışsa
 | 1 | Resend domain doğrulama: SPF/DKIM/DMARC DNS kayıtları + firsat@ gönderici | Selçuk DNS'e kayıt ekler (net talimat verilecek) |
 | 2 | Şema: email_queue, email_events, unsubscribe_logs, user_email_preferences, product_affinity + RLS | Migration SQL hazırlanır, Selçuk onaylar |
 | 3 | Kuyruk motoru: Vercel Cron (5 dk'da bir) → scheduled_at gelmiş pending mailleri işle; cancel mantığı; frequency cap; bounce/complaint kontrolü | Mevcut check-in cron'u genişletilir |
+
+**Not (2026-07-13):** Vercel Hobby plan cron'u günde 1 çalışmaya limitliyor — 5 dk sıklığı desteklemiyor. Çözüm: Supabase `pg_cron` + `pg_net` (ücretsiz, mevcut altyapı) `/api/email-queue/process`'i her 5 dk'da `net.http_post` ile tetikliyor (`app_config.cron_shared_secret` ile yetkilendirme, endpoint hem `CRON_SECRET` hem `CRON_SHARED_SECRET` kabul ediyor). Vercel cron günlük fallback olarak kalıyor. `cron.job` adı: `process-email-queue`.
 | 4 | Resend webhook endpoint → email_events | İmza doğrulamalı |
 | 5 | Akış 1 (Welcome + double opt-in) | En yüksek getiri, önce bu |
 | 6 | Akış 2 (Sepet terk + iptal mantığı) | İkinci en yüksek getiri |
