@@ -123,4 +123,19 @@ Amaç: Tamamen otomatik, ikna edici, spam'a düşmeyen, KVKK uyumlu davranışsa
 - Doğrulama: `npx tsc --noEmit` temiz, `npx next build` başarılı, `shopping-flow.spec.ts` E2E testi geçti (regresyon yok), backend curl testiyle `email_queue`'ya 3 satır (cart_1h/24h/72h, doğru `cancel_key`) yazıldığı doğrulandı, test satırları temizlendi.
 - Düzeltilen buglar: `CheckoutContent.tsx`'de yanlış alan adları (`it.name`→`it.productName`, `it.price`→`it.unitPrice`, tsc hatası veriyordu); `coupons_discount_value_check` (>0) constraint'i `discount_value: 0` ile ihlal ediliyordu → `1` yapıldı; webhook'ta cart_abandon iptali eksikti → eklendi.
 
-**Sıradaki:** Aşama 7 (Review akışı), Aşama 8 (Cross-sell aksesuar kapısı + Win-back), Aşama 9 (tercih yönetimi sayfası + unsubscribe + sunset cron).
+## AŞAMA 7 TAMAMLANDI — 2026-07-13
+
+**Review Akışı — mimari karar: mevcut check-in sistemi genişletildi (PRD'nin literal `review_5d`/`review_10d` kuyruk akışı yerine)**
+
+Sebep: `post_purchase_checkins` tablosu + `src/app/api/checkins/process/route.ts` cron'u zaten çalışıyordu (direkt Resend ile "memnun musun?" maili gönderiyor). PRD'nin ayrı bir `review_5d`/`review_10d` kuyruk akışı kurmak, "delivered" sipariş durumu gibi henüz var olmayan bir tetikleyici mekanizması gerektirirdi. Kullanıcı onayıyla mevcut sistem genişletildi.
+
+- `src/app/api/webhooks/iyzico/route.ts` — check-in zamanlaması artık kategori bazlı: `spor`/`gunluk` kategorisi +5 gün, diğerleri (varsayılan, klasik/deri) +10 gün. Önceden sabit +7 gündü.
+- `src/app/api/admin/reviews/route.ts` — `issueReviewCoupon()` eklendi: fotoğraflı yorum admin tarafından onaylandığında (tek seferlik, `coupon_issued` bayrağıyla korunuyor) otomatik %10 tek kullanımlık kupon (`YORUM10-XXXXXX`) oluşturur ve `review_coupon_awarded` mailini kuyruğa yazar.
+- `src/lib/email-templates.ts` — `review_5d`/`review_10d` stub case'leri kaldırıldı, yerine `review_coupon_awarded` şablonu + dispatcher case eklendi (marka temalı, kupon kodu gösterir, alışverişe git CTA).
+- **Keşfedilen 2 mevcut production bug (bu oturumda bulundu, bu değişiklikle düzeltiliyor):**
+  1. `product_reviews.admin_note` kolonu kodda kullanılıyordu ama DB'de yoktu → admin moderasyon paneli PUT endpoint'i kırıktı.
+  2. `post_purchase_checkins.response`/`.review_invited` kolonları `checkins/respond` route'unda kullanılıyordu ama DB'de yoktu → "memnun musun?" yanıt linkleri kırıktı.
+- **Migration hazır, ÇALIŞTIRILMADI:** `migrations/2026-07-13_asama7_review_akisi.sql` — 4 tane `add column if not exists` (destructive değil). Supabase SQL Editor'de manuel çalıştırılması gerekiyor (kural: migration SQL'i ben hazırlarım, Run'a kullanıcı basar).
+- Doğrulama: `npx tsc --noEmit` temiz, `npx next build` başarılı, `shopping-flow.spec.ts` E2E regresyon testi geçti. Migration çalıştırılmadığı için uçtan uca DB testi (kupon/mail kuyruğu oluşumu) henüz yapılamadı — migration sonrası yapılacak.
+
+**Sıradaki:** Aşama 8 (Cross-sell aksesuar kapısı + Win-back), Aşama 9 (tercih yönetimi sayfası + unsubscribe + sunset cron).

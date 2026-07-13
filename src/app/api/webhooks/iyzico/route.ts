@@ -144,6 +144,21 @@ export async function POST(req: NextRequest) {
                 .select("product_id, size, quantity")
                 .eq("order_id", order.id);
 
+              // Kategori bazlı check-in gecikmesi: spor/günlük hızlı değerlendirilir (+5),
+              // klasik/deri ayakkabı 1 günde değerlendirilemez (+10, varsayılan)
+              const FAST_REVIEW_CATEGORIES = new Set(["spor", "gunluk"]);
+              let checkinDelayDays = 10;
+              if (items && items.length > 0) {
+                const { data: firstProduct } = await supabaseAdmin
+                  .from("products")
+                  .select("category")
+                  .eq("id", items[0].product_id)
+                  .maybeSingle();
+                if (firstProduct?.category && FAST_REVIEW_CATEGORIES.has(firstProduct.category)) {
+                  checkinDelayDays = 5;
+                }
+              }
+
               if (items) {
                 for (const item of items) {
                   await supabaseAdmin.rpc("decrement_stock", {
@@ -180,10 +195,10 @@ export async function POST(req: NextRequest) {
                 } catch { /* non-critical */ }
               }
 
-              // Post-purchase check-in kaydı oluştur (+7 gün)
+              // Post-purchase check-in kaydı oluştur (kategori bazlı: +5 veya +10 gün)
               try {
                 const scheduledAt = new Date();
-                scheduledAt.setDate(scheduledAt.getDate() + 7);
+                scheduledAt.setDate(scheduledAt.getDate() + checkinDelayDays);
                 await supabaseAdmin
                   .from("post_purchase_checkins")
                   .insert({

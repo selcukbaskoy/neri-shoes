@@ -218,6 +218,33 @@ ${ctaBtn(cartUrl, "Ücretsiz Kargo ile Sipariş Ver")}`,
 }
 
 // ============================================================
+// Aşama 7 — Değerlendirme kuponu
+// ============================================================
+
+function reviewCouponAwardedHtml(
+  name: string, productName: string, couponCode: string, shopUrl: string, email: string
+): string {
+  return shell(
+    "Değerlendirmeniz için teşekkürler — %10 kodunuz hazır",
+    `${name}, fotoğraflı değerlendirmeniz onaylandı. %10 indirim kodunuz sizi bekliyor.`,
+    `<p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#bbb;">
+${esc(productName)} için paylaştığınız fotoğraflı değerlendirme onaylandı. Teşekkür olarak
+<strong style="color:#ffd700;">%10 indirim kodu</strong> hesabınıza tanımlandı.
+</p>
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;">
+<tr><td style="padding:20px 24px;text-align:center;">
+  <p style="margin:0 0 6px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.12em;">İndirim Kodunuz</p>
+  <p style="margin:0;font-size:22px;font-weight:700;color:#ffd700;letter-spacing:.12em;">${esc(couponCode)}</p>
+  <p style="margin:6px 0 0;font-size:11px;color:#555;">%10 indirim · 30 gün geçerli · tek kullanım</p>
+</td></tr>
+</table>
+${ctaBtn(shopUrl, "Alışverişe Git")}`,
+    unsubFooter(email, "review")
+  );
+}
+
+// ============================================================
 // Dispatcher
 // ============================================================
 
@@ -334,10 +361,20 @@ export async function dispatchTemplate(
       };
     }
 
-    // Aşama 7 — Satın alma sonrası değerlendirme
-    case "review_5d":
-    case "review_10d":
-      return null;
+    // Aşama 7 — Satın alma sonrası değerlendirme (mevcut check-in sistemi genişletildi,
+    // hatırlatıcı check-in tarafından direkt gönderiliyor; bu case sadece onay sonrası kupon maili)
+    case "review_coupon_awarded": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const productName = String(payload.product_name ?? "");
+      const couponCode = String(payload.coupon_code ?? "");
+      const shopUrl = `${siteUrl}/tr/urunler`;
+      return {
+        subject: "Değerlendirmeniz onaylandı — %10 kodunuz hazır",
+        html: reviewCouponAwardedHtml(name, productName, couponCode, shopUrl, email),
+        from: `Neri Shoes <siparis@nerishoes.com.tr>`,
+      };
+    }
 
     // Aşama 8 — Çapraz satış
     case "cross_sell_7d":
