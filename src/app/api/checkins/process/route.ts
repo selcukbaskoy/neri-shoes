@@ -9,8 +9,14 @@ import { sendPostPurchaseCheckinEmail } from "@/lib/email";
  * CRON_SECRET header ile korunur.
  */
 export async function POST(req: NextRequest) {
-  const cronSecret = req.headers.get("x-cron-secret");
-  if (cronSecret !== process.env.CRON_SECRET) {
+  // Vercel Cron isteği "Authorization: Bearer $CRON_SECRET" header'ı gönderir (resmi format).
+  // x-cron-secret manuel/harici tetikleme (curl testi vb.) için geriye dönük destekleniyor.
+  const authHeader = req.headers.get("authorization");
+  const legacyHeader = req.headers.get("x-cron-secret");
+  const authorized =
+    authHeader === `Bearer ${process.env.CRON_SECRET}` ||
+    legacyHeader === process.env.CRON_SECRET;
+  if (!authorized) {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   }
 
