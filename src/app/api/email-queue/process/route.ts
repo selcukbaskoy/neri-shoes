@@ -44,14 +44,8 @@ export async function POST(req: NextRequest) {
     for (const item of items) {
       stats.processed++;
 
-      // 1. Şablon hazır mı? Değilse bu turda atla (pending kalır)
-      const template = await dispatchTemplate(item.template_key, item.payload ?? {});
-      if (!template) {
-        stats.skipped++;
-        continue;
-      }
-
-      // 2. Blacklist kontrolü (bounce / şikayet / global unsub)
+      // 1. Blacklist kontrolü (bounce / şikayet / global unsub) — şablon üretmeden önce,
+      // çünkü bazı şablonlar (kupon üreten) yan etkili: gereksiz/tekrarlı üretimi önler.
       const blacklisted = await isBlacklisted(item.customer_email);
       if (blacklisted) {
         await setStatus(item.id, "cancelled", "Blacklisted");
@@ -59,7 +53,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // 3. Promosyon frekans sınırı (günde 1 promosyon maili)
+      // 2. Promosyon frekans sınırı (günde 1 promosyon maili) — aynı sebeple şablondan önce.
       if (isPromotional(item.flow_type)) {
         const capped = await hasHitDailyPromoCap(item.customer_email);
         if (capped) {
@@ -74,6 +68,13 @@ export async function POST(req: NextRequest) {
           stats.capped++;
           continue;
         }
+      }
+
+      // 3. Şablon hazır mı? Değilse bu turda atla (pending kalır) — kupon gibi yan etkiler burada oluşur.
+      const template = await dispatchTemplate(item.template_key, item.payload ?? {});
+      if (!template) {
+        stats.skipped++;
+        continue;
       }
 
       // 4. Gönder

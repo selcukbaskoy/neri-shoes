@@ -245,6 +245,107 @@ ${ctaBtn(shopUrl, "Alışverişe Git")}`,
 }
 
 // ============================================================
+// Aşama 8 — Çapraz satış + Geri kazanım
+// ============================================================
+
+interface ProductBrief {
+  name: string;
+  slug: string;
+  price: number;
+}
+
+function productListBlock(products: ProductBrief[], siteUrl: string): string {
+  const rows = products.map(
+    (p) => `<tr>
+      <td style="padding:12px 0;border-bottom:1px solid #1e1e1e;">
+        <a href="${siteUrl}/tr/urunler/${p.slug}" style="color:#e5e5e5;text-decoration:none;font-size:13px;">${esc(p.name)}</a>
+        <span style="display:block;color:#ffd700;font-size:13px;font-weight:600;margin-top:4px;">${fmt(p.price)}</span>
+      </td>
+    </tr>`
+  ).join("");
+  return `<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;">${rows}</table>`;
+}
+
+function crossSell7dHtml(name: string, products: ProductBrief[], shopUrl: string, email: string, siteUrl: string): string {
+  return shell(
+    "Tarzınızı tamamlayacak parçalar",
+    `${name}, son siparişinizle uyumlu aksesuarlara göz atın.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#bbb;">
+Son siparişinizle uyumlu, ustalıkla seçilmiş tamamlayıcı parçalar sizi bekliyor.
+</p>
+${productListBlock(products, siteUrl)}
+${ctaBtn(shopUrl, "Aksesuarlara Göz At")}`,
+    unsubFooter(email, "cross_sell")
+  );
+}
+
+function winBack30dHtml(name: string, shopUrl: string, email: string): string {
+  return shell(
+    "Sizi özledik",
+    `${name}, son siparişiniz nasıldı? Yeni sezon parçalarımıza göz atın.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 24px;font-size:14px;line-height:1.7;color:#bbb;">
+Son siparişinizin nasıl gittiğini merak ediyoruz. Bu arada yeni sezon parçalarımıza göz atmak ister misiniz?
+</p>
+${ctaBtn(shopUrl, "Yeni Sezona Göz At")}`,
+    unsubFooter(email, "win_back")
+  );
+}
+
+function winBack60dHtml(name: string, favoriteBlock: string, shopUrl: string, email: string): string {
+  return shell(
+    "Sizin için seçtiklerimiz",
+    `${name}, favorileriniz ya da yeni sezon sizi bekliyor.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 24px;font-size:14px;line-height:1.7;color:#bbb;">${favoriteBlock}</p>
+${ctaBtn(shopUrl, "Şimdi İncele")}`,
+    unsubFooter(email, "win_back")
+  );
+}
+
+function winBack90dHtml(name: string, couponCode: string, shopUrl: string, email: string): string {
+  return shell(
+    "Size özel %15 indirim",
+    `${name}, sizi geri bekliyoruz — %15 indirim kodunuz hazır.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 24px;font-size:14px;line-height:1.7;color:#bbb;">
+Sizi tekrar aramızda görmek isteriz. Size özel bir indirim hazırladık.
+</p>
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;">
+<tr><td style="padding:20px 24px;text-align:center;">
+  <p style="margin:0 0 6px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.12em;">İndirim Kodunuz</p>
+  <p style="margin:0;font-size:22px;font-weight:700;color:#ffd700;letter-spacing:.12em;">${esc(couponCode)}</p>
+  <p style="margin:6px 0 0;font-size:11px;color:#555;">%15 indirim · 14 gün geçerli · tek kullanım</p>
+</td></tr>
+</table>
+${ctaBtn(shopUrl, "Alışverişe Git")}`,
+    unsubFooter(email, "win_back")
+  );
+}
+
+function winBack120dHtml(name: string, couponCode: string, shopUrl: string, email: string): string {
+  return shell(
+    "Son bir hatırlatma",
+    `${name}, bu son fırsat maili — %20 kodunuzla veda hediyeniz.`,
+    `<p style="margin:0 0 20px;font-size:15px;color:#ccc;">Merhaba ${esc(name)},</p>
+<p style="margin:0 0 24px;font-size:14px;line-height:1.7;color:#bbb;">
+Bir süredir sizi göremedik. Bu, size göndereceğimiz son fırsat maili olacak —
+dilerseniz aşağıdaki kodla son bir kez uğrayın.
+</p>
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 24px;background:#0f0f0f;border:1px solid #2a2a2a;border-radius:4px;">
+<tr><td style="padding:20px 24px;text-align:center;">
+  <p style="margin:0 0 6px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:.12em;">Veda Hediyeniz</p>
+  <p style="margin:0;font-size:22px;font-weight:700;color:#ffd700;letter-spacing:.12em;">${esc(couponCode)}</p>
+  <p style="margin:6px 0 0;font-size:11px;color:#555;">%20 indirim · 14 gün geçerli · tek kullanım</p>
+</td></tr>
+</table>
+${ctaBtn(shopUrl, "Son Kez Göz At")}`,
+    unsubFooter(email, "win_back")
+  );
+}
+
+// ============================================================
 // Dispatcher
 // ============================================================
 
@@ -376,16 +477,120 @@ export async function dispatchTemplate(
       };
     }
 
-    // Aşama 8 — Çapraz satış
-    case "cross_sell_7d":
-      return null;
+    // Aşama 8 — Çapraz satış (AKSESUAR KAPISI: aksesuar yoksa null döner,
+    // kuyrukta pending kalır, aksesuar eklenince bir sonraki cron turunda otomatik gönderilir)
+    case "cross_sell_7d": {
+      const { supabaseAdmin } = await import("@/lib/supabase");
+      const { data: accessories } = await supabaseAdmin
+        .from("products")
+        .select("name, slug, price")
+        .eq("category", "aksesuar")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (!accessories || accessories.length === 0) return null;
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const shopUrl = `${siteUrl}/tr/urunler`;
+      return {
+        subject: "Tarzınızı tamamlayacak parçalar",
+        html: crossSell7dHtml(name, accessories as ProductBrief[], shopUrl, email, siteUrl),
+        from: `Neri Shoes Fırsatlar <firsat@nerishoes.com.tr>`,
+      };
+    }
 
     // Aşama 8 — Geri kazanım
-    case "win_back_30d":
-    case "win_back_60d":
-    case "win_back_90d":
-    case "win_back_120d":
-      return null;
+    case "win_back_30d": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const shopUrl = `${siteUrl}/tr/urunler`;
+      return {
+        subject: "Sizi özledik",
+        html: winBack30dHtml(name, shopUrl, email),
+        from: `Neri Shoes Fırsatlar <firsat@nerishoes.com.tr>`,
+      };
+    }
+
+    case "win_back_60d": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const customerId = payload.customer_id ? String(payload.customer_id) : "";
+      const shopUrl = `${siteUrl}/tr/urunler`;
+      let favoriteBlock = "Yeni sezon parçalarımız mağazada — göz atmaya ne dersiniz?";
+      if (customerId) {
+        const { supabaseAdmin } = await import("@/lib/supabase");
+        const { data: favs } = await supabaseAdmin
+          .from("customer_favorites")
+          .select("products(name, discount_percentage)")
+          .eq("customer_id", customerId)
+          .limit(10);
+        const discounted = (favs ?? [])
+          .map((f) => f.products as { name?: string; discount_percentage?: number } | null)
+          .find((p) => p && (p.discount_percentage ?? 0) > 0);
+        if (discounted?.name) {
+          favoriteBlock = `Favorilerinize eklediğiniz <strong style="color:#ffd700;">${esc(discounted.name)}</strong> ürününün fiyatı düştü — kaçırmayın.`;
+        }
+      }
+      return {
+        subject: "Sizin için seçtiklerimiz",
+        html: winBack60dHtml(name, favoriteBlock, shopUrl, email),
+        from: `Neri Shoes Fırsatlar <firsat@nerishoes.com.tr>`,
+      };
+    }
+
+    case "win_back_90d": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const shopUrl = `${siteUrl}/tr/urunler`;
+      const { supabaseAdmin } = await import("@/lib/supabase");
+      const { randomBytes } = await import("crypto");
+      const code = `GERIDON15-${randomBytes(3).toString("hex").toUpperCase()}`;
+      await supabaseAdmin.from("coupons").insert({
+        code,
+        discount_type: "percent",
+        discount_value: 15,
+        min_order_amount: 0,
+        valid_until: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        max_uses: 1,
+        is_active: true,
+      });
+      return {
+        subject: "Size özel %15 indirim",
+        html: winBack90dHtml(name, code, shopUrl, email),
+        from: `Neri Shoes Fırsatlar <firsat@nerishoes.com.tr>`,
+      };
+    }
+
+    case "win_back_120d": {
+      const name = String(payload.customer_name ?? "Değerli Müşterimiz");
+      const email = String(payload.customer_email ?? "");
+      const shopUrl = `${siteUrl}/tr/urunler`;
+      const { supabaseAdmin } = await import("@/lib/supabase");
+      const { randomBytes } = await import("crypto");
+      const code = `SONSANS20-${randomBytes(3).toString("hex").toUpperCase()}`;
+      await supabaseAdmin.from("coupons").insert({
+        code,
+        discount_type: "percent",
+        discount_value: 20,
+        min_order_amount: 0,
+        valid_until: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        max_uses: 1,
+        is_active: true,
+      });
+      if (email) {
+        await supabaseAdmin
+          .from("user_email_preferences")
+          .upsert(
+            { customer_email: email, sunset_warned_at: new Date().toISOString() },
+            { onConflict: "customer_email" }
+          );
+      }
+      return {
+        subject: "Son bir hatırlatma — veda hediyeniz",
+        html: winBack120dHtml(name, code, shopUrl, email),
+        from: `Neri Shoes Fırsatlar <firsat@nerishoes.com.tr>`,
+      };
+    }
 
     default:
       void payload;

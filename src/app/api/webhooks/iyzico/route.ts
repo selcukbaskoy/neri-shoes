@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
           try {
             const { data: order } = await supabaseAdmin
               .from("orders")
-              .select("id, confirmation_email_sent_at, coupon_id, customer_id, discount_amount, customer_email")
+              .select("id, confirmation_email_sent_at, coupon_id, customer_id, discount_amount, customer_email, customer_name")
               .eq("iyzico_token", token)
               .single();
 
@@ -148,13 +148,15 @@ export async function POST(req: NextRequest) {
               // klasik/deri ayakkabı 1 günde değerlendirilemez (+10, varsayılan)
               const FAST_REVIEW_CATEGORIES = new Set(["spor", "gunluk"]);
               let checkinDelayDays = 10;
+              let purchasedCategory: string | null = null;
               if (items && items.length > 0) {
                 const { data: firstProduct } = await supabaseAdmin
                   .from("products")
                   .select("category")
                   .eq("id", items[0].product_id)
                   .maybeSingle();
-                if (firstProduct?.category && FAST_REVIEW_CATEGORIES.has(firstProduct.category)) {
+                purchasedCategory = firstProduct?.category ?? null;
+                if (purchasedCategory && FAST_REVIEW_CATEGORIES.has(purchasedCategory)) {
                   checkinDelayDays = 5;
                 }
               }
@@ -192,6 +194,62 @@ export async function POST(req: NextRequest) {
                 try {
                   const { cancelByKey } = await import("@/lib/email-queue");
                   await cancelByKey(`cart_abandon_${order.customer_email.toLowerCase().trim()}`);
+                } catch { /* non-critical */ }
+              }
+
+              // Çapraz satış (Aşama 8) — "teslim edildi" durumu takip edilmediği için
+              // ödeme anı +7 gün tetikleyici olarak kullanılıyor (Aşama 7'deki check-in kararıyla tutarlı).
+              // Aksesuar kapısı gönderim anında dispatchTemplate içinde kontrol edilir.
+              if (order.customer_email) {
+                try {
+                  const { enqueueEmail } = await import("@/lib/email-queue");
+                  const scheduledAt = new Date();
+                  scheduledAt.setDate(scheduledAt.getDate() + 7);
+                  await enqueueEmail({
+                    flow_type: "cross_sell",
+                    template_key: "cross_sell_7d",
+                    customer_email: order.customer_email,
+                    customer_name: order.customer_name ?? undefined,
+                    scheduled_at: scheduledAt,
+                    payload: {
+                      customer_name: order.customer_name,
+                      customer_email: order.customer_email,
+                      category: purchasedCategory,
+                    },
+                  });
+                } catch { /* non-critical */ }
+              }
+
+              // Geri kazanım (Aşama 8) — her satın alma zinciri sıfırlar, son siparişten sayılır.
+              if (order.customer_email) {
+                try {
+                  const { cancelByKey, enqueueEmail } = await import("@/lib/email-queue");
+                  const emailLower = order.customer_email.toLowerCase().trim();
+                  const winbackKey = `winback_${emailLower}`;
+                  await cancelByKey(winbackKey);
+                  const stages: Array<{ key: string; days: number }> = [
+                    { key: "win_back_30d", days: 30 },
+                    { key: "win_back_60d", days: 60 },
+                    { key: "win_back_90d", days: 90 },
+                    { key: "win_back_120d", days: 120 },
+                  ];
+                  for (const stage of stages) {
+                    const scheduledAt = new Date();
+                    scheduledAt.setDate(scheduledAt.getDate() + stage.days);
+                    await enqueueEmail({
+                      flow_type: "win_back",
+                      template_key: stage.key,
+                      customer_email: order.customer_email,
+                      customer_name: order.customer_name ?? undefined,
+                      scheduled_at: scheduledAt,
+                      cancel_key: winbackKey,
+                      payload: {
+                        customer_name: order.customer_name,
+                        customer_email: order.customer_email,
+                        customer_id: order.customer_id,
+                      },
+                    });
+                  }
                 } catch { /* non-critical */ }
               }
 

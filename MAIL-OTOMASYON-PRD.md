@@ -138,4 +138,20 @@ Sebep: `post_purchase_checkins` tablosu + `src/app/api/checkins/process/route.ts
 - **Migration hazır, ÇALIŞTIRILMADI:** `migrations/2026-07-13_asama7_review_akisi.sql` — 4 tane `add column if not exists` (destructive değil). Supabase SQL Editor'de manuel çalıştırılması gerekiyor (kural: migration SQL'i ben hazırlarım, Run'a kullanıcı basar).
 - Doğrulama: `npx tsc --noEmit` temiz, `npx next build` başarılı, `shopping-flow.spec.ts` E2E regresyon testi geçti. Migration çalıştırılmadığı için uçtan uca DB testi (kupon/mail kuyruğu oluşumu) henüz yapılamadı — migration sonrası yapılacak.
 
-**Sıradaki:** Aşama 8 (Cross-sell aksesuar kapısı + Win-back), Aşama 9 (tercih yönetimi sayfası + unsubscribe + sunset cron).
+## AŞAMA 8 TAMAMLANDI — 2026-07-13
+
+**Çapraz Satış (Aksesuar Kapısı) + Geri Kazanım**
+
+- `src/app/api/webhooks/iyzico/route.ts` — ödeme başarılı olunca iki yeni kuyruk zinciri tetikleniyor:
+  - `cross_sell_7d`: +7 gün sonra (teslimat durumu takip edilmediği için ödeme anı proxy tetikleyici, Aşama 7 kararıyla tutarlı), satın alınan kategoriyle birlikte kuyruğa yazılıyor.
+  - `win_back_30d/60d/90d/120d`: her satın almada `cancelByKey("winback_{email}")` ile önceki zincir iptal edilip +30/60/90/120 gün olarak yeniden kuyruğa yazılıyor — "son siparişten geçen süre" mantığı, ayrı bir tarama cron'u gerekmiyor.
+- `src/lib/email-templates.ts`:
+  - `cross_sell_7d`: gönderim anında `products` tablosunda `category='aksesuar' AND is_active=true` kontrolü (AKSESUAR KAPISI). Ürün yoksa `null` döner, kayıt kuyrukta `pending` kalır — Selçuk aksesuar eklediği an bir sonraki cron turunda kendiliğinden gönderilir, kod değişikliği gerekmez.
+  - `win_back_30d`: yumuşak "nasıl gitti" maili, kupon yok.
+  - `win_back_60d`: `customer_favorites` üzerinden indirimdeki favori ürün varsa kişiselleştirilmiş mesaj, yoksa genel "yeni sezon" fallback.
+  - `win_back_90d`: dinamik %15 kupon (`GERIDON15-XXXXXX`, 14 gün geçerli).
+  - `win_back_120d`: sunset — dinamik %20 kupon (`SONSANS20-XXXXXX`) + `user_email_preferences.sunset_warned_at` işaretlenir (otomatik listeden çıkarma mantığı Aşama 9'a bırakıldı, açma-oranı takibi henüz yok).
+- **Bulunan ve düzeltilen gerçek bug:** `/api/email-queue/process` şablon üretimini (yan etkili — kupon oluşturuyor) promosyon günlük limiti kontrolünden ÖNCE çağırıyordu. Sonuç: cap'e takılan (ertelenen) bir kayıt her 5 dakikalık cron turunda YENİ bir kupon üretiyordu (test sırasında aynı `win_back_120d` kaydı için 2 kupon oluştuğu tespit edildi). Fix: sıralama değişti — blacklist + cap kontrolü artık `dispatchTemplate` çağrısından önce yapılıyor. Bu aynı zamanda mevcut `cart_72h` (Aşama 6) kuponu için de geçerliydi, dolaylı olarak düzeltildi.
+- Doğrulama: gerçek ortamda (`selcukbaskoy@gmail.com`) `/api/email-queue/process` üzerinden tüm 5 yeni şablon (cross_sell_7d kapı kapalı→açık, win_back_30d/60d/90d/120d) tek tek gönderildi ve içerik doğrulandı; cap-sonrası tekrar dispatch edilmediği ayrıca test edildi. Test verileri (aksesuar ürünü, kuponlar, kuyruk kayıtları, user_email_preferences satırı) temizlendi. `npx tsc --noEmit` temiz, `npx next build` başarılı, `shopping-flow.spec.ts` E2E regresyonu geçti.
+
+**Sıradaki:** Aşama 9 (tercih yönetimi sayfası + unsubscribe + sunset cron).
