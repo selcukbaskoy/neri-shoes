@@ -68,6 +68,29 @@ H-1 ile aynı commit'te çözüldü. Module-level throw giderildiğinde bu hata 
 
 ---
 
+## H-3 — Dükkan (C:\Nerishoes) Site-Sync Pivotu: Doğrulanmamış Ürün Satırları + Arşiv Stok Sıfırlaması (2026-07-17)
+
+### Belirti
+Önceki oturumda dükkanın 826 varyantlık (marka-taklit riski taşıyan) kataloğu `[ARSIV]` etiketiyle arşivlendi, yerine Neri Shoes sitesinden 19 ürün × 10 beden = 190 satır senkronize edildi. Bu oturumda doğrulama yapılırken:
+1. Beklenen 19 yerine 20 model+renk grubu bulundu.
+2. 2 satır (`Hotiç Deliklil Gri Taban`, `LV Bej`) site kataloğunda **hiç yok** — marka-taklit isim deseni taşıyorlar (pivot'un tam olarak temizlemeye çalıştığı risk), zaten `purchase_price`/gerçek renk girilmiş (diğer 18 site-kaynaklı üründe `purchase_price=0`) → manuel/farklı bir yoldan eklendikleri anlaşılıyor.
+3. Bu 2 satıra testler başlamadan ÖNCE gerçek satış zaten yapılmıştı (satış #530, #531 — 2 gerçek müşteri, veresiye, toplam 2.700 TL borç).
+4. Arşivlenen 826 satırın 825'inde stok miktarı sıfırlanmış (yedekte normal 8-21 adet aralığındaydı) — pivot script'i sadece isim etiketlemekle kalmamış, stok alanını da sıfırlamış.
+
+### Kök Neden
+Pivot işlemi (isim arşivleme + site senkronu) önceki oturumda tek seferde, bu oturumdaki gibi satır-satır doğrulama yapılmadan uygulanmış. 2 rogue satırın nereden geldiği bu oturumda tespit edilemedi (script dışı elle giriş izlenimi var).
+
+### Çözüm / Durum
+Düzeltme yapılmadı — kanıt toplanıp `DUKKAN-ENTEGRASYON-PLANI-V3-PIVOT.md`'de Selçuk'a raporlandı, karar bekleniyor (rogue satırları arşivle mi, satışları olduğu gibi mi bırak).
+
+### Önleme Kuralı
+- **Toplu veri pivotu (arşivleme, senkron, migration) sonrası satır sayısı beklenenle eşleşmiyorsa ("19 değil 20"), asla "yaklaşık doğru" diyip geçme — her fazla/eksik satırı tek tek kaynağıyla (site DB, dış kayıt) çapraz doğrula.**
+- Toplu stok/veri değişikliği yapan her script, yan etkilerini (stok sıfırlama gibi) açıkça loglamalı/dokümante etmeli — aksi halde sonraki oturumda "bu kasıtlı mıydı" sorusu cevapsız kalıyor.
+- `purchase_price`, `maliyet` gibi sadece işletme sahibinin bilebileceği veriler **asla tahmin edilmez** — 0 veya boşsa doğrudan sorulur.
+- Dashboard'daki agregat sayılar (ör. "Düşük Stok Kalemi") arşivlenmiş/pasif kayıtları filtrelemiyorsa anlamını yitirebilir — yeni bir "arşiv" durumu eklenen her sistemde, mevcut agregat widget'ların bu durumu es geçip geçmediği kontrol edilmeli.
+
+---
+
 ## Genel Dersler
 
 ### Env Var Güvenlik Matrisi
