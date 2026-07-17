@@ -1,0 +1,29 @@
+# MALİYET BEKLEYEN ÜRÜNLER
+
+Kaynak: canlı Supabase `products` tablosu (`tphxrtxzkvivjkxoeujm`), 2026-07-17 sorgusu. `[ARSIV]` ürünler (rogue Hotiç/LV Bej dahil) hariç tutuldu. Satış fiyatı Supabase'den doğrudan çekildi, referans amaçlıdır. **Alış Maliyeti** kolonunu doldur.
+
+> **Not — sayım düzeltmesi:** DUKKAN-ENTEGRASYON-PLANI-V3-PIVOT.md §4 metninde "18 ürün" yazıyordu ama kendi tablosu ve canlı Supabase doğrulaması **19 satır** çıkardı. Fark "HOT Leather Series" adının Supabase'de 2 ayrı üründen (`hot-leather-series` = Kahverengi, `hot-leather-series-2` = Siyah) oluşmasından geliyor — metin bunu "17 tekil model + 2 ürün" diye tarif etmiş ama toplamı yanlış yazmış (17+2=19, 18 değil). Aşağıdaki liste gerçek ve tam: 19 satır.
+
+| # | Model Adı | Renk | Satış Fiyatı (TL) | Alış Maliyeti (TL) |
+|---|---|---|---|---|
+| 1 | 313 Spor | Standart | 3.000 | ___ |
+| 2 | 314 Runner | Standart | 2.800 | ___ |
+| 3 | 4767 Yarasa Kauçuk Eva Taban | Standart | 3.000 | ___ |
+| 4 | 4919 Süet Düz Deriler | Standart | 3.200 | ___ |
+| 5 | 4920 Süet Deri | Siyah | 3.000 | ___ |
+| 6 | Cloud Loafer Series | Standart | 3.000 | ___ |
+| 7 | Croco Black Edition | Standart | 3.225 | ___ |
+| 8 | Full Black | Standart | 3.200 | ___ |
+| 9 | HOT Leather Series | Kahverengi | 3.000 | ___ |
+| 10 | HOT Leather Series | Siyah | 3.000 | ___ |
+| 11 | Hybrid Derby | Standart | 3.000 | ___ |
+| 12 | Hybrid Derby 2 | Standart | 3.000 | ___ |
+| 13 | LF-01 Beyaz EVA Taban | Standart | 3.000 | ___ |
+| 14 | Milano GM | Standart | 3.000 | ___ |
+| 15 | Monk Beast | Standart | 7.600 | ___ |
+| 16 | Olive Python | Standart | 3.000 | ___ |
+| 17 | Soft Luxe Driver | Standart | 3.199,99 | ___ |
+| 18 | Stealth Black Edition | Standart | 0 / null (bkz. not) | ___ |
+| 19 | Suede Knot Loafer | Standart | 2.800 | ___ |
+
+**Not — Stealth Black Edition:** Supabase'de `price: null`, `compare_at_price: null`, `is_active: true`. Site tarafında gerçek bir bug (aktif ama fiyatsız), dükkan senkron hatası değil (bkz. V3-PIVOT.md §4/3c). Maliyet yine de girilebilir, satış fiyatı site düzeltilince tamamlanacak.
