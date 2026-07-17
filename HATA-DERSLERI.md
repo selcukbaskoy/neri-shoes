@@ -91,6 +91,24 @@ Düzeltme yapılmadı — kanıt toplanıp `DUKKAN-ENTEGRASYON-PLANI-V3-PIVOT.md
 
 ---
 
+## H-4 — ECOMMERCE-DONUSUM-PLANI.md + MUSTERI-PANELI-PLANI.md Markdown Bozulması (2026-07-17)
+
+### Belirti
+İki plan dosyası çalışma dizininde (commit edilmemiş) bozulmuş halde bulundu: `---` → `\---`, `alt_çizgili_isimler` → `alt\_çizgili\_isimler` (bazı yerlerde `\\\\\\\\_` gibi katmanlı escape), `-` madde işaretleri → `*`. Klasik "markdown AST round-trip" imzası (remark/unified/mdast-util-to-markdown gibi bir kütüphanenin varsayılan stringify çıktısı) — GitHub-flavored markdown yazımını CommonMark'ın escape kurallarına göre yeniden yazan bir formatlayıcı/araç.
+
+### Kök Neden
+Hangi araç olduğu bu oturumda tespit edilemedi — repo kökünde `.prettierrc`, `.markdownlint*`, `.vscode/settings.json` yok, yani proje-içi bir format-on-save kaynağı değil. Şüpheliler: editör tarafında global bir markdown formatter eklentisi, ya da dosyayı okuyup geri yazan bir MCP/araç zinciri (ör. bir markdown-to-AST işlem yapan otomasyon). Kanıt kaybolmadan (dosyalar hâlâ commit edilmemişken) yakalanmış olması şans.
+
+### Çözüm
+`git checkout <son sağlam commit> -- <dosya>` ile geri alındı (bozukluk hiç commitlenmemişti, working tree'de kaldı — diff sıfıra döndü).
+
+### Önleme Kuralı
+- **`.md` dosyalarını düzenlerken satır satır Edit kullan, dosyayı tamamen okuyup formatlayıp geri yazan (Write ile tam üzerine yazan) bir akıştan kaçın** — AST round-trip formatlayıcılar sessizce escape/bullet stilini değiştirir.
+- Bir markdown dosyasında beklenmedik `\---`, `\_` gibi ters eğik çizgili escape'ler görülürse, hemen düzeltmeye çalışma — önce `git diff` ile hangi satırların/aralığın etkilendiğini gör, kaynağı (hangi tool/hook) not et.
+- Commit edilmemiş dosya bozulmaları git geçmişinden ucuza geri alınabilir — bu yüzden sık `git status`/`git diff` kontrolü (özellikle uzun oturumlarda) erken yakalamayı sağlar.
+
+---
+
 ## Genel Dersler
 
 ### Env Var Güvenlik Matrisi
