@@ -47,10 +47,7 @@ Supabase site kataloğunda bu isimlerde **sıfır eşleşme** var. İsimler tam 
 
 Yani iki gerçek müşterinin şu anda, pivot'un tam olarak önlemeye çalıştığı riskli/yasadışı-taklit ürünler üzerinden gerçek borç kaydı var. Bu satırların nasıl arşivlenmeden/temizlenmeden kaldığı belirsiz — muhtemelen pivot script'i çalışırken veya sonrasında elle eklenmiş.
 
-**Karar kullanıcıya ait — dokunulmadı, hiçbir düzeltme/silme yapılmadı.** Olası seçenekler (öneri değil, sadece seçenek listesi):
-- Bu 2 satırı da `[ARSIV]` etiketiyle işaretle (satış geçmişi ve müşteri borcu bozulmadan kalır, sadece gelecekte satılamaz hale gelir)
-- Satış #530/#531'i olduğu gibi bırak (müşteri borcu gerçek, iptal edilmemeli) ama ürün kartını arşivle
-- Selçuk'un bu isimlerin nereden geldiğini hatırlayıp hatırlamadığını sormak gerekir
+**KARAR VERİLDİ (2026-07-17, Selçuk onayı):** İki satır da `[ARSIV] ` öneki eklenerek arşivlendi (id 1208 → `[ARSIV] Hotiç Deliklil Gri Taban`, id 1209 → `[ARSIV] LV Bej`). Satış #530/#531 ve müşteri borç kayıtları (customer_id 15, 210) hiç dokunulmadan bırakıldı — sadece ürün kartı artık satılamaz durumda. Doğrulandı: satışlar aynen duruyor (`product_id`, `total_price`, `is_paid`, `customer_id` değişmedi).
 
 ---
 
@@ -107,7 +104,7 @@ Supabase'de doğrulandı: **site'nin kendisinde** `stealth-black-edition` ürün
 | Müşteri sayısı | 207 | 206 + 1 yeni (LV Bej satışıyla eklenen Akif Sarıkaya, id 210) |
 | Düşük stok kalemi (panel) | 938 | ⚠️ bkz. aşağıdaki uyarı |
 
-**⚠️ Uyarı 1 — Arşiv stok sıfırlanmış:** Pivot-öncesi yedekte 826 ürünün stok dağılımı normaldi (satır başına 8-21 adet arası). Şu an 826 satırın 825'i stok=0. Bu, pivot operasyonunun sadece isim etiketlemekle kalmayıp **stok miktarını da sıfırladığını** gösteriyor. Muhtemelen kasıtlı (arşivlenen riskli ürünlerin bir daha satılamaması için) ama bu kararın bilinçli mi yoksa yan etki mi olduğu bu oturumda doğrulanamadı — Selçuk'a sorulmalı.
+**Uyarı 1 — Arşiv stok sıfırlanmış (TEYİT EDİLDİ — kasıtlı):** Pivot-öncesi yedekte 826 ürünün stok dağılımı normaldi (satır başına 8-21 adet arası). Şu an 826 satırın 825'i stok=0. Selçuk (2026-07-17) bunun kasıtlı olduğunu doğruladı — arşivlenen riskli/taklit ürünlerin bir daha satılamaması için bilerek sıfırlanmış. Aksiyon gerekmiyor.
 
 **⚠️ Uyarı 2 — "Düşük Stok Kalemi" paneli artık anlamsız:** 938 sayısının büyük kısmı (826 arşiv satırının tamamı, çünkü stok=0 eşik altı) kasıtlı-sıfırlanmış arşiv ürünlerinden geliyor. Gerçek aktif 192 satırdan da 188'i düşük stok eşiğinde (çünkü 20 model 10 beden arası dağılmış, adet başına küçük sayılar). Sonuç: panel artık **gerçek yeniden-sipariş sinyali vermiyor**, neredeyse tüm katalog "düşük stok" görünüyor. Bu widget'ın arşivlenmiş ürünleri filtrelemesi gerekiyor — teknik borç olarak not edildi.
 
@@ -127,7 +124,7 @@ Eski F3 (V2 planı): Tüm ürün kataloğu + finansal geçmiş + müşteri veris
 
 **Yeni kapsam (pivot sayesinde basitleşti):** Ürün eşleştirme sorunu ortadan kalktığı için F3 artık sadece **finansal/işlemsel geçmiş migrasyonu** (satışlar, veresiye/tahsilat kayıtları, 207 müşteri) — ürün kataloğu tarafında ekstra eşleştirme mantığı gerekmiyor çünkü F1 şeması zaten `sqlite_id_map` ile bağlantı kurmaya hazır.
 
-**Onay bekleyen soru (KVKK):** 207 müşterinin kişisel verisi (isim, telefon, borç geçmişi) buluta taşınacak. Bu, Türkiye KVKK kapsamında açık rıza/veri işleme bildirimi gerektirebilir. **Selçuk'un onayı olmadan F3'e başlanmayacak.**
+**KVKK onayı alındı (2026-07-17):** Selçuk 207 müşterinin kişisel verisinin (isim, telefon, borç geçmişi) buluta taşınmasını onayladı — F3'e başlanabilir.
 
 ---
 
@@ -137,10 +134,10 @@ F1'den beri bekliyor: sandbox key `sandbox-` önekiyle değil → API 1001 hatas
 
 ---
 
-## 9. SONUÇ / BEKLENEN KULLANICI KARARLARI
+## 9. SONUÇ / KALAN AÇIK MADDE
 
-1. **Madde 3 kritik bulgu** — Hotiç Deliklil Gri Taban / LV Bej satırları ve bağlı 2 gerçek veresiye satışı (#530, #531) için karar
-2. **Madde 3a** — 18 üründen kaynaklanan gerçek alış maliyetleri (tahmin edilmeyecek, sadece Selçuk verebilir)
-3. **Arşiv stok sıfırlaması** — kasıtlı mı, teyit gerekiyor
-4. **KVKK sorusu** — F3 için 207 müşteri verisinin buluta taşınmasına onay
-5. **F3 basitleştirilmiş kapsam onayı**
+1. ~~Madde 3 kritik bulgu~~ — ✅ Çözüldü: 2 satır arşivlendi, satışlar dokunulmadı.
+2. **Madde 3a — hâlâ açık** — 18 üründen kaynaklanan gerçek alış maliyetleri (tahmin edilmeyecek, sadece Selçuk verebilir, tablo Madde 4'te)
+3. ~~Arşiv stok sıfırlaması~~ — ✅ Teyit edildi: kasıtlı.
+4. ~~KVKK sorusu~~ — ✅ Onaylandı, F3 başlayabilir.
+5. ~~F3 basitleştirilmiş kapsam onayı~~ — ✅ Onaylandı (üstteki KVKK onayıyla birlikte).
