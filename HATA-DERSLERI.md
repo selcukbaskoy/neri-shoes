@@ -109,6 +109,25 @@ Hangi araç olduğu bu oturumda tespit edilemedi — repo kökünde `.prettierrc
 
 ---
 
+## H-5 — Admin Ürün Ekleme: Vercel Payload Limiti 413 (2026-07-18)
+
+### Belirti
+Admin panelde ürün eklerken "Ürün eklenemedi. Tekrar deneyin." — jenerik, sebepsiz hata. Supabase loglarında (postgres/api) HİÇBİR iz yok.
+
+### Kök Neden (canlı `fetch` ile kanıtlandı)
+`/api/admin/products` POST/PUT, görselleri `FormData` içinde binary olarak sunucuya (Vercel Serverless Function) gönderiyordu. Vercel'in function body sert limiti ~4.5MB — bu limit Next.js route config ile değiştirilemez (Hobby/Pro). Client-side kontrol (`AdminPanel.tsx` `MAX_FILE_SIZE = 5MB`) bu gerçek limitin ÜZERİNDEYDİ, üstelik sadece TEK dosya bazında kontrol ediyordu (birden fazla görselin toplamı hiç kontrol edilmiyordu).
+Kanıt: aynı isteğe 3MB gövde → 201, 6MB gövde → `413 FUNCTION_PAYLOAD_TOO_LARGE`. İstek Vercel platform katmanında reddedildiği için Next.js route handler'a hiç girmiyor — Supabase log'larında iz bırakmaması bununla tutarlı.
+
+### Çözüm
+`handleImageSelect` içinde seçilen her görsel sunucuya gitmeden ÖNCE tarayıcıda canvas ile sıkıştırılıyor (max 2000px kenar, JPEG q=0.82) ve gerçek platform limitinin altında güvenli bir eşiğe (`SAFE_UPLOAD_LIMIT = 4MB`) indiriliyor. Ayrıca `handleProductSubmit`'te gönderim öncesi TÜM yeni görsellerin toplam boyutu ayrıca kontrol ediliyor (tek tek limiti geçmeseler bile toplamda platform limitini aşabilirler).
+
+### Önleme Kuralı
+- **Client-side dosya boyutu limiti, hedef platformun GERÇEK sert limitinin altında olmalı** — "makul görünen" bir sayı (5MB) yeterli değil, asıl deployment hedefinin (Vercel/Cloudflare/vb.) request body limiti araştırılıp ona göre güvenlik payı bırakılmalı.
+- **Çoklu dosya yüklemede TEK TEK boyut kontrolü yetmez — TOPLAM boyut da kontrol edilmeli**, özellikle hepsi tek bir `FormData`/istekte birleşiyorsa.
+- Sunucu tarafında hiç iz bırakmayan, jenerik "işlem başarısız" hataları görülünce önce platform katmanını (Vercel/CDN/proxy limitleri) şüpheli listeye al — DB/RLS/trigger araştırmasından ÖNCE, çünkü istek DB'ye hiç ulaşmamış olabilir.
+
+---
+
 ## Genel Dersler
 
 ### Env Var Güvenlik Matrisi
@@ -123,6 +142,9 @@ Hangi araç olduğu bu oturumda tespit edilemedi — repo kökünde `.prettierrc
 | `IYZICO_API_KEY` | **ASLA HAYIR** | Sadece API route |
 | `RESEND_API_KEY` | **ASLA HAYIR** | Sadece API route |
 | `CRON_SECRET` | **ASLA HAYIR** | Sadece cron/API |
+
+### Dosya Hijyeni
+Alakasız/bayat rapor dosyaları commit edilmeden temizlenmeli — DOGRULAMA-RAPORU.md örneği (2026-07-13 tarihli, iptal edilmiş migration'dan bahsediyordu, 2026-07-18'de fark edilip silindi).
 
 ### Vercel Env Var Checklist
 Yeni env var eklenince:

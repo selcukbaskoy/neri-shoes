@@ -10,7 +10,36 @@ import AdminCoupons from "./AdminCoupons";
 
 const MAX_IMAGES = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// Vercel serverless function body limit is ~4.5MB; stay safely under it so a
+// full multi-image FormData POST never gets rejected at the platform level.
+const SAFE_UPLOAD_LIMIT = 4 * 1024 * 1024;
+const MAX_IMAGE_DIMENSION = 2000;
+const IMAGE_JPEG_QUALITY = 0.82;
 const SIZES = [37, 38, 39, 40, 41, 42, 43, 44, 45, 46];
+
+async function compressImage(file: File): Promise<File> {
+  if (file.type === "image/svg+xml" || file.size <= SAFE_UPLOAD_LIMIT / 2) return file;
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(bitmap.width, bitmap.height));
+    const width = Math.round(bitmap.width * scale);
+    const height = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    const blob: Blob | null = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", IMAGE_JPEG_QUALITY)
+    );
+    if (!blob || blob.size >= file.size) return file;
+    const newName = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+    return new File([blob], newName, { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
 
 type ImageItem =
   | { type: "existing"; url: string }
@@ -193,8 +222,9 @@ export default function AdminPanel({
     setShowProductForm(false);
   }
 
-  function handleImageSelect(e: ChangeEvent<HTMLInputElement>) {
+  async function handleImageSelect(e: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
+    e.target.value = "";
     const oversized = files.filter((f) => f.size > MAX_FILE_SIZE);
     if (oversized.length > 0) {
       alert(`Şu dosyalar 5MB limitini aşıyor:\n${oversized.map((f) => f.name).join("\n")}`);
@@ -205,15 +235,27 @@ export default function AdminPanel({
       alert(`Maksimum ${MAX_IMAGES} görsel yüklenebilir. ${remaining} tane daha ekleyebilirsiniz.`);
     }
     const toAdd = valid.slice(0, remaining);
+    if (toAdd.length === 0) return;
+
+    // Sunucuya gitmeden önce sıkıştır: tek foto Vercel'in ~4.5MB istek limitine
+    // takılmasın, birden çok foto da toplamda limiti aşmasın.
+    const compressed = await Promise.all(toAdd.map(compressImage));
+    const stillOversized = compressed.filter((f) => f.size > SAFE_UPLOAD_LIMIT);
+    const usable = compressed.filter((f) => f.size <= SAFE_UPLOAD_LIMIT);
+    if (stillOversized.length > 0) {
+      alert(
+        `Şu dosyalar sıkıştırma sonrası bile çok büyük (limit ${(SAFE_UPLOAD_LIMIT / 1024 / 1024).toFixed(1)}MB), eklenmedi:\n${stillOversized.map((f) => f.name).join("\n")}`
+      );
+    }
+
     setImageItems((prev) => [
       ...prev,
-      ...toAdd.map((file) => ({
+      ...usable.map((file) => ({
         type: "new" as const,
         file,
         previewUrl: URL.createObjectURL(file),
       })),
     ]);
-    e.target.value = "";
   }
 
   function removeImage(index: number) {
@@ -250,6 +292,17 @@ export default function AdminPanel({
         alert("İndirimli fiyat, normal fiyattan düşük olmalıdır.");
         return;
       }
+    }
+
+    const totalNewBytes = imageItems.reduce(
+      (sum, item) => sum + (item.type === "new" ? item.file.size : 0),
+      0
+    );
+    if (totalNewBytes > SAFE_UPLOAD_LIMIT) {
+      alert(
+        `Toplam yeni görsel boyutu çok büyük (${(totalNewBytes / 1024 / 1024).toFixed(1)}MB). Limit ${(SAFE_UPLOAD_LIMIT / 1024 / 1024).toFixed(1)}MB — bazı görselleri kaldırıp tekrar deneyin.`
+      );
+      return;
     }
 
     setSavingProduct(true);
