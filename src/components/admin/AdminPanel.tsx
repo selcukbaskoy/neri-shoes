@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Product, ProductCategory, PRODUCT_CATEGORIES, BlogPost, BlogCategory, BLOG_CATEGORIES } from "@/lib/types";
@@ -668,9 +669,17 @@ export default function AdminPanel({
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="section-title">Admin Panel</h1>
-        <button type="button" className="btn-primary" onClick={handleLogout}>
-          {t("logout")}
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/dukkan"
+            className="rounded border border-accent/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-accent transition-colors hover:border-accent hover:bg-accent/10"
+          >
+            Dükkan →
+          </Link>
+          <button type="button" className="btn-primary" onClick={handleLogout}>
+            {t("logout")}
+          </button>
+        </div>
       </div>
 
       {/* Tab switcher */}
