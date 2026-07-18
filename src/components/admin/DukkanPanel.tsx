@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import DukkanSatis from "./DukkanSatis";
 import DukkanStok from "./DukkanStok";
+import DukkanVeresiye from "./DukkanVeresiye";
+import DukkanGunSonu from "./DukkanGunSonu";
 import type { Product } from "@/lib/types";
 
 type DukkanTab = "satis" | "stok" | "veresiye" | "gunsonu";
@@ -50,10 +52,10 @@ export default function DukkanPanel({ products }: { products: Product[] }) {
         <DukkanSatis />
       ) : activeTab === "stok" ? (
         <DukkanStok products={products} />
+      ) : activeTab === "veresiye" ? (
+        <DukkanVeresiye />
       ) : (
-        <div className="card p-8 text-center text-sm text-muted">
-          {TABS.find((t) => t.key === activeTab)?.label} — yakında
-        </div>
+        <DukkanGunSonu />
       )}
     </div>
   );
