@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { getProducts } from "@/lib/products";
 import DukkanPanel from "@/components/admin/DukkanPanel";
 
 export default async function DukkanPage() {
@@ -9,5 +10,7 @@ export default async function DukkanPage() {
     redirect("/admin");
   }
 
-  return <DukkanPanel />;
+  const products = await getProducts();
+
+  return <DukkanPanel products={products} />;
 }

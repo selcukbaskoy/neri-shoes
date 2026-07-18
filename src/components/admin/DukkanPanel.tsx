@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import DukkanSatis from "./DukkanSatis";
+import DukkanStok from "./DukkanStok";
+import type { Product } from "@/lib/types";
 
 type DukkanTab = "satis" | "stok" | "veresiye" | "gunsonu";
 
@@ -13,7 +15,7 @@ const TABS: { key: DukkanTab; label: string }[] = [
   { key: "gunsonu", label: "Gün Sonu" },
 ];
 
-export default function DukkanPanel() {
+export default function DukkanPanel({ products }: { products: Product[] }) {
   const [activeTab, setActiveTab] = useState<DukkanTab>("satis");
 
   return (
@@ -46,6 +48,8 @@ export default function DukkanPanel() {
 
       {activeTab === "satis" ? (
         <DukkanSatis />
+      ) : activeTab === "stok" ? (
+        <DukkanStok products={products} />
       ) : (
         <div className="card p-8 text-center text-sm text-muted">
           {TABS.find((t) => t.key === activeTab)?.label} — yakında
