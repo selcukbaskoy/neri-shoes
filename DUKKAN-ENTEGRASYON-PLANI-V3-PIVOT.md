@@ -141,3 +141,38 @@ F1'den beri bekliyor: sandbox key `sandbox-` önekiyle değil → API 1001 hatas
 3. ~~Arşiv stok sıfırlaması~~ — ✅ Teyit edildi: kasıtlı.
 4. ~~KVKK sorusu~~ — ✅ Onaylandı, F3 başlayabilir.
 5. ~~F3 basitleştirilmiş kapsam onayı~~ — ✅ Onaylandı (üstteki KVKK onayıyla birlikte).
+
+---
+
+## 10. F3 SONUÇ — ✅ TAMAMLANDI (2026-07-18)
+
+6 kategori, canlı Supabase+SQLite sorgularıyla tam mutabakat sağlandı. Script'ler: `scripts/f3-migrate-sale-items.mjs` (yazma), `scripts/f3-full-reconciliation.mjs` + `scripts/f3-verify-sale-items.mjs` (doğrulama).
+
+| Kalem | SQLite (kaynak) | Supabase (hedef) | Durum |
+|---|---|---|---|
+| sqlite_id_map (eşleşen ürün) | 190 | 190 | ✅ |
+| store_customers | 207 | 207 | ✅ |
+| sales (toplam) | 413 | 413 | ✅ |
+| sales (reversed olmayan) | 411 | 411 | ✅ |
+| ciro (non-reversed) | 672275.01 TL | 672275.01 TL | ✅ |
+| credit_collections | 67 | 67 | ✅ |
+| credit_collections toplam | 62000.00 TL | 62000.00 TL | ✅ |
+| payment_allocations | 64 | 64 | ✅ |
+| payment_allocations toplam | 87300.00 TL | 87300.00 TL | ✅ |
+| manual_report_sales | 24 | 24 | ✅ |
+| manual_report_sales toplam | 202450.00 TL | 202450.00 TL | ✅ |
+| returns → store_audit_log | 1 | 1 | ✅ |
+| store_sale_items (satır) | 413 | 413 | ✅ |
+| store_sale_items SUM(quantity) | 505 | 505 | ✅ |
+
+Ek doğrulamalar:
+- 413 `store_sales` satışının tamamı en az 1 `store_sale_items` kaydına bağlı, 0 yetim satış.
+- 5 rastgele satış id'si spot-check: SQLite `sales` satırı (product_id, quantity, unit_price) ile Supabase `store_sale_items` kaydı (quantity) birebir eşleşti.
+- Tek satır/kuruş fark yok. Selçuk onayı: evet.
+
+**Regresyon (canlı, F3 boyunca ilk kez kontrol):**
+- Admin panelde ürün ekleme (AŞAMA 1 / H-5 413 fix) — ✅ etkilenmedi
+- Site tüm sayfalar — ✅ normal
+- iyzico ödeme akışı — ✅ dokunulmadı
+
+**F3 resmen kapandı. F4 (POS panel UI, `/admin/dukkan` içinde) için Selçuk onayı bekleniyor.**

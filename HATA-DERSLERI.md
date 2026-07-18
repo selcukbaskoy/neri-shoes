@@ -128,6 +128,19 @@ Kanıt: aynı isteğe 3MB gövde → 201, 6MB gövde → `413 FUNCTION_PAYLOAD_T
 
 ---
 
+## H-6 — Teknik Borç: `deleteProduct()` Storage Temizliği Yapmıyor (2026-07-18)
+
+### Durum
+Ürün silindiğinde Supabase Storage'daki (`products` bucket) görsel dosyaları silinmiyor — sadece `products` tablosundaki satır kaldırılıyor. Sonuç: silinen her ürünün görselleri bucket'ta yetim (orphan) kalıyor.
+
+### Kanıt
+2026-07-18'de bucket'ta 10 yetim dosya bulundu (hiçbiri `products.image`/`products.images` içinde referanslı değildi) — manuel SQL karşılaştırmasıyla tespit edilip silindi.
+
+### Düzeltme (henüz yapılmadı — sadece kayıt)
+`deleteProduct()` (muhtemelen `src/app/api/admin/products/route.ts` DELETE handler) silme öncesi ürünün `images[]` dizisini `supabase.storage.from("products").remove(...)` ile de temizlemeli. Şu an bu adım eksik.
+
+---
+
 ## Genel Dersler
 
 ### Env Var Güvenlik Matrisi
