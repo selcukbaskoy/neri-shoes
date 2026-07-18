@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import DukkanSatis from "./DukkanSatis";
 
 type DukkanTab = "satis" | "stok" | "veresiye" | "gunsonu";
 
@@ -43,9 +44,13 @@ export default function DukkanPanel() {
         ))}
       </div>
 
-      <div className="card p-8 text-center text-sm text-muted">
-        {TABS.find((t) => t.key === activeTab)?.label} — yakında
-      </div>
+      {activeTab === "satis" ? (
+        <DukkanSatis />
+      ) : (
+        <div className="card p-8 text-center text-sm text-muted">
+          {TABS.find((t) => t.key === activeTab)?.label} — yakında
+        </div>
+      )}
     </div>
   );
 }
