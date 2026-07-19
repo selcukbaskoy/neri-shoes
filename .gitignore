@@ -51,4 +51,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# planning docs / research (not for repo)
+DUKKAN-ENTEGRASYON-PLANI-V2.md
+*DÜKKAN*PLANI*.md
+FABLE-REHBER.md
+GITHUB-REPO-ARASTIRMASI.md
+GITHUB-REPO-PLANI.md
+research-repos/
+server.log
