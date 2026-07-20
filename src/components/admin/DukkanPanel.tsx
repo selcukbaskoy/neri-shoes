@@ -7,9 +7,10 @@ import DukkanMusteri from "./DukkanMusteri";
 import DukkanStok from "./DukkanStok";
 import DukkanVeresiye from "./DukkanVeresiye";
 import DukkanGunSonu from "./DukkanGunSonu";
+import DukkanRaporlar from "./DukkanRaporlar";
 import type { Product } from "@/lib/types";
 
-type DukkanTab = "satis" | "stok" | "veresiye" | "gunsonu";
+type DukkanTab = "satis" | "stok" | "veresiye" | "gunsonu" | "raporlar";
 
 interface SelectedCustomer {
   id: number;
@@ -25,6 +26,7 @@ const TABS: { key: DukkanTab; label: string }[] = [
   { key: "stok", label: "Stok" },
   { key: "veresiye", label: "Veresiye" },
   { key: "gunsonu", label: "Gün Sonu" },
+  { key: "raporlar", label: "Raporlar" },
 ];
 
 export default function DukkanPanel({ products }: { products: Product[] }) {
@@ -72,8 +74,10 @@ export default function DukkanPanel({ products }: { products: Product[] }) {
         <DukkanStok products={products} />
       ) : activeTab === "veresiye" ? (
         <DukkanVeresiye />
-      ) : (
+      ) : activeTab === "gunsonu" ? (
         <DukkanGunSonu />
+      ) : (
+        <DukkanRaporlar />
       )}
     </div>
   );
