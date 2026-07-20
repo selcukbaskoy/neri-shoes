@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import DukkanSatis from "./DukkanSatis";
+import DukkanMusteri from "./DukkanMusteri";
 import DukkanStok from "./DukkanStok";
 import DukkanVeresiye from "./DukkanVeresiye";
 import DukkanGunSonu from "./DukkanGunSonu";
@@ -49,7 +50,10 @@ export default function DukkanPanel({ products }: { products: Product[] }) {
       </div>
 
       {activeTab === "satis" ? (
-        <DukkanSatis />
+        <>
+          <DukkanSatis />
+          <DukkanMusteri />
+        </>
       ) : activeTab === "stok" ? (
         <DukkanStok products={products} />
       ) : activeTab === "veresiye" ? (
