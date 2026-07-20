@@ -33,16 +33,19 @@ interface CustomerResult {
 const inputClass =
   "w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60";
 
-export default function DukkanSatis() {
+export default function DukkanSatis({
+  selectedCustomer,
+  onSaleComplete,
+}: {
+  selectedCustomer: CustomerResult | null;
+  onSaleComplete: () => void;
+}) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProductResult[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<"nakit" | "pos" | "veresiye">("nakit");
   const [discountAmount, setDiscountAmount] = useState("");
   const [note, setNote] = useState("");
-  const [customerQuery, setCustomerQuery] = useState("");
-  const [customerResults, setCustomerResults] = useState<CustomerResult[]>([]);
-  const [selectedCustomer, setSelectedCustomer] = useState<CustomerResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const [lastSaleId, setLastSaleId] = useState<number | null>(null);
@@ -63,23 +66,6 @@ export default function DukkanSatis() {
     }, 300);
     return () => clearTimeout(t);
   }, [query]);
-
-  useEffect(() => {
-    if (paymentMethod !== "veresiye" || !customerQuery.trim()) {
-      setCustomerResults([]);
-      return;
-    }
-    const t = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/admin/dukkan/customers?q=${encodeURIComponent(customerQuery.trim())}`);
-        const data = await res.json();
-        setCustomerResults(data.customers ?? []);
-      } catch {
-        setCustomerResults([]);
-      }
-    }, 300);
-    return () => clearTimeout(t);
-  }, [customerQuery, paymentMethod]);
 
   function addToCart(product: ProductResult, size: number) {
     const stockRow = product.stock.find((s) => s.size === size);
@@ -119,6 +105,10 @@ export default function DukkanSatis() {
       setMessage({ text: "Veresiye için müşteri seçin.", type: "error" });
       return;
     }
+    if (paymentMethod === "veresiye" && selectedCustomer?.is_blocked) {
+      setMessage({ text: "Bu müşteri bloklu — veresiye satış yapılamaz.", type: "error" });
+      return;
+    }
     setSubmitting(true);
     setMessage(null);
     try {
@@ -141,12 +131,16 @@ export default function DukkanSatis() {
         return;
       }
       setLastSaleId(data.saleId);
-      setMessage({ text: `Satış kaydedildi (#${data.saleId}).`, type: "success" });
+      setMessage({
+        text: selectedCustomer
+          ? `Satış kaydedildi (#${data.saleId}) — ${selectedCustomer.name}'a bağlandı.`
+          : `Satış kaydedildi (#${data.saleId}).`,
+        type: "success",
+      });
       setCart([]);
       setDiscountAmount("");
       setNote("");
-      setSelectedCustomer(null);
-      setCustomerQuery("");
+      onSaleComplete();
     } catch {
       setMessage({ text: "Bağlantı hatası.", type: "error" });
     }
@@ -229,6 +223,17 @@ export default function DukkanSatis() {
       </div>
 
       <div className="card p-5">
+        <div className="mb-4 rounded border border-[#222] bg-[#0f0f0f] px-3 py-2 text-sm">
+          🧾 Satış →{" "}
+          {selectedCustomer ? (
+            <span className="text-accent">
+              {selectedCustomer.name} {selectedCustomer.phone ? `(${selectedCustomer.phone})` : ""}
+            </span>
+          ) : (
+            <span className="text-muted">Anonim müşteri</span>
+          )}
+        </div>
+
         <div className="mb-4">
           <label className="mb-1 block text-xs uppercase tracking-[0.1em] text-muted">Ödeme Tipi</label>
           <div className="flex gap-2">
@@ -249,47 +254,15 @@ export default function DukkanSatis() {
           </div>
         </div>
 
-        {paymentMethod === "veresiye" && (
-          <div className="mb-4">
-            <label className="mb-1 block text-xs uppercase tracking-[0.1em] text-muted">Müşteri (ad veya telefon)</label>
-            {selectedCustomer ? (
-              <div className="flex items-center justify-between rounded border border-accent/40 bg-accent/5 px-3 py-2 text-sm">
-                <span>
-                  {selectedCustomer.name} {selectedCustomer.phone ? `— ${selectedCustomer.phone}` : ""}
-                </span>
-                <button type="button" onClick={() => setSelectedCustomer(null)} className="text-xs text-muted hover:text-accent">
-                  Değiştir
-                </button>
-              </div>
-            ) : (
-              <>
-                <input
-                  className={inputClass}
-                  value={customerQuery}
-                  onChange={(e) => setCustomerQuery(e.target.value)}
-                  placeholder="Müşteri ara..."
-                />
-                {customerResults.length > 0 && (
-                  <div className="mt-2 max-h-40 space-y-1 overflow-y-auto">
-                    {customerResults.map((c) => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedCustomer(c);
-                          setCustomerResults([]);
-                        }}
-                        disabled={c.is_blocked}
-                        className="block w-full rounded border border-[#222] px-3 py-2 text-left text-sm text-foreground hover:border-accent/40 disabled:opacity-40"
-                      >
-                        {c.name} {c.phone ? `— ${c.phone}` : ""} {c.is_blocked ? "(bloklu)" : ""}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+        {paymentMethod === "veresiye" && !selectedCustomer && (
+          <p className="mb-4 rounded border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-xs text-yellow-400">
+            Veresiye için aşağıdaki Müşteri bölümünden müşteri seçin.
+          </p>
+        )}
+        {paymentMethod === "veresiye" && selectedCustomer?.is_blocked && (
+          <p className="mb-4 rounded border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+            Bu müşteri bloklu — veresiye satış yapılamaz.
+          </p>
         )}
 
         <div className="mb-4">
@@ -326,7 +299,11 @@ export default function DukkanSatis() {
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={submitting || cart.length === 0}
+          disabled={
+            submitting ||
+            cart.length === 0 ||
+            (paymentMethod === "veresiye" && (!selectedCustomer || selectedCustomer.is_blocked))
+          }
           className="btn-primary w-full disabled:opacity-40"
         >
           {submitting ? "Kaydediliyor..." : "Satışı Tamamla"}

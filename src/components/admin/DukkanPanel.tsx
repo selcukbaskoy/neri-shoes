@@ -11,6 +11,15 @@ import type { Product } from "@/lib/types";
 
 type DukkanTab = "satis" | "stok" | "veresiye" | "gunsonu";
 
+interface SelectedCustomer {
+  id: number;
+  name: string;
+  phone: string | null;
+  credit_limit: number;
+  is_blocked: boolean;
+  created_at: string;
+}
+
 const TABS: { key: DukkanTab; label: string }[] = [
   { key: "satis", label: "Hızlı Satış" },
   { key: "stok", label: "Stok" },
@@ -20,6 +29,7 @@ const TABS: { key: DukkanTab; label: string }[] = [
 
 export default function DukkanPanel({ products }: { products: Product[] }) {
   const [activeTab, setActiveTab] = useState<DukkanTab>("satis");
+  const [selectedCustomer, setSelectedCustomer] = useState<SelectedCustomer | null>(null);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-8">
@@ -51,8 +61,12 @@ export default function DukkanPanel({ products }: { products: Product[] }) {
 
       {activeTab === "satis" ? (
         <>
-          <DukkanSatis />
-          <DukkanMusteri />
+          <DukkanSatis selectedCustomer={selectedCustomer} onSaleComplete={() => setSelectedCustomer(null)} />
+          <DukkanMusteri
+            selectedCustomer={selectedCustomer}
+            onCustomerSelect={setSelectedCustomer}
+            onCustomerClear={() => setSelectedCustomer(null)}
+          />
         </>
       ) : activeTab === "stok" ? (
         <DukkanStok products={products} />
