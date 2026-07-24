@@ -28,7 +28,7 @@ export default function DukkanStok({ products }: { products: Product[] }) {
   return (
     <div>
       <input
-        className="mb-4 w-full max-w-sm rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm text-foreground placeholder-muted/40 outline-none focus:border-accent/60"
+        className="mb-4 min-h-11 w-full max-w-sm rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-base text-foreground placeholder-muted/40 outline-none focus:border-accent/60 sm:text-sm"
         placeholder="Model ara..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}

@@ -14,7 +14,7 @@ interface CreditCustomer {
 }
 
 const inputClass =
-  "w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60";
+  "min-h-11 w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-base text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60 sm:text-sm";
 
 function dueColor(c: CreditCustomer) {
   if (!c.nearestDue) return "text-muted";
@@ -125,7 +125,7 @@ export default function DukkanVeresiye() {
                 <button
                   type="button"
                   onClick={() => openModal(c)}
-                  className="rounded border border-accent/40 px-3 py-1 text-xs text-accent transition-colors hover:bg-accent hover:text-black"
+                  className="min-h-11 rounded border border-accent/40 px-3 text-xs text-accent transition-colors hover:bg-accent hover:text-black"
                 >
                   Tahsilat
                 </button>

@@ -44,13 +44,13 @@ export default function DukkanPanel({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      <div className="mb-6 flex gap-2 border-b border-[#222]">
+      <div className="mb-6 flex gap-2 overflow-x-auto border-b border-[#222]">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
-            className={`pb-3 px-4 text-sm font-semibold uppercase tracking-wide transition-colors ${
+            className={`min-h-11 shrink-0 whitespace-nowrap px-4 pb-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
               activeTab === tab.key
                 ? "border-b-2 border-accent text-accent"
                 : "text-muted hover:text-foreground"

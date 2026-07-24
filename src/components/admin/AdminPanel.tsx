@@ -683,13 +683,13 @@ export default function AdminPanel({
       </div>
 
       {/* Tab switcher */}
-      <div className="mb-6 flex gap-2 border-b border-[#222]">
+      <div className="mb-6 flex gap-2 overflow-x-auto border-b border-[#222]">
         {(["products", "blog", "stock", "reviews", "coupons"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => { setActiveTab(tab); setNotification(null); }}
-            className={`pb-3 px-4 text-sm font-semibold uppercase tracking-wide transition-colors ${
+            className={`min-h-11 shrink-0 whitespace-nowrap px-4 pb-3 text-sm font-semibold uppercase tracking-wide transition-colors ${
               activeTab === tab
                 ? "border-b-2 border-accent text-accent"
                 : "text-muted hover:text-foreground"
@@ -732,7 +732,7 @@ export default function AdminPanel({
                   type="button"
                   disabled={processingProducts}
                   onClick={handleProcessProductTranslations}
-                  className="rounded border border-yellow-500 px-3 py-1.5 text-sm text-yellow-400 transition-colors hover:bg-yellow-500 hover:text-black disabled:opacity-50"
+                  className="min-h-11 rounded border border-yellow-500 px-3 py-1.5 text-sm text-yellow-400 transition-colors hover:bg-yellow-500 hover:text-black disabled:opacity-50"
                 >
                   {processingProducts ? "Çevriliyor..." : `⏳ Çevirileri İşle (${pendingProductCount})`}
                 </button>
@@ -829,14 +829,14 @@ export default function AdminPanel({
                           <button
                             type="button"
                             onClick={() => openEditProductForm(product)}
-                            className="rounded border border-accent px-3 py-1 text-accent transition-colors hover:bg-accent hover:text-black"
+                            className="min-h-11 rounded border border-accent px-3 text-accent transition-colors hover:bg-accent hover:text-black"
                           >
                             {t("edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDeleteProduct(product.id)}
-                            className="rounded border border-red-500 px-3 py-1 text-red-500 transition-colors hover:bg-red-500 hover:text-black"
+                            className="min-h-11 rounded border border-red-500 px-3 text-red-500 transition-colors hover:bg-red-500 hover:text-black"
                           >
                             {t("delete")}
                           </button>
@@ -862,7 +862,7 @@ export default function AdminPanel({
                   type="button"
                   disabled={processingBlog}
                   onClick={handleProcessBlogTranslations}
-                  className="rounded border border-yellow-500 px-3 py-1.5 text-sm text-yellow-400 transition-colors hover:bg-yellow-500 hover:text-black disabled:opacity-50"
+                  className="min-h-11 rounded border border-yellow-500 px-3 py-1.5 text-sm text-yellow-400 transition-colors hover:bg-yellow-500 hover:text-black disabled:opacity-50"
                 >
                   {processingBlog ? "Çevriliyor..." : `⏳ Blog Çevirilerini İşle (${pendingBlogCount})`}
                 </button>
@@ -918,7 +918,7 @@ export default function AdminPanel({
                           <button
                             type="button"
                             onClick={() => openEditBlogForm(post)}
-                            className="rounded border border-accent px-3 py-1 text-accent transition-colors hover:bg-accent hover:text-black"
+                            className="min-h-11 rounded border border-accent px-3 text-accent transition-colors hover:bg-accent hover:text-black"
                           >
                             {t("edit")}
                           </button>
@@ -926,7 +926,7 @@ export default function AdminPanel({
                             <button
                               type="button"
                               onClick={() => handlePublishBlog(post.id, "publish")}
-                              className="rounded border border-green-500 px-3 py-1 text-green-500 transition-colors hover:bg-green-500 hover:text-black"
+                              className="min-h-11 rounded border border-green-500 px-3 text-green-500 transition-colors hover:bg-green-500 hover:text-black"
                             >
                               {t("publish")}
                             </button>
@@ -934,7 +934,7 @@ export default function AdminPanel({
                             <button
                               type="button"
                               onClick={() => handlePublishBlog(post.id, "unpublish")}
-                              className="rounded border border-[#555] px-3 py-1 text-muted transition-colors hover:bg-[#333]"
+                              className="min-h-11 rounded border border-[#555] px-3 text-muted transition-colors hover:bg-[#333]"
                             >
                               {t("unpublish")}
                             </button>
@@ -942,7 +942,7 @@ export default function AdminPanel({
                           <button
                             type="button"
                             onClick={() => handleDeleteBlog(post.id)}
-                            className="rounded border border-red-500 px-3 py-1 text-red-500 transition-colors hover:bg-red-500 hover:text-black"
+                            className="min-h-11 rounded border border-red-500 px-3 text-red-500 transition-colors hover:bg-red-500 hover:text-black"
                           >
                             {t("delete")}
                           </button>
@@ -1413,7 +1413,7 @@ export default function AdminPanel({
                           [loc.code]: { ...prev[loc.code], price: e.target.value },
                         }))
                       }
-                      className="rounded border border-[#333] bg-[#111] px-3 py-1.5 text-sm text-foreground focus:border-accent focus:outline-none"
+                      className="min-h-11 rounded border border-[#333] bg-[#111] px-3 py-1.5 text-base text-foreground focus:border-accent focus:outline-none sm:text-sm"
                     />
                     <select
                       value={regionalPrices[loc.code]?.currency ?? loc.defaultCurrency}

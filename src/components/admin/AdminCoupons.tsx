@@ -131,7 +131,7 @@ export default function AdminCoupons() {
   }
 
   const inputClass =
-    "w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60";
+    "min-h-11 w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-base text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60 sm:text-sm";
 
   return (
     <div>
@@ -139,7 +139,7 @@ export default function AdminCoupons() {
         <span className="text-sm text-muted">{coupons.length} kupon</span>
         <button
           onClick={startNew}
-          className="rounded border border-accent/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-accent transition-colors hover:border-accent hover:bg-accent/10"
+          className="min-h-11 rounded border border-accent/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-accent transition-colors hover:border-accent hover:bg-accent/10"
         >
           Yeni Kupon
         </button>
@@ -196,10 +196,10 @@ export default function AdminCoupons() {
             </div>
             {error && <p className="mt-3 rounded border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-400">{error}</p>}
             <div className="mt-4 flex gap-3">
-              <button type="submit" disabled={saving} className="rounded bg-accent px-5 py-2 text-sm font-bold text-[#0a0a0a] transition-all hover:bg-accent/90 disabled:opacity-60">
+              <button type="submit" disabled={saving} className="min-h-11 rounded bg-accent px-5 py-2 text-sm font-bold text-[#0a0a0a] transition-all hover:bg-accent/90 disabled:opacity-60">
                 {saving ? "Kaydediliyor..." : "Kaydet"}
               </button>
-              <button type="button" onClick={() => setShowForm(false)} className="rounded border border-[#333] px-5 py-2 text-sm text-foreground transition-colors hover:border-accent hover:text-accent">
+              <button type="button" onClick={() => setShowForm(false)} className="min-h-11 rounded border border-[#333] px-5 py-2 text-sm text-foreground transition-colors hover:border-accent hover:text-accent">
                 İptal
               </button>
             </div>
@@ -251,13 +251,13 @@ export default function AdminCoupons() {
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => startEdit(c)}
-                        className="rounded border border-accent px-3 py-1 text-xs text-accent transition-colors hover:bg-accent hover:text-black"
+                        className="min-h-11 rounded border border-accent px-3 text-xs text-accent transition-colors hover:bg-accent hover:text-black"
                       >
                         Düzenle
                       </button>
                       <button
                         onClick={() => handleDelete(c.id)}
-                        className="rounded border border-red-500 px-3 py-1 text-xs text-red-500 transition-colors hover:bg-red-500 hover:text-black"
+                        className="min-h-11 rounded border border-red-500 px-3 text-xs text-red-500 transition-colors hover:bg-red-500 hover:text-black"
                       >
                         Sil
                       </button>

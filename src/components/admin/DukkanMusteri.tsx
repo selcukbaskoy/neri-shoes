@@ -34,7 +34,7 @@ interface PurchaseSummary {
 }
 
 const inputClass =
-  "w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60";
+  "min-h-11 w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-base text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60 sm:text-sm";
 
 const PHONE_RE = /^0?5\d{9}$/;
 
@@ -185,7 +185,7 @@ export default function DukkanMusteri({
             <button
               type="button"
               onClick={onCustomerClear}
-              className="text-xs text-muted hover:text-red-400"
+              className="flex min-h-11 items-center px-2 text-xs text-muted hover:text-red-400"
             >
               ✕ Kaldır
             </button>
@@ -206,7 +206,7 @@ export default function DukkanMusteri({
               <button
                 type="button"
                 onClick={() => loadPurchases(selectedCustomer.id)}
-                className="text-xs text-accent hover:underline"
+                className="flex min-h-11 items-center text-xs text-accent hover:underline"
               >
                 Yeniden dene
               </button>
@@ -259,7 +259,7 @@ export default function DukkanMusteri({
             <button
               type="button"
               onClick={openNewCustomerForm}
-              className="rounded border border-accent/40 px-3 py-2 text-xs uppercase tracking-wide text-accent transition-colors hover:bg-accent hover:text-black"
+              className="min-h-11 rounded border border-accent/40 px-3 py-2 text-xs uppercase tracking-wide text-accent transition-colors hover:bg-accent hover:text-black"
             >
               + Yeni Müşteri Kaydı Aç
             </button>
@@ -281,7 +281,7 @@ export default function DukkanMusteri({
                   <button
                     type="button"
                     onClick={openNewCustomerForm}
-                    className="rounded border border-accent/40 px-3 py-2 text-xs uppercase tracking-wide text-accent transition-colors hover:bg-accent hover:text-black"
+                    className="min-h-11 rounded border border-accent/40 px-3 py-2 text-xs uppercase tracking-wide text-accent transition-colors hover:bg-accent hover:text-black"
                   >
                     + Yeni Müşteri Kaydı Oluştur
                   </button>
@@ -297,7 +297,7 @@ export default function DukkanMusteri({
                     key={c.id}
                     type="button"
                     onClick={() => onCustomerSelect(c)}
-                    className="flex w-full items-center justify-between rounded border border-[#222] bg-[#0f0f0f] p-3 text-left transition-colors hover:border-accent/40"
+                    className="flex min-h-11 w-full items-center justify-between rounded border border-[#222] bg-[#0f0f0f] p-3 text-left transition-colors hover:border-accent/40"
                   >
                     <div>
                       <p className="text-sm font-semibold text-foreground">
@@ -351,11 +351,11 @@ export default function DukkanMusteri({
               <button
                 type="button"
                 onClick={() => setFormOpen(false)}
-                className="flex-1 rounded border border-[#2a2a2a] px-3 py-2 text-xs uppercase tracking-wide text-muted hover:border-accent/40"
+                className="min-h-11 flex-1 rounded border border-[#2a2a2a] px-3 py-2 text-xs uppercase tracking-wide text-muted hover:border-accent/40"
               >
                 İptal
               </button>
-              <button type="button" onClick={handleSave} disabled={saving} className="btn-primary flex-1 disabled:opacity-40">
+              <button type="button" onClick={handleSave} disabled={saving} className="btn-primary min-h-11 flex-1 disabled:opacity-40">
                 {saving ? "Kaydediliyor..." : "Kaydet"}
               </button>
             </div>

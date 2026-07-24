@@ -31,7 +31,7 @@ interface CustomerResult {
 }
 
 const inputClass =
-  "w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60";
+  "min-h-11 w-full rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-base text-foreground placeholder-muted/40 outline-none transition-colors focus:border-accent/60 sm:text-sm";
 
 export default function DukkanSatis({
   selectedCustomer,
@@ -177,7 +177,7 @@ export default function DukkanSatis({
                         type="button"
                         onClick={() => addToCart(product, s.size)}
                         disabled={s.quantity <= 0}
-                        className="rounded border border-accent/40 px-3 py-1 text-xs text-accent transition-colors hover:bg-accent hover:text-black disabled:opacity-30"
+                        className="min-h-11 rounded border border-accent/40 px-4 text-sm text-accent transition-colors hover:bg-accent hover:text-black disabled:opacity-30"
                       >
                         {s.size} ({s.quantity})
                       </button>
@@ -207,12 +207,12 @@ export default function DukkanSatis({
                     max={item.maxQty}
                     value={item.quantity}
                     onChange={(e) => updateQty(i, parseInt(e.target.value, 10) || 1)}
-                    className="w-16 rounded border border-[#2a2a2a] bg-[#111] px-2 py-1 text-center text-sm text-foreground"
+                    className="min-h-11 w-16 rounded border border-[#2a2a2a] bg-[#111] px-2 text-center text-base text-foreground sm:text-sm"
                   />
                   <span className="w-20 text-right text-sm text-accent">
                     {(item.quantity * item.unitPrice).toLocaleString("tr-TR")} TL
                   </span>
-                  <button type="button" onClick={() => removeItem(i)} className="text-xs text-red-500 hover:text-red-400">
+                  <button type="button" onClick={() => removeItem(i)} className="flex min-h-11 items-center px-2 text-xs text-red-500 hover:text-red-400">
                     Sil
                   </button>
                 </div>
@@ -242,7 +242,7 @@ export default function DukkanSatis({
                 key={pm}
                 type="button"
                 onClick={() => setPaymentMethod(pm)}
-                className={`flex-1 rounded border px-3 py-2 text-xs font-semibold uppercase tracking-wide transition-colors ${
+                className={`min-h-11 flex-1 rounded border px-3 py-2 text-xs font-semibold uppercase tracking-wide transition-colors ${
                   paymentMethod === pm
                     ? "border-accent bg-accent/10 text-accent"
                     : "border-[#2a2a2a] text-muted hover:border-accent/40"
@@ -304,7 +304,7 @@ export default function DukkanSatis({
             cart.length === 0 ||
             (paymentMethod === "veresiye" && (!selectedCustomer || selectedCustomer.is_blocked))
           }
-          className="btn-primary w-full disabled:opacity-40"
+          className="btn-primary min-h-12 w-full text-base disabled:opacity-40"
         >
           {submitting ? "Kaydediliyor..." : "Satışı Tamamla"}
         </button>
