@@ -16,6 +16,12 @@ function todayIstanbul() {
   return new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Istanbul" });
 }
 
+function yesterdayIstanbul() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toLocaleDateString("sv-SE", { timeZone: "Europe/Istanbul" });
+}
+
 export default function DukkanGunSonu() {
   const [date, setDate] = useState(todayIstanbul());
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -37,14 +43,34 @@ export default function DukkanGunSonu() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 flex flex-wrap items-center gap-3">
         <label className="text-xs uppercase tracking-[0.1em] text-muted">Tarih</label>
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-sm text-foreground outline-none focus:border-accent/60"
+          className="min-h-11 rounded border border-[#2a2a2a] bg-[#111] px-3 py-2 text-base text-foreground outline-none focus:border-accent/60 sm:text-sm"
         />
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setDate(todayIstanbul())}
+            className={`min-h-11 rounded border px-3 text-xs font-semibold uppercase tracking-wide transition-colors ${
+              date === todayIstanbul() ? "border-accent bg-accent/10 text-accent" : "border-[#2a2a2a] text-muted hover:border-accent/40"
+            }`}
+          >
+            Bugün
+          </button>
+          <button
+            type="button"
+            onClick={() => setDate(yesterdayIstanbul())}
+            className={`min-h-11 rounded border px-3 text-xs font-semibold uppercase tracking-wide transition-colors ${
+              date === yesterdayIstanbul() ? "border-accent bg-accent/10 text-accent" : "border-[#2a2a2a] text-muted hover:border-accent/40"
+            }`}
+          >
+            Dün
+          </button>
+        </div>
       </div>
 
       {!loaded ? (
