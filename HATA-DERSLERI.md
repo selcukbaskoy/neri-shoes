@@ -141,6 +141,31 @@ Kanıt: aynı isteğe 3MB gövde → 201, 6MB gövde → `413 FUNCTION_PAYLOAD_T
 
 ---
 
+## H-7 — Supabase Auth SMTP: Yanlış Resend API Key → 535 Auth Hatası, Signup 500 Dönüyor (2026-07-24)
+
+### Belirti
+`/auth/v1/signup` isteği 500 dönüyordu. Supabase Auth loglarında SMTP `535 Authentication credentials invalid` hatası.
+Kullanıcı kayıt formunu dolduruyor ama hesap oluşmuyor, hiçbir onay maili gitmiyordu.
+
+### Kök Neden
+Supabase Dashboard → Authentication → SMTP Settings password alanına yanlış/eksik bir Resend API key girilmişti (14 karakter, `re_` ile başlamıyor — gerçek key 36 karakter ve `re_` ile başlıyor). Kaynak muhtemelen kopyala-yapıştır sırasında kırpılmış bir değerdi.
+
+Ayrıca düzeltme sürecinde yeni bir tuzak ortaya çıktı: **Vercel'in "Copy to Clipboard" menü aksiyonu, env var'ı `.env` satır formatında kopyalıyor** (`RESEND_API_KEY=re_xxx...`), çıplak değeri değil. Bu fark edilmeden SMTP alanına yapıştırılırsa yine geçersiz credential olur.
+
+### Çözüm
+1. Vercel'den kopyalanan değerin `RESEND_API_KEY=` öneki içerip içermediği `v.startsWith('RESEND_API_KEY=')` ile (asla değeri ekrana yazdırmadan, sadece boolean/length kontrolüyle) doğrulandı.
+2. Önek JS ile temizlendi (`v.slice(prefix.length)`), native `HTMLInputElement` value setter + `input` event dispatch ile Supabase SMTP password alanına set edildi (React controlled input'u bypass etmek için gerekli).
+3. Save changes → "Successfully updated settings" toast'ı ile doğrulandı.
+4. Gerçek signup + forgot-password akışı Chrome MCP ile ucundan ucuna test edildi: her ikisi de 200 döndü, Türkçe/marka'lı mailler `info@nerishoes.com.tr`'den Inbox'a (spam'e değil) ulaştı, linkler doğru çalıştı.
+
+### Önleme Kuralı
+- **Bir API key/secret'ı bir panelden diğerine taşırken, "Copy to Clipboard" gibi kolaylık özelliklerinin çıplak değer değil `.env` formatı (`KEY=value`) kopyalayabileceğini varsay** — hedefe yapıştırmadan önce uzunluk/önek kontrolü yap.
+- **Secret doğrulama her zaman boolean/length/startsWith üzerinden yapılmalı, değerin kendisi asla loglanmamalı/ekrana yazdırılmamalı** — LLM transcript'i veya terminal geçmişi secret sızıntısı riski taşır.
+- **SMTP/Auth email gönderim hataları için önce Supabase Auth loglarındaki ham SMTP hata koduna bak** (535 = auth, 550 = domain/sender reddi, timeout = ağ/port) — kök nedeni doğru katmana (kimlik bilgisi vs. DNS/SPF/DKIM) hızlıca işaret eder.
+- **Resend order-confirmation mailleri (`src/lib/email.ts`, `RESEND_API_KEY` Vercel env var) ile Supabase Auth SMTP ayarları tamamen ayrı sistemlerdir** — biri bozulursa diğeri otomatik etkilenmez, ama regresyon kontrolünde ikisi de ayrı ayrı test edilmeli.
+
+---
+
 ## Genel Dersler
 
 ### Env Var Güvenlik Matrisi
