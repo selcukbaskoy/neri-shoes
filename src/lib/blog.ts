@@ -2,6 +2,8 @@ import { unstable_noStore as noStore } from "next/cache";
 import { supabase, supabaseAdmin } from "./supabase";
 import { BlogPost, BlogPostContent, BlogCategory, Locale } from "./types";
 
+export { getBlogContent, getBlogMeta } from "./blog-utils";
+
 function mapRow(row: Record<string, unknown>): BlogPost {
   return {
     id: row.id as string,
@@ -101,17 +103,4 @@ export async function unpublishBlogPost(id: string): Promise<void> {
     .update({ status: "draft", published_at: null })
     .eq("id", id);
   if (error) throw new Error(error.message);
-}
-
-export function getBlogContent(post: BlogPost, locale: Locale): BlogPostContent {
-  const c = post.content[locale];
-  if (!c || !c.title) return post.content["tr"] ?? { title: "", body: "", excerpt: "" };
-  return c;
-}
-
-export function getBlogMeta(post: BlogPost, locale: Locale) {
-  return {
-    title: post.metaTitle?.[locale] || post.metaTitle?.["tr"] || "",
-    description: post.metaDescription?.[locale] || post.metaDescription?.["tr"] || "",
-  };
 }

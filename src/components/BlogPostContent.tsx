@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { BlogPost, Locale } from "@/lib/types";
-import { getBlogContent } from "@/lib/blog";
+import { getBlogContent } from "@/lib/blog-utils";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
