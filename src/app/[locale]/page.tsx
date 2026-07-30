@@ -58,7 +58,7 @@ export default async function HomePage({ params }: Props) {
   const featured = [...featuredRaw].sort((a, b) => {
     const stockScore = (id: string) => (totalStock(id) > 0 ? 0 : 1);
     const featuredScore = (f: boolean) => (f ? 0 : 1);
-    const discountScore = (p: typeof a) => (p.compareAtPrice != null ? 0 : 1);
+    const discountScore = (p: typeof a) => (p.compareAtPrice != null && p.compareAtPrice > 0 ? 0 : 1);
     return (
       stockScore(a.id) - stockScore(b.id) ||
       featuredScore(a.featured) - featuredScore(b.featured) ||

@@ -101,7 +101,7 @@ export default function ProductCard({
         {/* Price block — compact, same 3-state logic as detail page */}
         {product.price != null && (
           <div className="flex flex-wrap items-center gap-2">
-            {product.compareAtPrice != null && product.price > product.compareAtPrice ? (
+            {product.compareAtPrice != null && product.compareAtPrice > 0 && product.price > product.compareAtPrice ? (
               /* Durum 1: indirimli */
               <>
                 <span className="text-base font-bold text-accent">

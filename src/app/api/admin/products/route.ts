@@ -132,7 +132,8 @@ export async function POST(request: NextRequest) {
   const priceRaw = formData.get("price");
   const compareAtPriceRaw = formData.get("compareAtPrice");
   const price = priceRaw && String(priceRaw).trim() !== "" ? Number(priceRaw) : null;
-  const compareAtPrice = compareAtPriceRaw && String(compareAtPriceRaw).trim() !== "" ? Number(compareAtPriceRaw) : null;
+  const compareAtPriceNum = compareAtPriceRaw && String(compareAtPriceRaw).trim() !== "" ? Number(compareAtPriceRaw) : null;
+  const compareAtPrice = compareAtPriceNum != null && compareAtPriceNum > 0 ? compareAtPriceNum : null;
   const discountPercentage =
     price != null && compareAtPrice != null && price > compareAtPrice
       ? Math.round(((price - compareAtPrice) / price) * 100)
@@ -226,7 +227,8 @@ export async function PUT(request: NextRequest) {
   const putPriceRaw = formData.get("price");
   const putCompareAtPriceRaw = formData.get("compareAtPrice");
   const putPrice = putPriceRaw && String(putPriceRaw).trim() !== "" ? Number(putPriceRaw) : null;
-  const putCompareAtPrice = putCompareAtPriceRaw && String(putCompareAtPriceRaw).trim() !== "" ? Number(putCompareAtPriceRaw) : null;
+  const putCompareAtPriceNum = putCompareAtPriceRaw && String(putCompareAtPriceRaw).trim() !== "" ? Number(putCompareAtPriceRaw) : null;
+  const putCompareAtPrice = putCompareAtPriceNum != null && putCompareAtPriceNum > 0 ? putCompareAtPriceNum : null;
   const putDiscountPercentage =
     putPrice != null && putCompareAtPrice != null && putPrice > putCompareAtPrice
       ? Math.round(((putPrice - putCompareAtPrice) / putPrice) * 100)

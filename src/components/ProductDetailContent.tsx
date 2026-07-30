@@ -154,6 +154,7 @@ export default function ProductDetailContent({
 
     const unitPrice =
       product.compareAtPrice != null &&
+      product.compareAtPrice > 0 &&
       product.price != null &&
       product.price > product.compareAtPrice
         ? product.compareAtPrice
@@ -372,7 +373,7 @@ export default function ProductDetailContent({
               transition={{ duration: 0.4, ease: "easeOut" }}
               className="flex flex-col gap-1.5"
             >
-              {product.compareAtPrice != null && product.price > product.compareAtPrice ? (
+              {product.compareAtPrice != null && product.compareAtPrice > 0 && product.price > product.compareAtPrice ? (
                 /* Durum 1: indirimli */
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="text-3xl font-bold text-accent">
