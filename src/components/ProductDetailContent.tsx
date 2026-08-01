@@ -428,20 +428,37 @@ export default function ProductDetailContent({
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {stockStatus.sizes.map((size) => (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => setSelectedSize(selectedSize === size ? null : size)}
-                    className={`min-w-[48px] rounded border px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                      selectedSize === size
-                        ? "border-accent bg-accent/20 text-accent shadow-[0_0_8px_rgba(255,208,0,0.3)]"
-                        : "border-[#333] text-foreground hover:border-accent/60 hover:text-accent/80"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+                {stock
+                  .slice()
+                  .sort((a, b) => a.size - b.size)
+                  .map((entry) => {
+                    const isOut = entry.quantity <= 0;
+                    const isLow = !isOut && entry.quantity <= 2;
+                    const isSelected = selectedSize === entry.size;
+                    return (
+                      <button
+                        key={entry.size}
+                        type="button"
+                        disabled={isOut}
+                        onClick={() => !isOut && setSelectedSize(isSelected ? null : entry.size)}
+                        title={isOut ? t("soldOut") : isLow ? `Son ${entry.quantity} adet!` : undefined}
+                        className={`relative min-h-11 min-w-[48px] rounded border px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                          isOut
+                            ? "cursor-not-allowed border-[#2a2a2a] text-muted/30 line-through"
+                            : isSelected
+                              ? "border-accent bg-accent/20 text-accent shadow-[0_0_8px_rgba(255,208,0,0.3)]"
+                              : "border-[#333] text-foreground hover:border-accent/60 hover:text-accent/80"
+                        }`}
+                      >
+                        {entry.size}
+                        {isLow && (
+                          <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-orange-500/90 px-1.5 py-[1px] text-[9px] font-bold leading-tight text-[#0a0a0a]">
+                            Son {entry.quantity}!
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
               </div>
               {/* Kalıp Rehberi */}
               <div className="rounded border border-[#222] bg-[#0f0f0f] p-3">

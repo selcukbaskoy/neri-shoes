@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { Product, ProductCategory, PRODUCT_CATEGORIES, BlogPost, BlogCategory, BLOG_CATEGORIES } from "@/lib/types";
 import AdminReviews from "./AdminReviews";
 import AdminCoupons from "./AdminCoupons";
+import StockMatrix from "./StockMatrix";
 
 const MAX_IMAGES = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -608,6 +609,14 @@ export default function AdminPanel({
     return Object.values(stock).reduce((sum, qty) => sum + qty, 0);
   }
 
+  const selectedStockFamily = (() => {
+    const selected = products.find((p) => p.id === selectedStockProductId);
+    if (!selected?.colorFamily) return selected ? [selected] : [];
+    return products
+      .filter((p) => p.colorFamily === selected.colorFamily)
+      .sort((a, b) => (a.colorName?.tr ?? a.name).localeCompare(b.colorName?.tr ?? b.name, "tr"));
+  })();
+
   function handleSelectStockProduct(productId: string) {
     setSelectedStockProductId(productId);
     const existing = allStocks[productId] ?? {};
@@ -979,7 +988,7 @@ export default function AdminPanel({
                 ))}
               </select>
 
-              {selectedStockProductId && (
+              {selectedStockProductId && selectedStockFamily.length <= 1 && (
                 <>
                   <table className="mb-6 text-sm">
                     <thead>
@@ -1020,6 +1029,17 @@ export default function AdminPanel({
               )}
             </div>
           </div>
+
+          {selectedStockProductId && selectedStockFamily.length > 1 && (
+            <div className="mb-8">
+              <StockMatrix
+                familyProducts={selectedStockFamily}
+                allStocks={allStocks}
+                onSaved={refetchAllStocks}
+                notify={notify}
+              />
+            </div>
+          )}
 
           {/* Overview table */}
           <div>
