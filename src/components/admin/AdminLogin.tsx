@@ -59,6 +59,7 @@ export default function AdminLogin() {
           onChange={(e) => setPassword(e.target.value)}
           className="input-field disabled:opacity-40"
           autoFocus
+          autoComplete="current-password"
           disabled={isLocked}
         />
         {error?.type === "invalid" && (

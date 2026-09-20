@@ -755,7 +755,85 @@ export default function AdminPanel({
           {products.length === 0 ? (
             <p className="text-muted">{t("noProducts")}</p>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-[#222]">
+            <>
+              {/* Mobile card list */}
+              <div className="grid gap-3 sm:hidden">
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className={`rounded-lg border border-[#222] bg-surface p-3 transition-opacity ${
+                      product.is_active === false ? "opacity-50" : ""
+                    }`}
+                  >
+                    <div className="flex gap-3">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        width={56}
+                        height={56}
+                        className="h-14 w-14 shrink-0 rounded object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="truncate font-medium">{product.name}</span>
+                          {product.translationStatus === "pending" && (
+                            <span className="rounded bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-medium text-yellow-400">
+                              Çeviri Bekliyor
+                            </span>
+                          )}
+                          {product.is_active === false && (
+                            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-[10px] font-medium text-red-400">
+                              Pasif
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1 text-xs text-muted">
+                          {tp(`category${capitalize(product.category)}`)}
+                          {product.sku && <> · SKU: {product.sku}</>}
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                          {product.price != null ? (
+                            <span>
+                              {product.price.toLocaleString("tr-TR")} TL
+                              {product.discountPercentage ? (
+                                <span className="ml-1 text-green-400">%{product.discountPercentage} ind.</span>
+                              ) : null}
+                            </span>
+                          ) : (
+                            <span className="text-muted">Fiyat yok</span>
+                          )}
+                          <span className="text-muted">
+                            {!stocksLoaded
+                              ? "Stok: ..."
+                              : getStockTotal(product.id) > 0
+                              ? `Stok: ${getStockTotal(product.id)} adet`
+                              : "Stok: —"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openEditProductForm(product)}
+                        className="min-h-11 flex-1 rounded border border-accent px-3 text-accent transition-colors hover:bg-accent hover:text-black"
+                      >
+                        {t("edit")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteProduct(product.id)}
+                        className="min-h-11 flex-1 rounded border border-red-500 px-3 text-red-500 transition-colors hover:bg-red-500 hover:text-black"
+                      >
+                        {t("delete")}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden overflow-x-auto rounded-lg border border-[#222] sm:block">
               <table className="w-full text-left text-sm">
                 <thead className="bg-surface text-muted">
                   <tr>
@@ -855,7 +933,8 @@ export default function AdminPanel({
                   ))}
                 </tbody>
               </table>
-            </div>
+              </div>
+            </>
           )}
         </>
       )}
@@ -1113,11 +1192,13 @@ export default function AdminPanel({
 
       {/* ─── Product Form Modal ───────────────────────────────────────────────── */}
       {showProductForm && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-4 pt-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
           <form
             onSubmit={handleProductSubmit}
-            className="card mb-8 w-full max-w-4xl p-6"
+            className="card flex w-full max-w-4xl flex-col overflow-hidden p-0"
+            style={{ maxHeight: "90vh" }}
           >
+          <div className="flex-1 overflow-y-auto p-6">
             <h2 className="mb-5 text-xl font-semibold text-accent">
               {productForm.id ? t("editProduct") : t("addProduct")}
             </h2>
@@ -1165,7 +1246,7 @@ export default function AdminPanel({
                   </span>
                 </label>
                 {imageItems.length > 0 && (
-                  <div className="mb-3 grid grid-cols-5 gap-2 sm:grid-cols-8">
+                  <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-5 md:grid-cols-8">
                     {imageItems.map((item, i) => {
                       const src = item.type === "existing" ? item.url : item.previewUrl;
                       return (
@@ -1181,20 +1262,20 @@ export default function AdminPanel({
                             </span>
                           )}
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={src} alt="" className="h-16 w-full object-cover" />
+                          <img src={src} alt="" className="h-24 w-full object-cover sm:h-16" />
                           <button
                             type="button"
                             onClick={() => removeImage(i)}
-                            className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center bg-black/70 text-[10px] text-white hover:bg-red-600"
+                            className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center bg-black/70 text-base text-white hover:bg-red-600 sm:h-6 sm:w-6 sm:text-[10px]"
                           >
                             ✕
                           </button>
-                          <div className="flex justify-center gap-1 bg-[#111] py-0.5">
+                          <div className="flex justify-center gap-1 bg-[#111] py-1">
                             <button
                               type="button"
                               onClick={() => moveImage(i, -1)}
                               disabled={i === 0}
-                              className="px-1.5 text-xs text-muted hover:text-white disabled:opacity-20"
+                              className="flex min-h-11 min-w-11 items-center justify-center px-2 text-lg text-muted hover:text-white disabled:opacity-20 sm:min-h-0 sm:min-w-0 sm:px-1.5 sm:text-xs"
                             >
                               ←
                             </button>
@@ -1202,7 +1283,7 @@ export default function AdminPanel({
                               type="button"
                               onClick={() => moveImage(i, 1)}
                               disabled={i === imageItems.length - 1}
-                              className="px-1.5 text-xs text-muted hover:text-white disabled:opacity-20"
+                              className="flex min-h-11 min-w-11 items-center justify-center px-2 text-lg text-muted hover:text-white disabled:opacity-20 sm:min-h-0 sm:min-w-0 sm:px-1.5 sm:text-xs"
                             >
                               →
                             </button>
@@ -1216,6 +1297,7 @@ export default function AdminPanel({
                   <input
                     type="file"
                     accept="image/*"
+                    capture="environment"
                     multiple
                     onChange={handleImageSelect}
                     className="input-field"
@@ -1305,7 +1387,7 @@ export default function AdminPanel({
               isOpen={accordionOpen.pricing}
               onToggle={() => toggleAccordion("pricing")}
             >
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm text-muted">Normal Fiyat (TL)</label>
                   <input
@@ -1419,8 +1501,13 @@ export default function AdminPanel({
                   Boş bırakılan diller için otomatik döviz çevirisi kullanılır.
                 </p>
                 {REGIONAL_LOCALES.map((loc) => (
-                  <div key={loc.code} className="grid grid-cols-[1fr_120px_80px] gap-2 items-center">
-                    <label className="text-xs font-medium text-muted">{loc.label}</label>
+                  <div
+                    key={loc.code}
+                    className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_120px_80px] sm:items-center"
+                  >
+                    <label className="col-span-2 text-xs font-medium text-muted sm:col-span-1">
+                      {loc.label}
+                    </label>
                     <input
                       type="number"
                       min="0"
@@ -1517,8 +1604,9 @@ export default function AdminPanel({
                 </>
               )}
             </AccordionSection>
+          </div>
 
-            <div className="mt-2 flex justify-end gap-3">
+          <div className="flex justify-end gap-3 border-t border-[#2a2a2a] bg-[#0a0a0a] p-4">
               <button type="button" onClick={closeProductForm} className="btn-primary">
                 {t("cancel")}
               </button>
