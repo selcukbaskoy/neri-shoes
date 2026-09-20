@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { Product, ProductCategory, PRODUCT_CATEGORIES, BlogPost, BlogCategory, BLOG_CATEGORIES } from "@/lib/types";
 import AdminReviews from "./AdminReviews";
 import AdminCoupons from "./AdminCoupons";
+import AdminInstagram from "./AdminInstagram";
 import StockMatrix from "./StockMatrix";
 
 const MAX_IMAGES = 10;
@@ -84,7 +85,7 @@ export default function AdminPanel({
   const tb = useTranslations("blog");
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"products" | "blog" | "stock" | "reviews" | "coupons">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "blog" | "stock" | "reviews" | "coupons" | "instagram">("products");
 
   // ─── Products state ───────────────────────────────────────────────────────
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -171,6 +172,13 @@ export default function AdminPanel({
     setAccordionOpen({ basic: true, pricing: true, regional: false, stock: false });
     setNotification(null);
     setShowProductForm(true);
+  }
+
+  function handleOpenInstagramAsProduct(images: string[], caption: string) {
+    openAddProductForm();
+    setImageItems(images.map((url) => ({ type: "existing", url })));
+    setProductForm((prev) => ({ ...prev, description: caption }));
+    setActiveTab("products");
   }
 
   function openEditProductForm(product: Product) {
@@ -693,7 +701,7 @@ export default function AdminPanel({
 
       {/* Tab switcher */}
       <div className="mb-6 flex gap-2 overflow-x-auto border-b border-[#222]">
-        {(["products", "blog", "stock", "reviews", "coupons"] as const).map((tab) => (
+        {(["products", "blog", "stock", "reviews", "coupons", "instagram"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -712,7 +720,9 @@ export default function AdminPanel({
               ? "Stok Yönetimi"
               : tab === "reviews"
               ? "Yorumlar"
-              : "Kuponlar"}
+              : tab === "coupons"
+              ? "Kuponlar"
+              : "Instagram"}
           </button>
         ))}
       </div>
@@ -1188,6 +1198,10 @@ export default function AdminPanel({
       {/* ─── Coupons Tab ───────────────────────────────────────────────────────── */}
       {activeTab === "coupons" && (
         <AdminCoupons />
+      )}
+
+      {activeTab === "instagram" && (
+        <AdminInstagram onOpenAsProduct={handleOpenInstagramAsProduct} />
       )}
 
       {/* ─── Product Form Modal ───────────────────────────────────────────────── */}
